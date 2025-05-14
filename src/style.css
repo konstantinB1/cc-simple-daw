@@ -1,9 +1,11 @@
 :root {
     --color-primary: #1e1e1e;
     --color-secondary: #0e0e0e;
-    --color-accent: hwb(0 36% 64%);
+    --color-accent: hwb(0 22% 78%);
     --color-text: #ffffff;
     --color-background: #181818;
+    --container-width: 600px;
+    --container-height: 60vh;
 }
 
 html {
@@ -18,8 +20,8 @@ html,body {
 .content {
     border-radius: 3px;
     background-color: var(--color-primary);
-    width: 50vw;
-    height: 60vh;
+    width: var(--container-width);
+    height: var(--container-height);
     margin: 20vh auto;
     border: 1px solid var(--color-accent);
 
@@ -36,16 +38,63 @@ html,body {
         height: 100%;
 
         .pad {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             border-radius: 3px;
             border: 1px solid var(--color-accent);
             background-color: var(--color-secondary);
             width: 120px;
             height: 120px;
-            transition: background-color 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: background-color 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         .active {
-            background-color: var(--color-accent);
+            background-color: var(--color-primary);
+            transform: scale(1.05);
+        }
+
+        .key {
+            font-size: 2em;
+            color: var(--color-text);
+            text-align: center;
+            line-height: 120px;
+            text-transform: uppercase;
         }
     }
+}
+
+.typography-100 {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.typography-200 {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.typography-300 {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.typography-400 {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.typography-500 {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
 }

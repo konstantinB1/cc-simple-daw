@@ -1,4 +1,5 @@
 import { KeyManager, type Key } from "./key-mappings";
+import { createElementsFromMappings } from "./ui";
 
 function main() {
     const keyManager: KeyManager = KeyManager.getInstance();
@@ -23,6 +24,8 @@ function main() {
             console.error(`Pad with id ${mapping.id} not found`);
         }
     });
+
+    createElementsFromMappings(keys, 'pad');
 }
 
 main();
