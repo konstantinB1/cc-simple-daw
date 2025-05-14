@@ -1,45 +1,4 @@
-import { KeyManager, KeyMapping, type Key } from "./key-mappings";
-
-export interface SimpleDAWInterfaceDeps {
-    audioContext: AudioContext;
-    gainNode: GainNode;
-    audioBuffer: AudioBuffer | null;
-    audioSource: AudioBufferSourceNode | null;
-    audioFile: File | null;
-}
-
-export default class SimpleDAW {
-    context: AudioContext;
-    gainNode: GainNode;
-    audioBuffer: AudioBuffer | null = null;
-    audioSource: AudioBufferSourceNode | null = null;
-    audioFile: File | null = null;
-    
-    constructor({
-        audioContext,
-        gainNode,
-        audioBuffer = null,
-        audioSource = null,
-        audioFile = null
-    }: SimpleDAWInterfaceDeps) {
-        this.context = audioContext;
-        this.gainNode = gainNode;
-        this.audioBuffer = audioBuffer;
-        this.audioSource = audioSource;
-        this.audioFile = audioFile;
-    }
-}
-
-const ctx = new AudioContext();
-const daw = new SimpleDAW({
-    audioContext: ctx,
-    gainNode: ctx.createGain(),
-    audioBuffer: null,
-    audioSource: null,
-    audioFile: null
-});
-
-
+import { KeyManager, type Key } from "./key-mappings";
 
 function main() {
     const keyManager: KeyManager = KeyManager.getInstance();
