@@ -8,40 +8,38 @@ import { KeyManager, KeyMapping, type Key } from "../lib/KeyManager";
 export default class Pads extends LitElement {
     private keyManager: KeyManager = KeyManager.getInstance();
 
-    @property({ type: Array })
-    keys: Key[] = padKeys;
+    private unsub: (() => void) | null = null;
 
     @property({ type: Array })
-    padMappings: KeyMapping[] = [];
+    protected keys: Key[] = padKeys;
 
-    constructor() {
-        super();
-        this.padMappings = padKeys.map((key) => new KeyMapping(key));
+    @property({ type: Array })
+    protected padMappings: KeyMapping[] = padKeys.map(
+        (key) => new KeyMapping(key),
+    );
+
+    connectedCallback(): void {
+        super.connectedCallback();
 
         this.keyManager.addKeys(padKeys);
-        this.keyManager.subscribe(({ mapping }) => {
+        this.unsub = this.keyManager.subscribe(({ mapping }) => {
             const getMappingKey = this.padMappings.findIndex(
                 (keyMapping) => keyMapping.key === mapping.key,
             );
 
-            if (getMappingKey !== -1) {
-                this.padMappings = this.padMappings.map((key, index) => {
-                    if (index === getMappingKey) {
-                        return {
-                            ...key,
-                            isPressed: mapping.isPressed,
-                        };
-                    }
-
-                    return key;
-                });
-            } else {
-                console.error(
-                    `Key mapping ${mapping.key} not found in pad mappings`,
-                    mapping,
-                );
-            }
+            this.padMappings = this.padMappings.map((key, index) =>
+                index === getMappingKey ? mapping : key,
+            );
         });
+    }
+
+    disconnectedCallback(): void {
+        super.disconnectedCallback();
+
+        if (this.unsub) {
+            this.unsub();
+            this.unsub = null;
+        }
     }
 
     static styles: CSSResultGroup = css`

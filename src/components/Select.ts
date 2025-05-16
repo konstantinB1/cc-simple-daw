@@ -1,0 +1,46 @@
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { typography } from "../global-styles";
+
+export type SelectOption = {
+    value: string;
+    label: string;
+};
+
+@customElement("daw-select")
+export default class Select extends LitElement {
+    @property({ type: Array })
+    options: SelectOption[] = [];
+
+    constructor() {
+        super();
+    }
+
+    static styles = [
+        typography,
+        css`
+            .select {
+                width: 100%;
+                padding: 10px;
+                border-radius: 3px;
+                border: 1px solid var(--color-accent);
+                background-color: var(--color-secondary);
+                color: var(--color-text);
+                font-size: 1em;
+            }
+        `,
+    ];
+
+    render() {
+        return html`
+            <select class="select">
+                ${this.options.map(
+                    (option) =>
+                        html`<option value="${option.value} typography-100">
+                            ${option.label}
+                        </option>`,
+                )}
+            </select>
+        `;
+    }
+}

@@ -16,6 +16,7 @@ html,
 body {
     margin: 0;
     padding: 0;
+    color: var(--color-text);
 }
 
 input[type="range"][orient="vertical"] {

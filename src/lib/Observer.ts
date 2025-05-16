@@ -27,6 +27,7 @@ export default class Observer<T extends (data?: any) => void> {
             this.observers[event] = [];
         }
     }
+
     clearAll(): void {
         this.observers = {};
     }

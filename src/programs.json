@@ -1,0 +1,61 @@
+{
+    "programs": [
+        {
+            "name": "TR-808",
+            "description": "This is the first program.",
+            "path": "assets/kits/TR-808 Kit",
+            "data": [
+                {
+                    "name": "808",
+                    "file": "808.wav"
+                },
+                {
+                    "name": "Clap",
+                    "file": "Clap.wav"
+                },
+                {
+                    "name": "Claves",
+                    "file": "Claves.wav"
+                },
+                {
+                    "name": "Cowbell",
+                    "file": "Cowbell.wav"
+                },
+                {
+                    "name": "Cymbal",
+                    "file": "Cymbal.wav"
+                },
+                {
+                    "name": "HiHat",
+                    "file": "Hihat.wav"
+                },
+                {
+                    "name": "Kick",
+                    "file": "Kick.wav"
+                },
+                {
+                    "name": "Maracas",
+                    "file": "Maracas.wav"
+                },
+                {
+                    "name": "Rimshot",
+                    "file": "Rimshot.wav"
+                },
+                {
+                    "name": "Snare",
+                    "file": "Snare.wav"
+                },
+                {
+                    "name": "Tom",
+                    "file": "Tom.wav"
+                }
+            ]
+        },
+        {
+            "name": "Program 2",
+            "description": "This is the second program.",
+            "version": "2.0.0",
+            "author": "Author B"
+        }
+    ]
+}
