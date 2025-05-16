@@ -1,9 +1,14 @@
-import Observer from "./observer";
+import Observer from "./Observer";
 
 export type Key = {
     key: string;
     id: string;
-}
+};
+
+export type KeyData = {
+    mapping: KeyMapping;
+    event: KeyboardEvent;
+};
 
 export class KeyManager {
     private keys: Map<string, KeyMapping> = new Map();
@@ -23,33 +28,40 @@ export class KeyManager {
         this.keys.set(keyMapping.key, keyMapping);
     }
 
-    addKeys(keys: Key[]): KeyManager {
+    addKeys(keys: Key[]): void {
         keys.forEach(this.add.bind(this));
-        return this;
     }
 
-    attachListener(onPress: (mapping: KeyMapping, event: KeyboardEvent) => void = () => {}): void {
-        window.addEventListener('keydown', (event: KeyboardEvent) => {
+    subscribe(callback: (key: KeyData) => void): () => void {
+        this.observer.subscribe("keypress", callback);
+
+        return () => this.observer.unsubscribe("keypress", callback);
+    }
+
+    createKeyListener(): void {
+        window.addEventListener("keydown", (event: KeyboardEvent) => {
             if (this.keys.has(event.key)) {
                 for (const mapping of this.keys.values()) {
                     if (mapping.key === event.key) {
                         mapping.isPressed = true;
-                        this.observer.notify(event.key);
-                        console.log(`Key pressed: ${event.key}`);
-                        onPress(mapping, event);
+                        this.observer.notify("keypress", {
+                            mapping: mapping,
+                            event: event,
+                        });
                     }
                 }
             }
         });
 
-        window.addEventListener('keyup', (event: KeyboardEvent) => {
+        window.addEventListener("keyup", (event: KeyboardEvent) => {
             if (this.keys.has(event.key)) {
                 for (const mapping of this.keys.values()) {
                     if (mapping.key === event.key) {
                         mapping.isPressed = false;
-                        this.observer.notify(event.key);
-                        console.log(`Key released: ${event.key}`);
-                        onPress(mapping, event);
+                        this.observer.notify("keypress", {
+                            mapping: mapping,
+                            event: event,
+                        });
                     }
                 }
             }
@@ -59,7 +71,7 @@ export class KeyManager {
     toggleEnabled(key: string, enabled: boolean): void {
         if (this.keys.has(key)) {
             const mapping = this.keys.get(key);
-            
+
             if (mapping) {
                 mapping.isDisabled = !enabled;
             }

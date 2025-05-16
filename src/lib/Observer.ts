@@ -12,7 +12,7 @@ export default class Observer<T extends (data?: any) => void> {
         if (!this.observers[event]) return;
 
         this.observers[event] = this.observers[event].filter(
-            (observer) => observer !== callback
+            (observer) => observer !== callback,
         );
     }
 
@@ -21,6 +21,7 @@ export default class Observer<T extends (data?: any) => void> {
 
         this.observers[event].forEach((callback) => callback(data));
     }
+
     clear(event: string): void {
         if (this.observers[event]) {
             this.observers[event] = [];
