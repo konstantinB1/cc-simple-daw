@@ -30,7 +30,7 @@ export default class Select extends LitElement {
                 border: 1px solid var(--color-accent);
                 background-color: var(--color-secondary);
                 color: var(--color-text);
-                font-size: 1em;
+                font-size: 0.8em;
             }
         `,
     ];
@@ -49,7 +49,7 @@ export default class Select extends LitElement {
 
     render() {
         return html`
-            <select class="select" @change=${this.handleChange}>
+            <select class="select typography-100" @change=${this.handleChange}>
                 ${this.options.map(
                     (option) =>
                         html`<option

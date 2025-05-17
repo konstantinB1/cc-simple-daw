@@ -1,6 +1,7 @@
 import { css, html, LitElement, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typography } from "../global-styles";
+import { classMap } from "lit/directives/class-map.js";
 
 const name = "daw-pad";
 
@@ -11,6 +12,9 @@ class Pad extends LitElement {
 
     @property({ type: Boolean })
     isPressed: boolean = false;
+
+    @property({ type: String })
+    name?: string = "Empty pad";
 
     constructor() {
         super();
@@ -24,12 +28,13 @@ class Pad extends LitElement {
                 justify-content: center;
                 align-items: center;
                 border-radius: 3px;
-                border: 1px solid var(--color-accent);
+                border: 0;
                 background-color: var(--color-secondary);
-                width: 120px;
-                height: 120px;
+                width: 100px;
+                height: 100px;
                 transition: background-color 0.4s
                     cubic-bezier(0.165, 0.84, 0.44, 1);
+                box-shadow: 0 0 2 px #000;
             }
 
             .active {
@@ -44,14 +49,29 @@ class Pad extends LitElement {
                 line-height: 120px;
                 text-transform: uppercase;
             }
+
+            .pad-name {
+                margin-bottom: 4px;
+                margin-left: 2px;
+                font-size: 0.7em;
+                color: var(--color-text);
+            }
         `,
     ];
 
     render() {
         return html`
-            <button class="pad ${this.isPressed ? "active" : ""}">
-                <p class="key typography-100">${this.keyBinding}</p>
-            </button>
+            <div>
+                <p class="pad-name typography-200">${this.name}</p>
+                <button
+                    class=${classMap({
+                        pad: true,
+                        active: this.isPressed,
+                    })}
+                >
+                    <p class="key typography-100">${this.keyBinding}</p>
+                </button>
+            </div>
         `;
     }
 }

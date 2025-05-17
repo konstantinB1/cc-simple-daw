@@ -1,8 +1,11 @@
 import { css, html, LitElement, type CSSResultGroup } from "lit";
 
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { padKeys } from "../constants";
 import { KeyManager, KeyMapping, type Key } from "../lib/KeyManager";
+import type Program from "./Program";
+
+import "./PadBank";
 
 @customElement("pads-container")
 export default class Pads extends LitElement {
@@ -17,6 +20,12 @@ export default class Pads extends LitElement {
     protected padMappings: KeyMapping[] = padKeys.map(
         (key) => new KeyMapping(key),
     );
+
+    @property({ type: Object })
+    public programData: Program | null = null;
+
+    @state()
+    private soundsAssigned: boolean = false;
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -42,18 +51,30 @@ export default class Pads extends LitElement {
         }
     }
 
+    update(changedProperties: Map<string | number | symbol, unknown>): void {
+        super.update(changedProperties);
+
+        if (!this.soundsAssigned) {
+            for (const key of changedProperties.keys()) {
+                if (key === "programData") {
+                }
+            }
+        }
+    }
+
     static styles: CSSResultGroup = css`
         .pads {
             display: grid;
             width: 100%;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            grid-gap: 10px;
+            grid-gap: 6px;
             align-items: center;
             justify-items: center;
             justify-content: center;
             align-content: center;
             height: 100%;
+            padding: 20px 0;
         }
     `;
 

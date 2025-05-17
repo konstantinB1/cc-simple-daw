@@ -34,6 +34,7 @@ export default class ProgramManager {
         if (!ProgramManager.instance) {
             ProgramManager.instance = new ProgramManager();
         }
+
         return ProgramManager.instance;
     }
 
@@ -41,7 +42,7 @@ export default class ProgramManager {
         return programsJson.programs.map((program) => program.name);
     }
 
-    async load(name: string): Promise<Program> {
+    public async load(name: string): Promise<Program> {
         if (this.loadedPrograms.has(name)) {
             return this.loadedPrograms.get(name) as Program;
         }

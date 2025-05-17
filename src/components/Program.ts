@@ -3,14 +3,24 @@ import { customElement } from "lit/decorators.js";
 import { typography } from "../global-styles";
 import ProgramManager from "../lib/ProgramManager";
 import type { SelectData, SelectOption } from "./Select";
+import type { Program as ProgramType } from "../lib/ProgramManager";
+
+export type ProgramLoadedData = {
+    program: ProgramType;
+};
 
 @customElement("program-container")
 export default class Program extends LitElement {
     private programManager: ProgramManager = ProgramManager.getInstance();
 
-    constructor() {
-        super();
-    }
+    static styles = [
+        typography,
+        css`
+            .container {
+                padding: 20px 0;
+            }
+        `,
+    ];
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -32,27 +42,32 @@ export default class Program extends LitElement {
         }
 
         try {
-            await this.programManager.load(defaultProgram);
-        } catch (error) {}
+            const prog = await this.programManager.load(defaultProgram);
+            this.emitProgramToParent(prog);
+        } catch (error) {
+            throw new Error("Failed to load default program");
+        }
     }
-
-    static styles = [
-        typography,
-        css`
-            .container {
-                padding: 20px 0;
-            }
-        `,
-    ];
 
     private async handleSelectProgram({
         detail: { value },
     }: CustomEvent<SelectData>) {
         try {
-            await this.programManager.load(value);
+            const currentProgram = await this.programManager.load(value);
+            this.emitProgramToParent(currentProgram);
         } catch (error) {
             throw new Error("Failed to load program");
         }
+    }
+
+    private emitProgramToParent(data: ProgramType) {
+        this.dispatchEvent(
+            new CustomEvent<ProgramLoadedData>("program-loaded", {
+                detail: { program: data },
+                bubbles: true,
+                composed: true,
+            }),
+        );
     }
 
     render() {
