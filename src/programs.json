@@ -3,7 +3,7 @@
         {
             "name": "TR-808",
             "description": "This is the first program.",
-            "path": "assets/kits/TR-808 Kit",
+            "path": "assets/kits/TR-808",
             "data": [
                 {
                     "name": "808",
@@ -18,6 +18,18 @@
                     "file": "Claves.wav"
                 },
                 {
+                    "name": "Conga High",
+                    "file": "Conga High.wav"
+                },
+                {
+                    "name": "Conga Mid",
+                    "file": "Conga Mid.wav"
+                },
+                {
+                    "name": "Conga Low",
+                    "file": "Conga Low.wav"
+                },
+                {
                     "name": "Cowbell",
                     "file": "Cowbell.wav"
                 },
@@ -30,24 +42,64 @@
                     "file": "Hihat.wav"
                 },
                 {
-                    "name": "Kick",
-                    "file": "Kick.wav"
+                    "name": "Kick Basic",
+                    "file": "Kick Basic.wav"
+                },
+                {
+                    "name": "Kick Long",
+                    "file": "Kick Long.wav"
+                },
+                {
+                    "name": "Kick Mid",
+                    "file": "Kick Mid.wav"
+                },
+                {
+                    "name": "Kick Short",
+                    "file": "Kick Short.wav"
                 },
                 {
                     "name": "Maracas",
                     "file": "Maracas.wav"
                 },
                 {
+                    "name": "Open Hat Long",
+                    "file": "Open Hat Long.wav"
+                },
+                {
+                    "name": "Open Hat Short",
+                    "file": "Open Hat Short.wav"
+                },
+                {
                     "name": "Rimshot",
                     "file": "Rimshot.wav"
                 },
                 {
-                    "name": "Snare",
-                    "file": "Snare.wav"
+                    "name": "Snare Bright",
+                    "file": "Snare Bright.wav"
                 },
                 {
-                    "name": "Tom",
-                    "file": "Tom.wav"
+                    "name": "Snare High",
+                    "file": "Snare High.wav"
+                },
+                {
+                    "name": "Snare Low",
+                    "file": "Snare Low.wav"
+                },
+                {
+                    "name": "Snare Mid",
+                    "file": "Snare Mid.wav"
+                },
+                {
+                    "name": "Tom High",
+                    "file": "Tom High.wav"
+                },
+                {
+                    "name": "Tom Low",
+                    "file": "Tom Low.wav"
+                },
+                {
+                    "name": "Tom Mid",
+                    "file": "Tom Mid.wav"
                 }
             ]
         },

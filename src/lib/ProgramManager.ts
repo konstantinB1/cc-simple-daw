@@ -1,4 +1,3 @@
-import { getBeforeLastSegment } from "../utils";
 import programsJson from "../programs.json" assert { type: "json" };
 
 export type AudioFile = {
@@ -11,10 +10,25 @@ export type Program = {
     data: AudioFile[];
 };
 
+const getFile = async (filePath: string): Promise<ArrayBuffer> => {
+    const file = await fetch(filePath, {
+        headers: {
+            "Content-Type": "audio/wav",
+        },
+    });
+
+    if (!file.ok) {
+        throw new Error(`Failed to load file: ${filePath}`);
+    }
+
+    return await file.arrayBuffer();
+};
+
 export default class ProgramManager {
     private static instance: ProgramManager;
-    private loadedPrograms: Program[] = [];
-    private currentProgram: Program | null = null;
+    private loadedPrograms: Map<string, Program> = new Map();
+
+    public currentProgram: Program | null = null;
 
     public static getInstance(): ProgramManager {
         if (!ProgramManager.instance) {
@@ -23,17 +37,13 @@ export default class ProgramManager {
         return ProgramManager.instance;
     }
 
-    async loadFile(path: string): Promise<Program> {}
-
-    private isProgramLoaded(name: string): boolean {
-        return this.loadedPrograms.some((program) => program.name === name);
+    public get programNames(): string[] {
+        return programsJson.programs.map((program) => program.name);
     }
 
-    async loadProgram(name: string): Promise<Program> {
-        if (this.isProgramLoaded(name)) {
-            return this.loadedPrograms.find(
-                (program) => program.name === name,
-            )!;
+    async load(name: string): Promise<Program> {
+        if (this.loadedPrograms.has(name)) {
+            return this.loadedPrograms.get(name) as Program;
         }
 
         const program = programsJson.programs.find((p) => p.name === name);
@@ -45,25 +55,27 @@ export default class ProgramManager {
         const basePath = program.path;
 
         try {
-            const audioFiles = await Promise.all(
-                program?.data?.map(async ({ name, file }) => {
-                    const response = await fetch(`${basePath}/${file}`, {
-                        headers: {
-                            "Content-Type": "audio/wav",
-                        },
-                    });
-                    const arrayBuffer = await response.arrayBuffer();
+            const audioFiles: AudioFile[] = await Promise.all(
+                (program?.data ?? []).map(async ({ name, file }) => {
+                    const data = await getFile(`${basePath}/${file}`);
 
                     return {
                         name,
-                        data: arrayBuffer,
+                        data,
                     };
                 }),
             );
 
-            console.log("Audio files loaded:", audioFiles);
+            const loadedProgram: Program = {
+                name,
+                data: audioFiles,
+            };
+
+            this.loadedPrograms.set(name, loadedProgram);
+            this.currentProgram = loadedProgram;
+
+            return loadedProgram;
         } catch (error) {
-            console.error(`Error loading program ${name}:`, error);
             throw new Error(`Error loading program ${name}`);
         }
     }

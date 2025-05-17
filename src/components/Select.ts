@@ -7,6 +7,10 @@ export type SelectOption = {
     label: string;
 };
 
+export type SelectData = {
+    value: string;
+};
+
 @customElement("daw-select")
 export default class Select extends LitElement {
     @property({ type: Array })
@@ -31,12 +35,27 @@ export default class Select extends LitElement {
         `,
     ];
 
+    private handleChange(event: Event) {
+        this.dispatchEvent(
+            new CustomEvent<SelectData>("select-data", {
+                detail: {
+                    value: (event.target as HTMLSelectElement).value,
+                },
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
     render() {
         return html`
-            <select class="select">
+            <select class="select" @change=${this.handleChange}>
                 ${this.options.map(
                     (option) =>
-                        html`<option value="${option.value} typography-100">
+                        html`<option
+                            value="${option.value}"
+                            class="typography-100"
+                        >
                             ${option.label}
                         </option>`,
                 )}

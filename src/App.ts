@@ -1,17 +1,20 @@
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import { KeyManager } from "./lib/KeyManager";
-import ProgramManager from "./lib/ProgramManager";
 
 @customElement("root-app")
 export class App extends LitElement {
     private keyManager: KeyManager = KeyManager.getInstance();
-    private programManager: ProgramManager = ProgramManager.getInstance();
 
     connectedCallback(): void {
         super.connectedCallback();
         this.keyManager.createKeyListener();
-        this.programManager.loadProgram("TR-808");
+
+        const path = window.location.pathname;
+
+        if (path !== "/") {
+            throw new Error("Invalid path");
+        }
     }
 
     static styles = [
