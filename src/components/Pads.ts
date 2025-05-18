@@ -2,7 +2,7 @@ import { css, html, LitElement, type CSSResultGroup } from "lit";
 
 import { customElement, property, state } from "lit/decorators.js";
 import { padKeys } from "../constants";
-import { KeyManager, KeyMapping, type Key } from "../lib/KeyManager";
+import { KeyManager, KeyMapping } from "../lib/KeyManager";
 
 import "./PadBank";
 import type { AudioFile, Program } from "../lib/ProgramManager";
@@ -29,19 +29,20 @@ export class MappedPadKey {
     }
 }
 
+const padMappings = padKeys.map(
+    (key) =>
+        new KeyMapping({
+            key: key.key,
+            id: key.id,
+            oneShot: true,
+        }),
+);
+
 @customElement("pads-container")
 export default class Pads extends LitElement {
     private keyManager: KeyManager = KeyManager.getInstance();
 
     private unsub: (() => void) | null = null;
-
-    @property({ type: Array })
-    protected keys: Key[] = padKeys;
-
-    @property({ type: Array })
-    private padMappings: KeyMapping[] = padKeys.map(
-        (key) => new KeyMapping(key),
-    );
 
     @property({ type: Object })
     private sampler: Sampler | null = null;
@@ -71,6 +72,7 @@ export default class Pads extends LitElement {
             align-content: center;
             height: 100%;
             padding: 20px 0;
+            min-height: 450px;
         }
     `;
 
@@ -96,12 +98,14 @@ export default class Pads extends LitElement {
             this.mappedKeyPads = this.bankMgr?.getData(
                 this.currentBank,
             ) as MappedPadKey[];
+
+            return;
         }
 
         if (changed.find((p) => p === "programData")) {
             this.unsub?.();
 
-            if (!this.programData || this.padMappings.length === 0) {
+            if (!this.programData) {
                 return;
             }
 
@@ -110,17 +114,17 @@ export default class Pads extends LitElement {
             }
 
             this.bankMgr.create(
-                this.padMappings,
+                padMappings,
                 this.programData.data,
-                (padKey) => {
-                    this.sampler?.add(padKey.data.name, padKey.data.data);
+                ({ data }) => {
+                    this.sampler?.add(data.name, data.data);
                 },
             );
 
             this.mappedKeyPads = this.bankMgr.getData(this.currentBank);
 
             this.unsub = this.keyManager.subscribe(({ mapping }) => {
-                const getMappingKey = this.padMappings.findIndex(
+                const getMappingKey = padMappings.findIndex(
                     (keyMapping) => keyMapping.key === mapping.key,
                 );
 

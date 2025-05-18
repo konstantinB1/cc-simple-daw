@@ -5,6 +5,7 @@ export type Key = {
     id: string;
     pressable?: boolean;
     handler?: (event: KeyboardEvent) => void;
+    oneShot?: boolean;
 };
 
 export type KeyData = {
@@ -25,7 +26,7 @@ export class KeyManager {
         return KeyManager.instance;
     }
 
-    add({ key, id, pressable = true, handler }: Key): void {
+    public add({ key, id, pressable = true, handler }: Key): void {
         const keyMapping = new KeyMapping({
             key,
             id,
@@ -42,11 +43,11 @@ export class KeyManager {
         this.keys.set(keyMapping.key, keyMapping);
     }
 
-    addKeys(keys: Key[]): void {
+    public addKeys(keys: Key[]): void {
         keys.forEach(this.add.bind(this));
     }
 
-    subscribe(callback: (key: KeyData) => void): () => void {
+    public subscribe(callback: (key: KeyData) => void): () => void {
         this.observer.subscribe("keypress", callback);
 
         return () => this.observer.unsubscribe("keypress", callback);
@@ -60,37 +61,35 @@ export class KeyManager {
                 return;
             }
 
-            if (event.repeat) {
-                return;
-            }
-
             for (const mapping of this.keys.values()) {
                 if (mapping.key === event.key) {
+                    if (!mapping.oneShot && mapping.isPressed === pressed) {
+                        return;
+                    }
+
                     if (mapping.isDisabled) {
                         return;
                     }
 
-                    if (mapping?.pressable) {
-                        mapping.isPressed = pressed;
+                    mapping.isPressed = pressed;
 
-                        mapping.handler?.(event);
+                    mapping.handler?.(event);
 
-                        this.observer.notify("keypress", {
-                            mapping: mapping,
-                            event: event,
-                        });
-                    }
+                    this.observer.notify("keypress", {
+                        mapping: mapping,
+                        event: event,
+                    });
                 }
             }
         };
     }
 
-    createKeyListener(): void {
-        window.addEventListener("keydown", this.handleKeyboardEvent(true));
+    public createKeyListener(): void {
+        window.addEventListener("keypress", this.handleKeyboardEvent(true));
         window.addEventListener("keyup", this.handleKeyboardEvent(false));
     }
 
-    toggleEnabled(key: string, enabled: boolean): void {
+    public toggleEnabled(key: string, enabled: boolean): void {
         if (this.keys.has(key)) {
             const mapping = this.keys.get(key);
 
@@ -108,16 +107,16 @@ interface IKeyMapping {
 export class KeyMapping implements IKeyMapping {
     key: string;
     id: string;
-    pressable?: boolean = true;
     handler?: (event: KeyboardEvent) => void;
+    oneShot: boolean = true;
 
     isPressed: boolean = false;
     isDisabled: boolean = false;
 
-    constructor({ key, id, pressable, handler }: Key) {
+    constructor({ key, id, handler, oneShot }: Key) {
         this.key = key;
         this.id = id;
-        this.pressable = pressable;
         this.handler = handler;
+        this.oneShot = oneShot ?? true;
     }
 }

@@ -2,7 +2,7 @@ import { PadBankSelector } from "../components/PadBank";
 import type { KeyMapping } from "./KeyManager";
 import type { AudioFile } from "./ProgramManager";
 
-export const PADS_PER_BANK = 11;
+export const PADS_PER_BANK = 12;
 
 export class MappedPadKey {
     mapping: KeyMapping;

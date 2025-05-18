@@ -77,7 +77,8 @@ export default class Program extends LitElement {
                     <daw-select
                         .options=${this.programNames}
                         @select-data=${this.handleSelectProgram}
-                    />
+                    >
+                    </daw-select>
                 </h1>
             </section>
         `;
