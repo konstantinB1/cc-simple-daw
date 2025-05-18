@@ -56,27 +56,29 @@ export class KeyManager {
         pressed: boolean,
     ): (event: KeyboardEvent) => void {
         return (event: KeyboardEvent) => {
-            if (this.keys.has(event.key)) {
-                if (event.repeat) {
-                    return;
-                }
+            if (!this.keys.has(event.key)) {
+                return;
+            }
 
-                for (const mapping of this.keys.values()) {
-                    if (mapping.key === event.key) {
-                        if (mapping.isDisabled) {
-                            return;
-                        }
+            if (event.repeat) {
+                return;
+            }
 
-                        if (mapping?.pressable) {
-                            mapping.isPressed = pressed;
+            for (const mapping of this.keys.values()) {
+                if (mapping.key === event.key) {
+                    if (mapping.isDisabled) {
+                        return;
+                    }
 
-                            mapping.handler?.(event);
+                    if (mapping?.pressable) {
+                        mapping.isPressed = pressed;
 
-                            this.observer.notify("keypress", {
-                                mapping: mapping,
-                                event: event,
-                            });
-                        }
+                        mapping.handler?.(event);
+
+                        this.observer.notify("keypress", {
+                            mapping: mapping,
+                            event: event,
+                        });
                     }
                 }
             }
