@@ -3,9 +3,45 @@ import { css, html, LitElement, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { padKeys } from "../constants";
 import { KeyManager, KeyMapping, type Key } from "../lib/KeyManager";
-import type Program from "./Program";
 
 import "./PadBank";
+import type { AudioFile, Program } from "../lib/ProgramManager";
+import { PadBankSelector, PADS_PER_BANK } from "./PadBank";
+import AudioManager from "../lib/audio/Context";
+import type Sampler from "../lib/audio/Sampler";
+
+class MappedPadKey {
+    mapping: KeyMapping;
+    data: AudioFile;
+    bank: PadBankSelector;
+    index: number;
+
+    constructor(
+        mapping: KeyMapping,
+        data: AudioFile,
+        bank: PadBankSelector,
+        index: number,
+    ) {
+        this.mapping = mapping;
+        this.data = data;
+        this.bank = bank;
+        this.index = index;
+    }
+}
+
+const getBank = (index: number) => {
+    let nextBank: PadBankSelector = PadBankSelector.A;
+
+    if (index >= PADS_PER_BANK && index < PADS_PER_BANK * 2) {
+        nextBank = PadBankSelector.B;
+    } else if (index >= PADS_PER_BANK * 2 && index < PADS_PER_BANK * 3) {
+        nextBank = PadBankSelector.C;
+    } else if (index >= PADS_PER_BANK * 3) {
+        nextBank = PadBankSelector.D;
+    }
+
+    return nextBank;
+};
 
 @customElement("pads-container")
 export default class Pads extends LitElement {
@@ -17,50 +53,18 @@ export default class Pads extends LitElement {
     protected keys: Key[] = padKeys;
 
     @property({ type: Array })
-    protected padMappings: KeyMapping[] = padKeys.map(
+    private padMappings: KeyMapping[] = padKeys.map(
         (key) => new KeyMapping(key),
     );
 
     @property({ type: Object })
-    public programData: Program | null = null;
+    private sampler: Sampler | null = null;
 
     @state()
-    private soundsAssigned: boolean = false;
+    private mappedKeyPads: MappedPadKey[] = [];
 
-    connectedCallback(): void {
-        super.connectedCallback();
-
-        this.keyManager.addKeys(padKeys);
-        this.unsub = this.keyManager.subscribe(({ mapping }) => {
-            const getMappingKey = this.padMappings.findIndex(
-                (keyMapping) => keyMapping.key === mapping.key,
-            );
-
-            this.padMappings = this.padMappings.map((key, index) =>
-                index === getMappingKey ? mapping : key,
-            );
-        });
-    }
-
-    disconnectedCallback(): void {
-        super.disconnectedCallback();
-
-        if (this.unsub) {
-            this.unsub();
-            this.unsub = null;
-        }
-    }
-
-    update(changedProperties: Map<string | number | symbol, unknown>): void {
-        super.update(changedProperties);
-
-        if (!this.soundsAssigned) {
-            for (const key of changedProperties.keys()) {
-                if (key === "programData") {
-                }
-            }
-        }
-    }
+    @property({ type: Object })
+    public programData: Program | null = null;
 
     static styles: CSSResultGroup = css`
         .pads {
@@ -78,17 +82,81 @@ export default class Pads extends LitElement {
         }
     `;
 
+    connectedCallback(): void {
+        super.connectedCallback();
+        this.keyManager.addKeys(padKeys);
+    }
+
+    disconnectedCallback(): void {
+        super.disconnectedCallback();
+
+        if (this.unsub) {
+            this.unsub();
+            this.unsub = null;
+        }
+    }
+
+    update(changedProperties: Map<PropertyKey, unknown>): void {
+        super.update(changedProperties);
+        const changed = Array.from(changedProperties.keys());
+
+        if (changed.find((p) => p === "programData")) {
+            this.unsub?.();
+
+            this.mappedKeyPads = this.padMappings.map((key, index) => {
+                const file = this.programData?.data[index];
+
+                if (!file) {
+                    throw new Error("No file found for pad key");
+                }
+
+                if (this.sampler) {
+                    this.sampler.add(file.name, file.data);
+                    console.info(
+                        `Added ${file.name} to sampler with key ${key.key}`,
+                    );
+                } else {
+                    throw new Error("No sampler found");
+                }
+
+                return new MappedPadKey(key, file, getBank(index), index);
+            });
+
+            this.unsub = this.keyManager.subscribe(({ mapping }) => {
+                const getMappingKey = this.padMappings.findIndex(
+                    (keyMapping) => keyMapping.key === mapping.key,
+                );
+
+                if (getMappingKey !== -1) {
+                    this.mappedKeyPads = this.mappedKeyPads.map((pad) => ({
+                        ...pad,
+                        mapping:
+                            pad.mapping.key === mapping.key
+                                ? mapping
+                                : pad.mapping,
+                    }));
+
+                    if (mapping.isPressed) {
+                        const pad = this.mappedKeyPads[getMappingKey];
+                        this.sampler?.play(pad.data.name);
+                    }
+                }
+            });
+        }
+    }
+
     render() {
         return html`
             <div class="pads">
-                ${this.padMappings.map(
-                    (key) => html`
+                ${this.mappedKeyPads.map(
+                    ({ mapping, data }) => html`
                         <daw-pad
-                            id="${key.id}"
-                            key-binding="${key.key}"
-                            .isPressed="${key.isPressed}"
+                            id="${mapping.id}"
+                            key-binding="${mapping.key}"
+                            .name="${data.name}"
+                            .isPressed="${mapping.isPressed}"
                             class="pad"
-                        />
+                        ></daw-pad>
                     `,
                 )}
             </div>

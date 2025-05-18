@@ -1,4 +1,4 @@
-export default class RootAudioContext {
+export default class AudioManager {
     private static instance: AudioContext | null = null;
 
     private constructor() {}
@@ -16,7 +16,7 @@ export default class RootAudioContext {
         kit: string,
         file: string,
     ): Promise<AudioBuffer> {
-        const context = this.getInstance();
+        const context = AudioManager.getInstance();
         const response = await fetch(`./assets/kits/${kit}/${file}`);
         const arrayBuffer = await response.arrayBuffer();
         return context.decodeAudioData(arrayBuffer);
@@ -34,6 +34,22 @@ export default class RootAudioContext {
 
         gainNode.gain.setValueAtTime(volume, context.currentTime);
         source.buffer = buffer;
+        source.connect(gainNode);
+        gainNode.connect(context.destination);
+        source.start(0);
+    }
+
+    public static playFromAudioBuffer(buffer: ArrayBuffer) {
+        const context = AudioManager.getInstance();
+        const source = context.createBufferSource();
+        const gainNode = context.createGain();
+
+        gainNode.gain.setValueAtTime(1, context.currentTime);
+
+        context.decodeAudioData(buffer, (decodedBuffer) => {
+            source.buffer = decodedBuffer;
+        });
+
         source.connect(gainNode);
         gainNode.connect(context.destination);
         source.start(0);

@@ -16,10 +16,6 @@ class Pad extends LitElement {
     @property({ type: String })
     name?: string = "Empty pad";
 
-    constructor() {
-        super();
-    }
-
     static styles: CSSResultGroup = [
         typography,
         css`
@@ -29,32 +25,35 @@ class Pad extends LitElement {
                 align-items: center;
                 border-radius: 3px;
                 border: 0;
-                background-color: var(--color-secondary);
+                background-color: var(--color-accent);
                 width: 100px;
                 height: 100px;
                 transition: background-color 0.4s
                     cubic-bezier(0.165, 0.84, 0.44, 1);
-                box-shadow: 0 0 2 px #000;
+                box-shadow: 0px 0px 2px #1c1c1c;
+                position: relative;
             }
 
             .active {
-                background-color: var(--color-primary);
+                background-color: #1c1c1c;
                 transform: scale(1.05);
             }
 
             .key {
-                font-size: 2em;
+                font-size: 1em;
                 color: var(--color-text);
-                text-align: center;
-                line-height: 120px;
                 text-transform: uppercase;
+                position: absolute;
+                bottom: 8px;
+                right: 10px;
             }
 
             .pad-name {
-                margin-bottom: 4px;
-                margin-left: 2px;
                 font-size: 0.7em;
                 color: var(--color-text);
+                background-color: var(--color-secondary);
+                padding: 6px;
+                margin-bottom: 4px;
             }
         `,
     ];
@@ -69,7 +68,7 @@ class Pad extends LitElement {
                         active: this.isPressed,
                     })}
                 >
-                    <p class="key typography-100">${this.keyBinding}</p>
+                    <span class="key typography-500">${this.keyBinding}</span>
                 </button>
             </div>
         `;

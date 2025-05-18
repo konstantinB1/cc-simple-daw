@@ -31,7 +31,6 @@ export default class MpcButton extends LitElement {
             }
 
             .container > button {
-                box-shadow: 0 1px 10px #000;
                 border-radius: 4px;
                 width: 60px;
                 height: 23px;
@@ -43,7 +42,7 @@ export default class MpcButton extends LitElement {
                 width: 13px;
                 height: 13px;
                 background-color: darkgreen;
-                transition: background-color 0.4s
+                transition: background-color 0.2s
                     cubic-bezier(0.165, 0.84, 0.44, 1);
 
                 margin: 6px 0;

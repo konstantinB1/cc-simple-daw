@@ -1,12 +1,14 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-enum PadBankSelector {
+export enum PadBankSelector {
     A,
     B,
     C,
     D,
 }
+
+export const PADS_PER_BANK = 11;
 
 @customElement("pads-bank")
 export default class PadBank extends LitElement {
@@ -41,7 +43,6 @@ export default class PadBank extends LitElement {
                 label="${PadBankSelector[bank]}"
                 .active=${this.isCurrentBank(bank)}
                 @click=${() => {
-                    console.log(`Selected bank: ${PadBankSelector[bank]}`);
                     this.currentBank = bank;
                 }}
             >

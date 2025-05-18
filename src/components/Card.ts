@@ -16,6 +16,6 @@ export default class Card extends LitElement {
     `;
 
     render() {
-        return html` <div class="card"><slot></slot></div> `;
+        return html`<div class="card"><slot></slot></div> `;
     }
 }

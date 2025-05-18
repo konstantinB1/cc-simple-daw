@@ -1,11 +1,22 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { Program } from "../lib/ProgramManager";
+import Sampler from "../lib/audio/Sampler";
 
 @customElement("main-init")
 export default class Root extends LitElement {
+    private ctx: AudioContext = new AudioContext();
+
+    private sampler: Sampler | null = null;
+
     @property({ type: Object })
     private currentProgram: Program | null = null;
+
+    constructor() {
+        super();
+
+        this.sampler = new Sampler(this.ctx);
+    }
 
     static styles = [
         css`
@@ -22,7 +33,7 @@ export default class Root extends LitElement {
         if (program) {
             this.currentProgram = program;
         } else {
-            console.error("No program found in event");
+            throw new Error("No program found in event");
         }
     }
 
@@ -34,7 +45,8 @@ export default class Root extends LitElement {
             <pads-bank></pads-bank>
             <card-component>
                 <pads-container
-                    .programData=${this.currentProgram}
+                    .programData=${this.currentProgram as any /* WTF? */}
+                    .sampler=${this.sampler}
                 ></pads-container>
             </card-component>
         `;

@@ -5,6 +5,7 @@ export default class Observer<T extends (data?: any) => void> {
         if (!this.observers[event]) {
             this.observers[event] = [];
         }
+
         this.observers[event].push(callback);
     }
 

@@ -1,5 +1,5 @@
 :root {
-    --color-primary: #1e1e1e;
+    --color-primary: #2c2c2c;
     --color-secondary: #0e0e0e;
     --color-accent: hwb(0 22% 78%);
     --color-text: #ffffff;
@@ -25,39 +25,4 @@ input[type="range"][orient="vertical"] {
     appearance: slider-vertical;
     width: 16px;
     vertical-align: bottom;
-}
-
-.typography-100 {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 100;
-    font-style: normal;
-}
-
-.typography-200 {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 200;
-    font-style: normal;
-}
-
-.typography-300 {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-}
-
-.typography-400 {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.typography-500 {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
 }
