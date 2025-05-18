@@ -22,12 +22,10 @@ export default class Sampler {
     play(id: string) {
         const sample = this.samples.get(id);
 
-        console.log(this.samples);
-
         if (sample) {
             sample.play();
         } else {
-            console.error(`Sample with id ${id} not found`);
+            throw new Error(`Sample with id ${id} not found`);
         }
     }
 

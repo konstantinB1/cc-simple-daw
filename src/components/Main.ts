@@ -9,15 +9,14 @@ import BankManager from "../lib/BankManager";
 export default class Root extends LitElement {
     private ctx: AudioContext = new AudioContext();
 
-    private sampler: Sampler | null = null;
+    private sampler: Sampler;
 
     @property({ type: Object })
     private currentProgram: Program | null = null;
 
-    @property({ type: Object })
+    @property({ type: Number })
     private padBank: PadBankSelector = PadBankSelector.A;
 
-    @property({ type: Object })
     private bankManager: BankManager = new BankManager();
 
     constructor() {
@@ -45,14 +44,12 @@ export default class Root extends LitElement {
         }
     }
 
-    private setPadBankFromEvent(e: CustomEvent) {
-        const padBank = e.detail.bank;
-
-        if (padBank) {
-            this.padBank = padBank;
-        } else {
-            throw new Error("No pad bank found in event");
-        }
+    private setPadBankFromEvent(
+        e: CustomEvent<{
+            bank: PadBankSelector;
+        }>,
+    ) {
+        this.padBank = e.detail.bank;
     }
 
     render() {
@@ -62,6 +59,7 @@ export default class Root extends LitElement {
             ></program-container>
             <pads-bank
                 @pad-bank-changed=${this.setPadBankFromEvent}
+                .bankManager=${this.bankManager}
                 .current=${this.padBank}
             ></pads-bank>
             <card-component>

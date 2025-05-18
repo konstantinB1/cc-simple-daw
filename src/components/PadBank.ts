@@ -1,5 +1,7 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { KeyManager } from "../lib/KeyManager";
+import type BankManager from "../lib/BankManager";
 
 export enum PadBankSelector {
     A,
@@ -10,6 +12,22 @@ export enum PadBankSelector {
 
 @customElement("pads-bank")
 export default class PadBank extends LitElement {
+    private keyManager: KeyManager = KeyManager.getInstance();
+
+    private bankManager: BankManager;
+
+    @property({ type: Number })
+    private current: PadBankSelector = PadBankSelector.A;
+
+    private isCurrentBank(bank: PadBankSelector): boolean {
+        return this.current === bank;
+    }
+
+    constructor(mgr: BankManager) {
+        super();
+        this.bankManager = mgr;
+    }
+
     static styles = [
         css`
             .container {
@@ -28,11 +46,24 @@ export default class PadBank extends LitElement {
         `,
     ];
 
-    @property({ type: Number })
-    private current: PadBankSelector = PadBankSelector.A;
-
-    private isCurrentBank(bank: PadBankSelector): boolean {
-        return this.current === bank;
+    connectedCallback(): void {
+        super.connectedCallback();
+        this.keyManager.addKeys([
+            {
+                key: "ArrowLeft",
+                id: "pad-bank-left",
+                handler: () => {
+                    this.current = this.bankManager.previous(this.current);
+                },
+            },
+            {
+                key: "ArrowRight",
+                id: "pad-bank-right",
+                handler: () => {
+                    this.current = this.bankManager.next(this.current);
+                },
+            },
+        ]);
     }
 
     private onChangeBank(bank: PadBankSelector): void {
