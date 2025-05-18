@@ -8,8 +8,6 @@ export enum PadBankSelector {
     D,
 }
 
-export const PADS_PER_BANK = 11;
-
 @customElement("pads-bank")
 export default class PadBank extends LitElement {
     static styles = [
@@ -31,10 +29,20 @@ export default class PadBank extends LitElement {
     ];
 
     @property({ type: Number })
-    private currentBank: PadBankSelector = PadBankSelector.A;
+    private current: PadBankSelector = PadBankSelector.A;
 
     private isCurrentBank(bank: PadBankSelector): boolean {
-        return this.currentBank === bank;
+        return this.current === bank;
+    }
+
+    private onChangeBank(bank: PadBankSelector): void {
+        this.dispatchEvent(
+            new CustomEvent("pad-bank-changed", {
+                detail: { bank },
+                bubbles: true,
+                composed: true,
+            }),
+        );
     }
 
     private renderBankButton(bank: PadBankSelector): TemplateResult {
@@ -42,9 +50,7 @@ export default class PadBank extends LitElement {
             <mpc-button
                 label="${PadBankSelector[bank]}"
                 .active=${this.isCurrentBank(bank)}
-                @click=${() => {
-                    this.currentBank = bank;
-                }}
+                @click=${() => this.onChangeBank(bank)}
             >
                 ${PadBankSelector[bank]}
             </mpc-button>

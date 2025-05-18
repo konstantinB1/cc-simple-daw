@@ -6,11 +6,11 @@ import { KeyManager, KeyMapping, type Key } from "../lib/KeyManager";
 
 import "./PadBank";
 import type { AudioFile, Program } from "../lib/ProgramManager";
-import { PadBankSelector, PADS_PER_BANK } from "./PadBank";
-import AudioManager from "../lib/audio/Context";
+import { PadBankSelector } from "./PadBank";
 import type Sampler from "../lib/audio/Sampler";
+import BankManager from "../lib/BankManager";
 
-class MappedPadKey {
+export class MappedPadKey {
     mapping: KeyMapping;
     data: AudioFile;
     bank: PadBankSelector;
@@ -28,20 +28,6 @@ class MappedPadKey {
         this.index = index;
     }
 }
-
-const getBank = (index: number) => {
-    let nextBank: PadBankSelector = PadBankSelector.A;
-
-    if (index >= PADS_PER_BANK && index < PADS_PER_BANK * 2) {
-        nextBank = PadBankSelector.B;
-    } else if (index >= PADS_PER_BANK * 2 && index < PADS_PER_BANK * 3) {
-        nextBank = PadBankSelector.C;
-    } else if (index >= PADS_PER_BANK * 3) {
-        nextBank = PadBankSelector.D;
-    }
-
-    return nextBank;
-};
 
 @customElement("pads-container")
 export default class Pads extends LitElement {
@@ -65,6 +51,12 @@ export default class Pads extends LitElement {
 
     @property({ type: Object })
     public programData: Program | null = null;
+
+    @property({ type: Number })
+    private currentBank: PadBankSelector = PadBankSelector.A;
+
+    @property({ type: Object })
+    private bankMgr: BankManager | null = null;
 
     static styles: CSSResultGroup = css`
         .pads {
@@ -100,27 +92,32 @@ export default class Pads extends LitElement {
         super.update(changedProperties);
         const changed = Array.from(changedProperties.keys());
 
+        if (changed.find((p) => p === "currentBank")) {
+            this.mappedKeyPads = this.bankMgr?.getData(
+                this.currentBank,
+            ) as MappedPadKey[];
+        }
+
         if (changed.find((p) => p === "programData")) {
             this.unsub?.();
 
-            this.mappedKeyPads = this.padMappings.map((key, index) => {
-                const file = this.programData?.data[index];
+            if (!this.programData || this.padMappings.length === 0) {
+                return;
+            }
 
-                if (!file) {
-                    throw new Error("No file found for pad key");
-                }
+            if (!this.bankMgr) {
+                throw new Error("BankManager is not defined");
+            }
 
-                if (this.sampler) {
-                    this.sampler.add(file.name, file.data);
-                    console.info(
-                        `Added ${file.name} to sampler with key ${key.key}`,
-                    );
-                } else {
-                    throw new Error("No sampler found");
-                }
+            this.bankMgr.create(
+                this.padMappings,
+                this.programData.data,
+                (padKey) => {
+                    this.sampler?.add(padKey.data.name, padKey.data.data);
+                },
+            );
 
-                return new MappedPadKey(key, file, getBank(index), index);
-            });
+            this.mappedKeyPads = this.bankMgr.getData(this.currentBank);
 
             this.unsub = this.keyManager.subscribe(({ mapping }) => {
                 const getMappingKey = this.padMappings.findIndex(
@@ -137,8 +134,9 @@ export default class Pads extends LitElement {
                     }));
 
                     if (mapping.isPressed) {
-                        const pad = this.mappedKeyPads[getMappingKey];
-                        this.sampler?.play(pad.data.name);
+                        this.sampler?.play(
+                            this.mappedKeyPads[getMappingKey].data.name,
+                        );
                     }
                 }
             });
