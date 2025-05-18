@@ -46,12 +46,6 @@ export default class BankManager {
         cb: (padKey: MappedPadKey) => void,
     ): void {
         for (let i = 0, y = 0; i < programData.length; i++) {
-            if (y < mappings.length - 1) {
-                y++;
-            } else {
-                y = 0;
-            }
-
             const mapping = mappings[y];
             const data = programData[i];
             const mappedPadKey = new MappedPadKey(mapping, data, getBank(i), i);
@@ -59,6 +53,12 @@ export default class BankManager {
             cb(mappedPadKey);
 
             this.soundData.push(mappedPadKey);
+
+            if (y < mappings.length - 1) {
+                y++;
+            } else {
+                y = 0;
+            }
         }
     }
 
