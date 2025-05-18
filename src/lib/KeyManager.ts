@@ -41,6 +41,9 @@ export class KeyManager {
     createKeyListener(): void {
         window.addEventListener("keydown", (event: KeyboardEvent) => {
             if (this.keys.has(event.key)) {
+                if (event.repeat) {
+                    return;
+                }
                 for (const mapping of this.keys.values()) {
                     if (mapping.key === event.key) {
                         mapping.isPressed = true;
@@ -55,6 +58,10 @@ export class KeyManager {
 
         window.addEventListener("keyup", (event: KeyboardEvent) => {
             if (this.keys.has(event.key)) {
+                if (event.repeat) {
+                    return;
+                }
+
                 for (const mapping of this.keys.values()) {
                     if (mapping.key === event.key) {
                         mapping.isPressed = false;
