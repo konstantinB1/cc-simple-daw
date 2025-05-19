@@ -59,7 +59,6 @@ export default class Root extends LitElement {
             ></program-container>
             <pads-bank
                 @pad-bank-changed=${this.setPadBankFromEvent}
-                .bankManager=${this.bankManager}
                 .current=${this.padBank}
             ></pads-bank>
             <card-component>

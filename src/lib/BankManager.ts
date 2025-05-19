@@ -62,11 +62,11 @@ export default class BankManager {
         }
     }
 
-    public getData(currentBank: PadBankSelector): MappedPadKey[] {
+    public getFromBank(currentBank: PadBankSelector): MappedPadKey[] {
         return this.soundData.filter((pad) => pad.bank === currentBank);
     }
 
-    public next(currentBank: PadBankSelector): PadBankSelector {
+    public static next(currentBank: PadBankSelector): PadBankSelector {
         if (currentBank === PadBankSelector.A) {
             return PadBankSelector.B;
         } else if (currentBank === PadBankSelector.B) {
@@ -81,7 +81,7 @@ export default class BankManager {
         return PadBankSelector.A;
     }
 
-    public previous(currentBank: PadBankSelector): PadBankSelector {
+    public static previous(currentBank: PadBankSelector): PadBankSelector {
         if (currentBank === PadBankSelector.A) {
             return PadBankSelector.A;
         } else if (currentBank === PadBankSelector.B) {

@@ -143,7 +143,7 @@ export default class Pads extends LitElement {
             this.sampler?.add(data.name, data.data);
         });
 
-        this.mappedKeyPads = this.bankMgr.getData(this.currentBank);
+        this.mappedKeyPads = this.bankMgr.getFromBank(this.currentBank);
         this.unsub = this.keyManager.subscribe(
             this.playFromKeyboard.bind(this),
         );
@@ -154,7 +154,7 @@ export default class Pads extends LitElement {
         const changed = Array.from(changedProperties.keys());
 
         if (changed.find((p) => p === "currentBank")) {
-            this.mappedKeyPads = this.bankMgr?.getData(
+            this.mappedKeyPads = this.bankMgr?.getFromBank(
                 this.currentBank,
             ) as MappedPadKey[];
         } else if (changed.find((p) => p === "programData")) {
