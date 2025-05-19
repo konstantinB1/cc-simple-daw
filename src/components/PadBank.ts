@@ -61,7 +61,6 @@ export default class PadBank extends LitElement {
                 key: "ArrowRight",
                 id: "pad-bank-right",
                 handler: () => {
-                    console.log("Right");
                     this.current = this.bankManager.next(this.current);
                     this.onChangeBank(this.current);
                 },

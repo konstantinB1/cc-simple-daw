@@ -30,7 +30,7 @@ export default class Select extends LitElement {
                 border: 1px solid var(--color-accent);
                 background-color: var(--color-secondary);
                 color: var(--color-text);
-                font-size: 0.8em;
+                font-size: 0.;
             }
         `,
     ];

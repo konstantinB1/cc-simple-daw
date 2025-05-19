@@ -5,6 +5,7 @@ if (window.location.pathname !== "/") {
 }
 
 import "./App";
+import "./components/Slider";
 import "./components/MpcButton";
 import "./components/Card";
 import "./components/Pads";

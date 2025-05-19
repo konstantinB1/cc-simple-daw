@@ -2,26 +2,29 @@ import { css, html, LitElement, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typography } from "../global-styles";
 import { classMap } from "lit/directives/class-map.js";
+import type { KeyMapping } from "../lib/KeyManager";
 
-const name = "daw-pad";
+export type PadClickData = {
+    mapping: KeyMapping;
+};
 
 @customElement("daw-pad")
-class Pad extends LitElement {
-    @property({ type: String, attribute: "key-binding" })
-    keyBinding: string = "";
-
-    @property({ type: Boolean })
-    isPressed: boolean = false;
+export default class Pad extends LitElement {
+    @property({ type: Object })
+    private mapping: KeyMapping | null = null;
 
     @property({ type: String })
     name?: string = "Empty pad";
+
+    @property({ type: Number })
+    volume: number = 0;
 
     static styles: CSSResultGroup = [
         typography,
         css`
             .pad {
                 display: flex;
-                justify-content: center;
+                justify-content: flex-end;
                 align-items: center;
                 border-radius: 3px;
                 border: 0;
@@ -34,6 +37,7 @@ class Pad extends LitElement {
                 position: relative;
             }
 
+            .pad:active,
             .active {
                 background-color: #1c1c1c;
                 transform: scale(1.05);
@@ -58,23 +62,32 @@ class Pad extends LitElement {
         `,
     ];
 
+    private emitClickData() {
+        this.dispatchEvent(
+            new CustomEvent<PadClickData>("pad-click", {
+                detail: {
+                    mapping: this.mapping as KeyMapping,
+                },
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
     render() {
         return html`
             <div>
-                <p class="pad-name typography-200">${this.name}</p>
+                <p class="pad-name typography-300">${this.name}</p>
                 <button
+                    @click=${this.emitClickData}
                     class=${classMap({
                         pad: true,
-                        active: this.isPressed,
+                        active: this.mapping?.isPressed || false,
                     })}
                 >
-                    <span class="key typography-500">${this.keyBinding}</span>
+                    <span class="key typography-500">${this.mapping?.key}</span>
                 </button>
             </div>
         `;
     }
-}
-
-export default function register() {
-    window.customElements.define(name, Pad);
 }
