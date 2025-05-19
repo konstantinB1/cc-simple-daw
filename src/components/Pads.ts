@@ -129,8 +129,6 @@ export default class Pads extends LitElement {
     }
 
     private assignPads() {
-        this.unsub?.();
-
         if (!this.programData) {
             return;
         }
@@ -138,6 +136,8 @@ export default class Pads extends LitElement {
         if (!this.bankMgr) {
             throw new Error("BankManager is not defined");
         }
+
+        this.unsub?.();
 
         this.bankMgr.create(padMappings, this.programData.data, ({ data }) => {
             this.sampler?.add(data.name, data.data);
