@@ -64,7 +64,7 @@ export default class MpcButton extends LitElement {
         return html``;
     }
 
-    private renderActiveIndicator() {
+    private get renderActiveIndicator() {
         if (this.active === undefined) {
             return html``;
         }
@@ -80,7 +80,7 @@ export default class MpcButton extends LitElement {
     render() {
         return html`
             <div class="container">
-                ${this.renderLabel} ${this.renderActiveIndicator()}
+                ${this.renderLabel} ${this.renderActiveIndicator}
                 <button></button>
             </div>
         `;

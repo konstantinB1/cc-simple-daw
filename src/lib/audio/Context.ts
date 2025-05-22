@@ -1,8 +1,6 @@
 export default class AudioManager {
     private static instance: AudioContext | null = null;
 
-    private constructor() {}
-
     public static getInstance(): AudioContext {
         if (!this.instance) {
             this.instance = new (window.AudioContext ||

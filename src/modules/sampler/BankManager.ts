@@ -1,8 +1,15 @@
-import { PadBankSelector } from "../components/PadBank";
-import type { KeyMapping } from "./KeyManager";
-import type { AudioFile } from "./ProgramManager";
+import { padKeys } from "@/constants";
+import type { KeyMapping } from "../../lib/KeyManager";
+import type { AudioFile } from "../../lib/ProgramManager";
 
-export const PADS_PER_BANK = 12;
+export const PADS_PER_BANK = padKeys.length;
+
+export enum PadBankSelector {
+    A,
+    B,
+    C,
+    D,
+}
 
 export class MappedPadKey {
     mapping: KeyMapping;

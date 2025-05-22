@@ -13,6 +13,10 @@ export const padKeys: Key[] = [
     "p",
     "a",
     "s",
+    "d",
+    "f",
+    "g",
+    "h",
 ].map((key, index) => ({
     key,
     id: `pad-${index + 1}`,

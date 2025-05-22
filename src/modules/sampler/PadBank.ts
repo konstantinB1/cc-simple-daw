@@ -1,14 +1,7 @@
+import BankManager, { PadBankSelector } from "@/modules/sampler/BankManager";
+import { KeyManager } from "@lib/KeyManager";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { KeyManager } from "../lib/KeyManager";
-import BankManager from "../lib/BankManager";
-
-export enum PadBankSelector {
-    A,
-    B,
-    C,
-    D,
-}
 
 @customElement("pads-bank")
 export default class PadBank extends LitElement {
@@ -96,12 +89,10 @@ export default class PadBank extends LitElement {
 
     render(): TemplateResult {
         return html`<div class="container">
-            <card-component>
-                <div class="pad-container">
-                    <div></div>
-                    ${this.renderPadButtons}
-                </div>
-            </card-component>
+            <div class="pad-container">
+                <div></div>
+                ${this.renderPadButtons}
+            </div>
         </div>`;
     }
 }

@@ -31,10 +31,8 @@ export default defineConfig({
         alias: {
             "@": "/src",
             "@assets": "/public/assets",
-            "@components": "/src/components",
+            "@modules": "/src/modules",
             "@lib": "/src/lib",
-            "@styles": "/src/styles",
-            "@programs": "/src/programs",
         },
     },
 });

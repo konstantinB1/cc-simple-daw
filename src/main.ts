@@ -3,13 +3,15 @@ if (window.location.pathname !== "/") {
 } else {
     document.body.innerHTML += `<root-app></root-app>`;
 }
-
-import "./App";
 import "./components/Slider";
 import "./components/MpcButton";
 import "./components/Card";
-import "./components/Pads";
-import "./components/Pad";
-import "./components/Program";
 import "./components/Select";
 import "./components/Main";
+import "./components/Icon";
+import "./components/IconButton";
+
+import "./modules/sampler/Pads";
+import "./modules/recoder/Recorder";
+
+import "./App";

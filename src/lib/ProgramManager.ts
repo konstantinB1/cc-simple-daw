@@ -1,3 +1,4 @@
+import { getAudioAsset } from "@/utils";
 import programsJson from "../programs.json" assert { type: "json" };
 
 export type AudioFile = {
@@ -8,20 +9,6 @@ export type AudioFile = {
 export type Program = {
     name: string;
     data: AudioFile[];
-};
-
-const getFile = async (filePath: string): Promise<ArrayBuffer> => {
-    const file = await fetch(filePath, {
-        headers: {
-            "Content-Type": "audio/wav",
-        },
-    });
-
-    if (!file.ok) {
-        throw new Error(`Failed to load file: ${filePath}`);
-    }
-
-    return await file.arrayBuffer();
 };
 
 export default class ProgramManager {
@@ -58,7 +45,7 @@ export default class ProgramManager {
         try {
             const audioFiles: AudioFile[] = await Promise.all(
                 (program?.data ?? []).map(async ({ name, file }) => {
-                    const data = await getFile(`${basePath}/${file}`);
+                    const data = await getAudioAsset(`${basePath}/${file}`);
 
                     return {
                         name,

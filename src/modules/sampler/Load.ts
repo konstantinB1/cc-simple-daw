@@ -1,9 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { typography } from "../global-styles";
-import ProgramManager from "../lib/ProgramManager";
-import type { SelectData, SelectOption } from "./Select";
-import type { Program as ProgramType } from "../lib/ProgramManager";
+import { typography } from "../../global-styles";
+import ProgramManager from "../../lib/ProgramManager";
+import type { SelectData, SelectOption } from "../../components/Select";
+import type { Program as ProgramType } from "../../lib/ProgramManager";
 
 export type ProgramLoadedData = {
     program: ProgramType;
@@ -73,13 +73,11 @@ export default class Program extends LitElement {
     render() {
         return html`
             <section class="container">
-                <h1 class="typography-100">
-                    <daw-select
-                        .options=${this.programNames}
-                        @select-data=${this.handleSelectProgram}
-                    >
-                    </daw-select>
-                </h1>
+                <daw-select
+                    .options=${this.programNames}
+                    @select-data=${this.handleSelectProgram}
+                >
+                </daw-select>
             </section>
         `;
     }

@@ -1,15 +1,19 @@
 import { css, html, LitElement, type CSSResultGroup } from "lit";
 
 import { customElement, property, state } from "lit/decorators.js";
-import { padKeys } from "../constants";
-import { KeyManager, KeyMapping, type KeyData } from "../lib/KeyManager";
+
+import { KeyManager, KeyMapping, type KeyData } from "@lib/KeyManager";
+
+import type { AudioFile, Program } from "@lib/ProgramManager";
+import type Sampler from "@lib/audio/Sampler";
+import BankManager, { PadBankSelector } from "@/modules/sampler/BankManager";
+import type { PadClickData } from "./Pad";
+import { padKeys } from "@/constants";
+import type { ProgramLoadedData } from "./Load";
 
 import "./PadBank";
-import type { AudioFile, Program } from "../lib/ProgramManager";
-import { PadBankSelector } from "./PadBank";
-import type Sampler from "../lib/audio/Sampler";
-import BankManager from "../lib/BankManager";
-import type { PadClickData } from "./Pad";
+import "./Load";
+import "./Pad";
 
 export class MappedPadKey {
     mapping: KeyMapping;
@@ -39,17 +43,19 @@ const padMappings = padKeys.map(
         }),
 );
 
-@customElement("pads-container")
+@customElement("sampler-pads")
 export default class Pads extends LitElement {
     private keyManager: KeyManager = KeyManager.getInstance();
 
-    private unsub: (() => void) | null = null;
+    private bankMgr: BankManager;
 
-    @property({ type: Object })
-    private sampler: Sampler | null = null;
+    private unsub: (() => void) | null = null;
 
     @state()
     private mappedKeyPads: MappedPadKey[] = [];
+
+    @property({ type: Object })
+    private sampler: Sampler | null = null;
 
     @property({ type: Object })
     public programData: Program | null = null;
@@ -57,15 +63,22 @@ export default class Pads extends LitElement {
     @property({ type: Number })
     private currentBank: PadBankSelector = PadBankSelector.A;
 
-    @property({ type: Object })
-    private bankMgr: BankManager | null = null;
+    constructor() {
+        super();
+        this.bankMgr = new BankManager();
+    }
 
     static styles: CSSResultGroup = css`
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .pads {
             display: grid;
-            width: 100%;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
             grid-gap: 6px;
             align-items: center;
             justify-items: center;
@@ -162,24 +175,56 @@ export default class Pads extends LitElement {
         }
     }
 
+    private setPadBankFromEvent(
+        e: CustomEvent<{
+            bank: PadBankSelector;
+        }>,
+    ) {
+        this.currentBank = e.detail.bank;
+    }
+
+    private setProgramFromEvent(e: CustomEvent<ProgramLoadedData>) {
+        const program = e.detail.program;
+
+        if (program) {
+            this.programData = program;
+        } else {
+            throw new Error("No program found in event");
+        }
+    }
+
     render() {
         return html`
-            <div class="pads">
-                ${this.mappedKeyPads.map(
-                    ({ mapping, data }) => html`
-                        <daw-pad
-                            @pad-click=${({
-                                detail,
-                            }: CustomEvent<PadClickData>) => {
-                                this.playFromClick({ mapping: detail.mapping });
-                            }}
-                            .mapping="${mapping}"
-                            .name="${data.name}"
-                            class="pad"
-                        ></daw-pad>
-                    `,
-                )}
-            </div>
+            <card-component is-draggable>
+                <div class="root">
+                    <div class="top-bar">
+                        <program-container
+                            @program-loaded=${this.setProgramFromEvent}
+                        ></program-container>
+                        <pads-bank
+                            @pad-bank-changed=${this.setPadBankFromEvent}
+                            .current=${this.currentBank}
+                        ></pads-bank>
+                    </div>
+                    <div class="pads">
+                        ${this.mappedKeyPads.map(
+                            ({ mapping, data }) => html`
+                                <daw-pad
+                                    @pad-click=${({
+                                        detail,
+                                    }: CustomEvent<PadClickData>) => {
+                                        this.playFromClick({
+                                            mapping: detail.mapping,
+                                        });
+                                    }}
+                                    .mapping="${mapping}"
+                                    .name="${data.name}"
+                                ></daw-pad>
+                            `,
+                        )}
+                    </div>
+                </div>
+            </card-component>
         `;
     }
 }

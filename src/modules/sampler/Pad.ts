@@ -1,8 +1,8 @@
+import { typography } from "@/global-styles";
+import type { KeyMapping } from "@/lib/KeyManager";
 import { css, html, LitElement, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { typography } from "../global-styles";
 import { classMap } from "lit/directives/class-map.js";
-import type { KeyMapping } from "../lib/KeyManager";
 
 export type PadClickData = {
     mapping: KeyMapping;

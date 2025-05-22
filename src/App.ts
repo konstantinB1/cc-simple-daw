@@ -13,6 +13,23 @@ export class App extends LitElement {
 
     static styles = [
         css`
+            :host {
+                --color-primary: #1d1d1d;
+                --color-secondary: #171717;
+                --color-accent: hwb(0 22% 78%);
+                --color-text: #ffffff;
+                --color-background: #181818;
+                --container-width: 1200px;
+                --container-height: 60vh;
+                --card-color: #2c2c2c;
+                --color-tint-primary: #d95656;
+                --border-radius: 10px;
+            }
+
+            html {
+                background-color: var(--color-background);
+            }
+
             .container {
                 width: var(--container-width);
                 margin: 20px auto;

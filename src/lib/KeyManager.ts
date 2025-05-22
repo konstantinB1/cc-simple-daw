@@ -63,7 +63,7 @@ export class KeyManager {
 
             for (const mapping of this.keys.values()) {
                 if (mapping.key === event.key) {
-                    if (!mapping.oneShot && mapping.isPressed === pressed) {
+                    if (mapping.isPressed === pressed) {
                         return;
                     }
 
