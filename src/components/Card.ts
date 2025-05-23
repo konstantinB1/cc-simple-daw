@@ -88,7 +88,10 @@ export default class Card extends LitElement {
         }
 
         const [offsetX, offsetY] = this.dragOffset;
-        this.pos = [event.clientX - offsetX - 10, event.clientY - offsetY - 30];
+        const diffX = event.clientX - offsetX;
+        const diffY = event.clientY - offsetY;
+
+        this.pos = [diffX < 0 ? 0 : diffX, diffY < 0 ? 0 : diffY];
     }
 
     render() {
