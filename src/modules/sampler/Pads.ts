@@ -195,7 +195,7 @@ export default class Pads extends LitElement {
 
     render() {
         return html`
-            <card-component is-draggable .draggableClasses=${["pads"]}>
+            <card-component is-draggable card-width="500px">
                 <div class="root">
                     <div class="top-bar">
                         <program-container

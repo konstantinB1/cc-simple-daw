@@ -16,10 +16,6 @@ export default class PadBank extends LitElement {
 
     static styles = [
         css`
-            .container {
-                margin-bottom: 30px;
-            }
-
             .pad-container {
                 display: flex;
                 justify-content: space-between;
@@ -27,7 +23,9 @@ export default class PadBank extends LitElement {
 
             .pad-bank {
                 display: flex;
-                gap: 20px;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
             }
         `,
     ];

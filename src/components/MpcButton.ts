@@ -30,22 +30,26 @@ export default class MpcButton extends LitElement {
                 margin-bottom: 3px;
             }
 
-            .container > button {
+            .btn {
                 border-radius: 4px;
-                width: 60px;
-                height: 23px;
+                border: 0;
+                min-width: 60px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                background-color: var(--color-primary);
+                border: 1px solid transparent;
+                height: 40px;
             }
 
             .active-indicator {
-                display: inline-block;
-                border-radius: 50%;
-                width: 13px;
-                height: 13px;
-                background-color: darkgreen;
-                transition: background-color 0.2s
-                    cubic-bezier(0.165, 0.84, 0.44, 1);
+                border: 1px solid var(--color-tint-primary);
+            }
 
-                margin: 6px 0;
+            .label {
+                font-size: 1em;
+                color: var(--color-text);
             }
 
             .active-indicator.active {
@@ -64,24 +68,18 @@ export default class MpcButton extends LitElement {
         return html``;
     }
 
-    private get renderActiveIndicator() {
-        if (this.active === undefined) {
-            return html``;
-        }
-
-        const classes = classMap({
-            "active-indicator": true,
-            active: this.active,
-        });
-
-        return html` <p class=${classes}></p> `;
-    }
-
     render() {
         return html`
             <div class="container">
-                ${this.renderLabel} ${this.renderActiveIndicator}
-                <button></button>
+                <button
+                    class=${classMap({
+                        btn: true,
+                        "active-indicator":
+                            this.active !== undefined && this.active,
+                    })}
+                >
+                    ${this.renderLabel}
+                </button>
             </div>
         `;
     }
