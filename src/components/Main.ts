@@ -17,12 +17,6 @@ export default class Root extends LitElement {
     static styles = [
         css`
             .container {
-                display: grid;
-                grid-template-areas:
-                    "recorder ."
-                    "pads" "empty";
-                gap: 10px;
-                grid-gap: 10px;
             }
         `,
     ];

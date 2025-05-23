@@ -21,7 +21,6 @@ export default class IconButton extends LitElement {
             background-color: var(--color-primary);
             color: var(--color-white);
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
         .icon-button > svg {
@@ -33,6 +32,18 @@ export default class IconButton extends LitElement {
         }
     `;
 
+    private delegateClick(event: MouseEvent): void {
+        event.stopPropagation();
+        event.preventDefault();
+
+        this.isActive = !this.isActive;
+        this.dispatchEvent(
+            new CustomEvent("handle-click", {
+                detail: { active: this.isActive },
+            }),
+        );
+    }
+
     render() {
         return html`
             <button
@@ -40,17 +51,7 @@ export default class IconButton extends LitElement {
                     "icon-button": true,
                     active: this.isActive && this.isActive !== undefined,
                 })}
-                }
-                @click=${() => {
-                    this.isActive = !this.isActive;
-                    this.dispatchEvent(
-                        new CustomEvent("icon-button-click", {
-                            detail: { active: this.isActive },
-                            bubbles: true,
-                            composed: true,
-                        }),
-                    );
-                }}
+                @click=${this.delegateClick}
                 style=${styleMap({
                     width: this.size + "px",
                     height: this.size + "px",

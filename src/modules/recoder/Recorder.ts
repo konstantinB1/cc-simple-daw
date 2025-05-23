@@ -21,7 +21,7 @@ export default class Recorder extends LitElement {
         css`
             .button-wrapper {
                 display: flex;
-                gap: 5px;
+                gap: 6px;
             }
         `,
     ];
@@ -62,27 +62,32 @@ export default class Recorder extends LitElement {
 
     render() {
         return html`
-            <card-component is-draggable>
-                <div class="button-wrapper">
-                    <icon-button size=${40}>
-                        <record-icon size=${20}></record-icon>
-                    </icon-button>
-                    <icon-button size=${40} @click=${this.handlePlay}>
-                        ${this.renderIsPlayingIcon}
-                    </icon-button>
-                    <bpm-picker
-                        .bpm=${this.bpm}
-                        @bpm-changed=${this.handleBpmChange}
-                    ></bpm-picker>
-                    <icon-button
-                        .isActive=${this.isPlaying}
-                        size=${40}
-                        @click=${this.toggleMetronome}
-                    >
-                        <metronome-icon></metronome-icon>
-                    </icon-button>
-                </div>
-            </card-component>
+            <div class="container">
+                <card-component is-draggable>
+                    <div class="button-wrapper">
+                        <icon-button size=${40}>
+                            <record-icon size=${20}></record-icon>
+                        </icon-button>
+                        <icon-button
+                            size=${40}
+                            @handle-click=${this.handlePlay}
+                        >
+                            ${this.renderIsPlayingIcon}
+                        </icon-button>
+                        <bpm-picker
+                            .bpm=${this.bpm}
+                            @bpm-changed=${this.handleBpmChange}
+                        ></bpm-picker>
+                        <icon-button
+                            .isActive=${this.isMetronomeOn}
+                            size=${40}
+                            @handle-click=${this.toggleMetronome}
+                        >
+                            <metronome-icon></metronome-icon>
+                        </icon-button>
+                    </div>
+                </card-component>
+            </div>
         `;
     }
 }

@@ -20,7 +20,6 @@ export default class BpmPicker extends LitElement {
                 justify-content: center;
                 height: 100%;
                 gap: 5px;
-                margin-left: 20px;
             }
 
             .bpm-text {
@@ -68,14 +67,14 @@ export default class BpmPicker extends LitElement {
         }
     }
 
-    private _onMouseDown = (e: MouseEvent) => {
+    private onMouseDown = (e: MouseEvent) => {
         this.isDragging = true;
-        window.addEventListener("mousemove", this._onMouseMove);
-        window.addEventListener("mouseup", this._onMouseUp);
+        window.addEventListener("mousemove", this.onMouseMove);
+        window.addEventListener("mouseup", this.onMouseUp);
         this.clickedPixel = e.clientY - this.unsafeIconBounds.top;
     };
 
-    private _onMouseMove = (e: MouseEvent) => {
+    private onMouseMove = (e: MouseEvent) => {
         if (!this.isDragging) return;
 
         const mouseY = e.clientY - this.unsafeIconBounds.top;
@@ -104,11 +103,11 @@ export default class BpmPicker extends LitElement {
         );
     };
 
-    private _onMouseUp = () => {
+    private onMouseUp = () => {
         this.isDragging = false;
         this.clickedPixel = 0;
-        window.removeEventListener("mousemove", this._onMouseMove);
-        window.removeEventListener("mouseup", this._onMouseUp);
+        window.removeEventListener("mousemove", this.onMouseMove);
+        window.removeEventListener("mouseup", this.onMouseUp);
     };
 
     render() {
@@ -117,7 +116,7 @@ export default class BpmPicker extends LitElement {
                 <p class="typography-300 bpm-text">${this.bpm}</p>
                 <div
                     class="bpm-input-icon-wrapper"
-                    @mousedown=${this._onMouseDown}
+                    @mousedown=${this.onMouseDown}
                 >
                     <up-down-icon></up-down-icon>
                 </div>
