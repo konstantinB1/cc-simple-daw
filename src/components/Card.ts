@@ -1,8 +1,12 @@
 import DragController, { DragEvent } from "@/controllers/DragController";
+import PanelManager from "@/lib/PanelManager";
 import { CSSResult, LitElement, css, html, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
+
+const ELEVATED_Z_INDEX = 100;
+const DEFAULT_Z_INDEX = 50;
 
 @customElement("card-component")
 export default class Card extends LitElement {
@@ -15,19 +19,38 @@ export default class Card extends LitElement {
     @property({ type: String, attribute: "card-width" })
     public cardWidth: string = "auto";
 
-    @property({ type: String, attribute: "card-id" })
-    private cardId: string = "";
-
     private dragController: DragController = new DragController();
+
+    private cardId: string;
+
+    private panelManager: PanelManager = PanelManager.getInstance();
+
+    @state()
+    private elementZIndex: number = 0;
 
     constructor() {
         super();
+
+        const cardId = this.getAttribute("card-id");
+
+        if (cardId == null) {
+            throw new Error(
+                "Card ID is not set, panel manager for this card will not work",
+            );
+        }
+
+        this.cardId = cardId;
+
+        this.panelManager.add(cardId).listen(cardId, ({ isCurrent }) => {
+            this.elementZIndex = isCurrent ? ELEVATED_Z_INDEX : DEFAULT_Z_INDEX;
+        });
 
         this.dragController.onDragChange.call(
             this.dragController,
             ({ event, coords: [x, y] }) => {
                 switch (event) {
                     case DragEvent.Start:
+                        this.panelManager.notify(cardId);
                         this.isDragging = true;
                         break;
                     case DragEvent.Dragging:
@@ -64,16 +87,6 @@ export default class Card extends LitElement {
         }
     `;
 
-    connectedCallback(): void {
-        super.connectedCallback();
-
-        if (!this.cardId) {
-            throw new Error(
-                "Card ID is not set, panel manager for this card will not work",
-            );
-        }
-    }
-
     render(): TemplateResult {
         const [x, y] = this.pos;
         const handleMouseDown = this.dragController.handleMouseDown.bind(
@@ -88,6 +101,7 @@ export default class Card extends LitElement {
         const styles = styleMap({
             transform: `translate(${x}px, ${y}px)`,
             width: this.cardWidth,
+            zIndex: this.elementZIndex,
         });
 
         return html`<div

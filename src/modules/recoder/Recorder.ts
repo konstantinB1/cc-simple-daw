@@ -63,7 +63,7 @@ export default class Recorder extends LitElement {
     render() {
         return html`
             <div class="container">
-                <card-component is-draggable>
+                <card-component is-draggable card-id="recorder-component">
                     <div class="button-wrapper">
                         <icon-button size=${40}>
                             <record-icon size=${20}></record-icon>

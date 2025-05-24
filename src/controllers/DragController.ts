@@ -19,7 +19,7 @@ export default class DragController {
     private holdTimeout: NodeJS.Timeout | null = null;
     private dragOffset: [number, number] = [0, 0];
     private pos: [number, number] = [0, 0];
-    private elevateZIndex: number = 0;
+    public elevateZIndex: number = 0;
 
     private obs: Observer<DragControllerData> = new Observer();
 

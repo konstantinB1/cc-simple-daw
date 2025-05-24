@@ -10,7 +10,6 @@ export default class Metronome {
     private metronomeSound: Sample | null = null;
 
     public async start(bpm: number): Promise<void> {
-        console.log("start metronome", this.isPlaying);
         if (this.isPlaying) {
             return;
         }

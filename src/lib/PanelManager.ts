@@ -1,15 +1,13 @@
 import Observer from "./Observer";
 
 type Panel = {
-    zIndex: number;
+    isCurrent: boolean;
 };
 
-type PanelDataFn = (panel: Panel) => void;
-
 export default class PanelManager {
-    private panels: Map<string, Panel> = new Map();
+    private panels: string[] = [];
 
-    private obs: Observer<PanelDataFn> = new Observer();
+    private obs: Observer<Panel> = new Observer();
 
     private static instance: PanelManager;
 
@@ -21,32 +19,20 @@ export default class PanelManager {
         return PanelManager.instance;
     }
 
-    public add(name: string): void {
-        this.panels.set(name, {
-            zIndex: 0,
-        });
+    public add(name: string): PanelManager {
+        this.panels.push(name);
+        return this;
     }
 
-    public elevatePanel(name: string): void {
-        const panel = this.panels.get(name);
-
-        if (panel) {
-            panel.zIndex = 1;
-
-            this.panels.forEach((p, key) => {
-                if (key !== name) {
-                    p.zIndex = 0;
-                }
-
-                this.obs.notify(name, {
-                    name: key,
-                    data: p,
-                });
+    public notify(name: string): void {
+        for (const key of this.panels) {
+            this.obs.notify(key, {
+                isCurrent: key === name,
             });
         }
     }
 
-    public listen(name: string, fn: PanelDataFn): void {
+    public listen(name: string, fn: (panels: Panel) => void): void {
         this.obs.subscribe(name, fn);
     }
 }
