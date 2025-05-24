@@ -14,13 +14,6 @@ export default class Root extends LitElement {
         this.sampler = new Sampler(this.ctx);
     }
 
-    static styles = [
-        css`
-            .container {
-            }
-        `,
-    ];
-
     render() {
         return html`<div class="container">
             <recorder-component></recorder-component>

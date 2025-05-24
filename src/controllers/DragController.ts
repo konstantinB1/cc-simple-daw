@@ -1,8 +1,6 @@
 import Observer from "@/lib/Observer";
 
 const HOLD_TIMEOUT_MS = 200;
-const ELEVATED_Z_INDEX = 1000;
-const NORMAL_Z_INDEX = 0;
 
 export enum DragEvent {
     Start,
@@ -19,7 +17,6 @@ export default class DragController {
     private holdTimeout: NodeJS.Timeout | null = null;
     private dragOffset: [number, number] = [0, 0];
     private pos: [number, number] = [0, 0];
-    public elevateZIndex: number = 0;
 
     private obs: Observer<DragControllerData> = new Observer();
 
@@ -38,7 +35,6 @@ export default class DragController {
                 coords: this.pos,
             });
 
-            this.elevateZIndex = ELEVATED_Z_INDEX;
             window.addEventListener("mousemove", this.handleWindowMouseMove);
         }, HOLD_TIMEOUT_MS);
 
@@ -73,7 +69,6 @@ export default class DragController {
             coords: this.pos,
         });
 
-        this.elevateZIndex = NORMAL_Z_INDEX;
         window.removeEventListener("mousemove", this.handleWindowMouseMove);
         window.removeEventListener("mouseup", this.handleWindowMouseUp);
     };
