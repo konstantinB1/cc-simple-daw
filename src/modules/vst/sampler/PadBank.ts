@@ -1,7 +1,7 @@
-import BankManager, { PadBankSelector } from "@/modules/sampler/BankManager";
 import { KeyManager } from "@lib/KeyManager";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import BankManager, { PadBankSelector } from "./BankManager";
 
 @customElement("pads-bank")
 export default class PadBank extends LitElement {

@@ -1,15 +1,16 @@
 :root {
     --color-primary: #1d1d1d;
     --color-secondary: #171717;
-    --color-accent: hwb(0 22% 78%);
+    --color-accent: hwb(0 13% 87%);
     --color-text: #ffffff;
     --color-background: #181818;
     --container-width: 1200px;
     --container-height: 60vh;
-    --card-color: #2c2c2c;
+    --card-color: #595959;
     --color-tint-primary: #d95656;
     --color-tint-primary-active: #4b1e1e;
     --border-radius: 10px;
+    --nav-bg-color: #474747;
 }
 
 html {

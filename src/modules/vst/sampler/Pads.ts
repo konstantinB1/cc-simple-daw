@@ -6,7 +6,7 @@ import { KeyManager, KeyMapping, type KeyData } from "@lib/KeyManager";
 
 import type { AudioFile, Program } from "@lib/ProgramManager";
 import type Sampler from "@lib/audio/Sampler";
-import BankManager, { PadBankSelector } from "@/modules/sampler/BankManager";
+
 import type { PadClickData } from "./Pad";
 import { padKeys } from "@/constants";
 import type { ProgramLoadedData } from "./Load";
@@ -14,6 +14,8 @@ import type { ProgramLoadedData } from "./Load";
 import "./PadBank";
 import "./Load";
 import "./Pad";
+import BankManager from "./BankManager";
+import { PadBankSelector } from "./BankManager";
 
 export class MappedPadKey {
     mapping: KeyMapping;

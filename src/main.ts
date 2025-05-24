@@ -11,7 +11,6 @@ import "./components/Main";
 import "./components/Icon";
 import "./components/IconButton";
 
-import "./modules/sampler/Pads";
-import "./modules/recoder/Recorder";
+import "./modules/vst/sampler/Pads";
 
 import "./App";

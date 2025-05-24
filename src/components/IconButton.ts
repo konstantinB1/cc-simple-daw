@@ -1,3 +1,4 @@
+import { typography } from "@/global-styles";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
@@ -11,26 +12,44 @@ export default class IconButton extends LitElement {
     @property({ type: Boolean })
     isActive: boolean = false;
 
-    static styles = css`
-        .icon-button {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--color-secondary);
-            background-color: var(--color-primary);
-            color: var(--color-white);
-            cursor: pointer;
-        }
+    @property({ type: String, attribute: "label-text" })
+    labelText: string = "";
 
-        .icon-button > svg {
-            fill: var(--color-white);
-        }
+    static styles = [
+        typography,
+        css`
+            .icon-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: var(--border-radius);
+                border: 1px solid var(--color-accent);
+                background-color: var(--color-primary);
+                color: var(--color-white);
+                cursor: pointer;
+            }
 
-        .active {
-            background-color: var(--color-tint-primary-active);
-        }
-    `;
+            .icon-button > svg {
+                fill: var(--color-white);
+            }
+
+            .active {
+                background-color: var(--color-tint-primary-active);
+            }
+
+            .label-text {
+                font-size: 0.7em;
+            }
+
+            .icon-button-wrapper {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+            }
+        `,
+    ];
 
     private delegateClick(event: MouseEvent): void {
         event.stopPropagation();
@@ -46,19 +65,26 @@ export default class IconButton extends LitElement {
 
     render() {
         return html`
-            <button
-                class=${classMap({
-                    "icon-button": true,
-                    active: this.isActive && this.isActive !== undefined,
-                })}
-                @click=${this.delegateClick}
-                style=${styleMap({
-                    width: this.size + "px",
-                    height: this.size + "px",
-                })}
-            >
-                <slot></slot>
-            </button>
+            <div class="icon-button-wrapper">
+                <button
+                    class=${classMap({
+                        "icon-button": true,
+                        active: this.isActive && this.isActive !== undefined,
+                    })}
+                    @click=${this.delegateClick}
+                    style=${styleMap({
+                        width: this.size + "px",
+                        height: this.size + "px",
+                    })}
+                >
+                    <slot></slot>
+                </button>
+                ${this.labelText
+                    ? html`<span class="label-text typography-500"
+                          >${this.labelText}</span
+                      >`
+                    : ""}
+            </div>
         `;
     }
 }

@@ -63,30 +63,25 @@ export default class Recorder extends LitElement {
     render() {
         return html`
             <div class="container">
-                <card-component is-draggable card-id="recorder-component">
-                    <div class="button-wrapper">
-                        <icon-button size=${40}>
-                            <record-icon size=${20}></record-icon>
-                        </icon-button>
-                        <icon-button
-                            size=${40}
-                            @handle-click=${this.handlePlay}
-                        >
-                            ${this.renderIsPlayingIcon}
-                        </icon-button>
-                        <bpm-picker
-                            .bpm=${this.bpm}
-                            @bpm-changed=${this.handleBpmChange}
-                        ></bpm-picker>
-                        <icon-button
-                            .isActive=${this.isMetronomeOn}
-                            size=${40}
-                            @handle-click=${this.toggleMetronome}
-                        >
-                            <metronome-icon></metronome-icon>
-                        </icon-button>
-                    </div>
-                </card-component>
+                <div class="button-wrapper">
+                    <icon-button size=${40}>
+                        <record-icon size=${20}></record-icon>
+                    </icon-button>
+                    <icon-button size=${40} @handle-click=${this.handlePlay}>
+                        ${this.renderIsPlayingIcon}
+                    </icon-button>
+                    <bpm-picker
+                        .bpm=${this.bpm}
+                        @bpm-changed=${this.handleBpmChange}
+                    ></bpm-picker>
+                    <icon-button
+                        .isActive=${this.isMetronomeOn}
+                        size=${40}
+                        @handle-click=${this.toggleMetronome}
+                    >
+                        <metronome-icon></metronome-icon>
+                    </icon-button>
+                </div>
             </div>
         `;
     }

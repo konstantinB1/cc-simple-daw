@@ -1,12 +1,11 @@
+import type { SelectData, SelectOption } from "@/components/Select";
+import { typography } from "@/global-styles";
+import ProgramManager from "@/lib/ProgramManager";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { typography } from "../../global-styles";
-import ProgramManager from "../../lib/ProgramManager";
-import type { SelectData, SelectOption } from "../../components/Select";
-import type { Program as ProgramType } from "../../lib/ProgramManager";
 
 export type ProgramLoadedData = {
-    program: ProgramType;
+    program: any;
 };
 
 @customElement("program-container")
@@ -60,7 +59,7 @@ export default class Program extends LitElement {
         }
     }
 
-    private emitProgramToParent(data: ProgramType) {
+    private emitProgramToParent(data: any) {
         this.dispatchEvent(
             new CustomEvent<ProgramLoadedData>("program-loaded", {
                 detail: { program: data },

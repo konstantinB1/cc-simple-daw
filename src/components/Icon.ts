@@ -8,6 +8,7 @@ import "./icons/PlayIcon";
 import "./icons/StopIcon";
 import "./icons/UpAndDownIcon";
 import "./icons/MetronomeIcon";
+import "./icons/EqIcon";
 
 export interface SVGIconInterface {
     name: string;

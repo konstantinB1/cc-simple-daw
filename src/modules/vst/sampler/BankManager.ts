@@ -1,6 +1,6 @@
 import { padKeys } from "@/constants";
-import type { KeyMapping } from "../../lib/KeyManager";
-import type { AudioFile } from "../../lib/ProgramManager";
+import type { KeyMapping } from "@/lib/KeyManager";
+import type { AudioFile } from "@/lib/ProgramManager";
 
 export const PADS_PER_BANK = padKeys.length;
 
