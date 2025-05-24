@@ -1,12 +1,8 @@
-import { LitElement, css, html } from "lit";
+import DragController, { DragEvent } from "@/controllers/DragController";
+import { CSSResult, LitElement, css, html, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
-import { createRef, ref, type Ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
-
-const ELEVATED_Z_INDEX = 10;
-const NORMAL_Z_INDEX = 0;
-const HOLD_TIMEOUT_MS = 250;
 
 @customElement("card-component")
 export default class Card extends LitElement {
@@ -16,22 +12,36 @@ export default class Card extends LitElement {
     @state()
     private isDragging: boolean = false;
 
-    @state()
-    private elevateZIndex: number = 0;
-
     @property({ type: String, attribute: "card-width" })
     public cardWidth: string = "auto";
 
     @property({ type: String, attribute: "card-id" })
     private cardId: string = "";
 
-    private dragOffset: [number, number] = [0, 0];
+    private dragController: DragController = new DragController();
 
-    private cardRef: Ref<HTMLElement> = createRef();
+    constructor() {
+        super();
 
-    private holdTimeout: NodeJS.Timeout | null = null;
+        this.dragController.onDragChange.call(
+            this.dragController,
+            ({ event, coords: [x, y] }) => {
+                switch (event) {
+                    case DragEvent.Start:
+                        this.isDragging = true;
+                        break;
+                    case DragEvent.Dragging:
+                        this.pos = [x, y];
+                        break;
+                    case DragEvent.End:
+                        this.isDragging = false;
+                        break;
+                }
+            },
+        );
+    }
 
-    static styles = css`
+    static styles: CSSResult = css`
         :root {
             --color-drag: #3f3f3f;
         }
@@ -42,15 +52,14 @@ export default class Card extends LitElement {
             gap: 10px;
             padding: 20px;
             background-color: var(--card-color);
-            border-radius: 2px;
+            border-radius: var(--border-radius);
             border: 1px solid var(--color-accent);
-            position: relative;
             overflow: auto;
             position: absolute;
-            transition: transform 0.05s linear;
         }
 
         .card.is-dragging {
+            cursor: grabbing;
             border: 1px solid var(--color-tint-primary);
         }
     `;
@@ -65,76 +74,27 @@ export default class Card extends LitElement {
         }
     }
 
-    private get unsafeCardRefRect(): DOMRect {
-        const value = this.cardRef.value;
-
-        if (!value) {
-            throw new Error("Card reference is not set");
-        }
-
-        return value.getBoundingClientRect();
-    }
-
-    private handleMouseDown(event: MouseEvent): void {
-        this.holdTimeout = setTimeout(() => {
-            this.isDragging = true;
-            this.dragOffset = [
-                event.clientX - this.unsafeCardRefRect.left,
-                event.clientY - this.unsafeCardRefRect.top,
-            ];
-
-            this.elevateZIndex = ELEVATED_Z_INDEX;
-        }, HOLD_TIMEOUT_MS);
-    }
-
-    private handleMouseUp(_: MouseEvent): void {
-        if (this.holdTimeout) {
-            clearTimeout(this.holdTimeout);
-        }
-
-        this.isDragging = false;
-        this.elevateZIndex = NORMAL_Z_INDEX;
-        this.dragOffset = [0, 0];
-    }
-
-    private handleMouseMove(event: MouseEvent): void {
-        if (!this.isDragging) {
-            return;
-        }
-
-        console.log(this.unsafeCardRefRect);
-
-        const randomNumber = -250;
-
-        const [offsetX, offsetY] = this.dragOffset;
-        const diffX = event.clientX - offsetX + randomNumber;
-        const diffY = event.clientY - offsetY;
-
-        this.pos = [diffX < 0 ? 0 : diffX, diffY < 0 ? 0 : diffY];
-    }
-
-    render() {
+    render(): TemplateResult {
         const [x, y] = this.pos;
+        const handleMouseDown = this.dragController.handleMouseDown.bind(
+            this.dragController,
+        );
+
+        const classes = classMap({
+            card: true,
+            "is-dragging": this.isDragging,
+        });
+
+        const styles = styleMap({
+            transform: `translate(${x}px, ${y}px)`,
+            width: this.cardWidth,
+        });
 
         return html`<div
             id=${this.cardId}
-            class=${classMap({
-                card: true,
-                "is-dragging": this.isDragging,
-            })}
-            style=${styleMap({
-                transform: `translate(${x}px, ${y}px)`,
-                zIndex: this.elevateZIndex,
-                width: this.cardWidth,
-            })}
-            ${ref(this.cardRef)}
-            @mousedown="${this.handleMouseDown}"
-            @mouseup="${this.handleMouseUp}"
-            @mousemove="${this.handleMouseMove}"
-            @mouseleave="${
-                this
-                    .handleMouseUp /* This is to avoid mouse leaving the card too soon */
-            }"
+            class=${classes}
+            style=${styles}
+            @mousedown="${handleMouseDown}"
         >
             <slot></slot>
         </div> `;

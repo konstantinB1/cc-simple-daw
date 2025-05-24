@@ -22,11 +22,3 @@ body {
     padding: 0;
     color: var(--color-text);
 }
-
-input[type="range"][orient="vertical"] {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    appearance: slider-vertical;
-    width: 16px;
-    vertical-align: bottom;
-}

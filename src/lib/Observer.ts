@@ -1,7 +1,9 @@
-export default class Observer<T extends (data?: any) => void> {
-    private observers: { [key: string]: T[] } = {};
+type Callback<T> = (data: T) => void;
 
-    subscribe(event: string, callback: T): void {
+export default class Observer<T> {
+    private observers: { [key: string]: Callback<T>[] } = {};
+
+    subscribe(event: string, callback: Callback<T>): void {
         if (!this.observers[event]) {
             this.observers[event] = [];
         }
@@ -17,7 +19,7 @@ export default class Observer<T extends (data?: any) => void> {
         );
     }
 
-    notify(event: string, data?: any): void {
+    notify(event: string, data: T): void {
         if (!this.observers[event]) return;
 
         this.observers[event].forEach((callback) => callback(data));
