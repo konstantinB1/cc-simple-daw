@@ -180,6 +180,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/core@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@floating-ui/core@npm:1.7.0"
+  dependencies:
+    "@floating-ui/utils": ^0.2.9
+  checksum: 428a90e49024cfc9ac2276f6f28501aa06be8946a5619eed83de30084d35ee10a08c70fb2bde06f21d18d90714b7d3813770b5416d0d13e2d201616c49a4f611
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@floating-ui/dom@npm:1.7.0"
+  dependencies:
+    "@floating-ui/core": ^1.7.0
+    "@floating-ui/utils": ^0.2.9
+  checksum: 86e35e0d9b849476c0a29623870146b5f0c94b6fb131d14e399b235ea01a8b6c2d2545682fa01364f2a7f81bbf8e58b4947241eb5cada164eeaca2df22dbc625
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.2.9":
+  version: 0.2.9
+  resolution: "@floating-ui/utils@npm:0.2.9"
+  checksum: d518b80cec5a323e54a069a1dd99a20f8221a4853ed98ac16c75275a0cc22f75de4f8ac5b121b4f8990bd45da7ad1fb015b9a1e4bac27bb1cd62444af84e9784
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -203,6 +229,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lit-labs/signals@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@lit-labs/signals@npm:0.1.2"
+  dependencies:
+    lit: ^2.0.0 || ^3.0.0
+    signal-polyfill: ^0.2.0
+  checksum: ca7b0b166dfcdaa75e0df19a98faf8a0855ae827c35cfd78b8f7c013d26e64e711c87377ac14784895f00a90b3d68b8ab7447174fc3de8d917b835875e143528
+  languageName: node
+  linkType: hard
+
 "@lit-labs/ssr-dom-shim@npm:^1.2.0":
   version: 1.3.0
   resolution: "@lit-labs/ssr-dom-shim@npm:1.3.0"
@@ -210,7 +246,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^2.1.0":
+"@lit/context@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@lit/context@npm:1.1.5"
+  dependencies:
+    "@lit/reactive-element": ^1.6.2 || ^2.1.0
+  checksum: 351a3ac656d5fb75599914da04a7e44f13396fc92ac350b4800611a930cb60b2d7539a58579df654949f70af2fee3808603376920395740ad76adccb37d97fb7
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:^1.6.2 || ^2.1.0, @lit/reactive-element@npm:^2.1.0":
   version: 2.1.0
   resolution: "@lit/reactive-element@npm:2.1.0"
   dependencies:
@@ -395,6 +440,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ms@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@types/ms@npm:2.1.0"
+  checksum: 532d2ebb91937ccc4a89389715e5b47d4c66e708d15942fe6cc25add6dc37b2be058230a327dd50f43f89b8b6d5d52b74685a9e8f70516edfc9bdd6be910eff4
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^22.15.18":
   version: 22.15.18
   resolution: "@types/node@npm:22.15.18"
@@ -495,8 +547,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cc-simple-daw@workspace:."
   dependencies:
+    "@floating-ui/dom": ^1.7.0
+    "@lit-labs/signals": ^0.1.2
+    "@lit/context": ^1.1.5
+    "@types/ms": ^2.1.0
     "@types/node": ^22.15.18
     lit: ^3.3.0
+    ms: ^2.1.3
     prettier: ^3.5.3
     typescript: ~5.8.3
     vite: ^6.3.5
@@ -873,7 +930,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:^3.3.0":
+"lit@npm:^2.0.0 || ^3.0.0, lit@npm:^3.3.0":
   version: 3.3.0
   resolution: "lit@npm:3.3.0"
   dependencies:
@@ -1258,6 +1315,13 @@ __metadata:
   version: 4.1.0
   resolution: "signal-exit@npm:4.1.0"
   checksum: 64c757b498cb8629ffa5f75485340594d2f8189e9b08700e69199069c8e3070fb3e255f7ab873c05dc0b3cec412aea7402e10a5990cb6a050bd33ba062a6c549
+  languageName: node
+  linkType: hard
+
+"signal-polyfill@npm:^0.2.0":
+  version: 0.2.2
+  resolution: "signal-polyfill@npm:0.2.2"
+  checksum: 34513684f95f24369cab2d119fa1405102f584f53d83cfb5b88cdaddd623cedba59fa88d0b96c3a9cb1862b8d080263b6993232e27bfa5185600c8ab18740cb6
   languageName: node
   linkType: hard
 

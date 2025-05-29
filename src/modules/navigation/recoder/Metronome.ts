@@ -1,21 +1,18 @@
-import AudioManager from "@/lib/audio/Context";
 import Sample from "@/lib/audio/Sample";
 import { getAudioAsset } from "@/utils";
 
 export default class Metronome {
-    private interval: NodeJS.Timeout | null = null;
+    private ctx?: AudioContext;
 
-    private isPlaying: boolean = false;
+    private interval: NodeJS.Timeout | null = null;
 
     private metronomeSound: Sample | null = null;
 
+    constructor(audioContext: AudioContext) {
+        this.ctx = audioContext;
+    }
+
     public async start(bpm: number): Promise<void> {
-        if (this.isPlaying) {
-            return;
-        }
-
-        this.isPlaying = true;
-
         if (!this.metronomeSound) {
             throw new Error("Metronome sound not loaded");
         }
@@ -28,12 +25,6 @@ export default class Metronome {
     }
 
     public stop(): void {
-        if (!this.isPlaying) {
-            return;
-        }
-
-        this.isPlaying = false;
-
         if (this.interval) {
             clearInterval(this.interval);
         }
@@ -46,11 +37,7 @@ export default class Metronome {
             throw new Error("Metronome sound not found");
         }
 
-        this.metronomeSound = new Sample(
-            AudioManager.getInstance(),
-            sound,
-            "metronome",
-        );
+        this.metronomeSound = new Sample(this.ctx!, sound, "metronome");
     }
 
     private metronomeInterval(bpm: number): number {

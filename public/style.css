@@ -3,14 +3,20 @@
     --color-secondary: #171717;
     --color-accent: hwb(0 13% 87%);
     --color-text: #ffffff;
-    --color-background: #181818;
+    --color-background: #161616;
     --container-width: 1200px;
     --container-height: 60vh;
-    --card-color: #595959;
+    --card-color: #4e4e4e;
     --color-tint-primary: #d95656;
-    --color-tint-primary-active: #4b1e1e;
+    --color-tint-primary-active: #250e0e;
     --border-radius: 10px;
-    --nav-bg-color: #474747;
+    --nav-bg-color: #595959;
+    --color-success: #5ace5e;
+    --color-error: #f44336;
+    --color-warning: #ff9800;
+    --color-info: #2196f3;
+    --color-border: #333333;
+    --color-border-light: #444444;
 }
 
 html {
@@ -22,4 +28,5 @@ body {
     margin: 0;
     padding: 0;
     color: var(--color-text);
+    user-select: none;
 }

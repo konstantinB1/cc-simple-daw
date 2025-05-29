@@ -15,7 +15,7 @@ export type KeyData = {
 
 export class KeyManager {
     private keys: Map<string, KeyMapping> = new Map();
-    private observer = new Observer();
+    private observer = new Observer<KeyData>();
     private static instance: KeyManager;
 
     static getInstance(): KeyManager {
@@ -57,12 +57,16 @@ export class KeyManager {
         pressed: boolean,
     ): (event: KeyboardEvent) => void {
         return (event: KeyboardEvent) => {
+            console.log(event);
             if (!this.keys.has(event.key)) {
                 return;
             }
 
             for (const mapping of this.keys.values()) {
                 if (mapping.key === event.key) {
+                    console.log(
+                        `Key pressed: ${mapping.key}, id: ${mapping.id}, pressed: ${pressed}`,
+                    );
                     if (mapping.isPressed === pressed) {
                         return;
                     }
@@ -85,7 +89,7 @@ export class KeyManager {
     }
 
     public createKeyListener(): void {
-        window.addEventListener("keypress", this.handleKeyboardEvent(true));
+        window.addEventListener("keydown", this.handleKeyboardEvent(true));
         window.addEventListener("keyup", this.handleKeyboardEvent(false));
     }
 

@@ -1,11 +1,17 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit";
+import {
+    css,
+    html,
+    LitElement,
+    type CSSResultGroup,
+    type PropertyValues,
+} from "lit";
 
 import { customElement, property, state } from "lit/decorators.js";
 
 import { KeyManager, KeyMapping, type KeyData } from "@lib/KeyManager";
 
 import type { AudioFile, Program } from "@lib/ProgramManager";
-import type Sampler from "@lib/audio/Sampler";
+import Sampler from "@lib/audio/Sampler";
 
 import type { PadClickData } from "./Pad";
 import { padKeys } from "@/constants";
@@ -16,6 +22,7 @@ import "./Load";
 import "./Pad";
 import BankManager from "./BankManager";
 import { PadBankSelector } from "./BankManager";
+import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 
 export class MappedPadKey {
     mapping: KeyMapping;
@@ -46,10 +53,10 @@ const padMappings = padKeys.map(
 );
 
 @customElement("sampler-pads")
-export default class Pads extends LitElement {
+export default class Pads extends WithPlaybackContext(LitElement) {
     private keyManager: KeyManager = KeyManager.getInstance();
 
-    private bankMgr: BankManager;
+    private bankMgr: BankManager = new BankManager();
 
     private unsub: (() => void) | null = null;
 
@@ -64,11 +71,6 @@ export default class Pads extends LitElement {
 
     @property({ type: Number })
     private currentBank: PadBankSelector = PadBankSelector.A;
-
-    constructor() {
-        super();
-        this.bankMgr = new BankManager();
-    }
 
     static styles: CSSResultGroup = css`
         .top-bar {
@@ -104,6 +106,10 @@ export default class Pads extends LitElement {
             this.unsub();
             this.unsub = null;
         }
+    }
+
+    protected firstUpdated(_changedProperties: PropertyValues): void {
+        this.sampler = new Sampler(this.playbackContext.master.audioContext);
     }
 
     private playFromKeyboard({ mapping }: KeyData) {
@@ -201,6 +207,7 @@ export default class Pads extends LitElement {
                 is-draggable
                 card-width="500px"
                 card-id="sampler-pads"
+                .startPos=${[0, 80] as const}
             >
                 <div class="root">
                     <div class="top-bar">

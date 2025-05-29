@@ -30,28 +30,6 @@ export default class PadBank extends LitElement {
         `,
     ];
 
-    connectedCallback(): void {
-        super.connectedCallback();
-        this.keyManager.addKeys([
-            {
-                key: "ArrowLeft",
-                id: "pad-bank-left",
-                handler: () => {
-                    this.current = BankManager.previous(this.current);
-                    this.onChangeBank(this.current);
-                },
-            },
-            {
-                key: "ArrowRight",
-                id: "pad-bank-right",
-                handler: () => {
-                    this.current = BankManager.next(this.current);
-                    this.onChangeBank(this.current);
-                },
-            },
-        ]);
-    }
-
     private onChangeBank(bank: PadBankSelector): void {
         this.dispatchEvent(
             new CustomEvent("pad-bank-changed", {

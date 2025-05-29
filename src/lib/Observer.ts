@@ -11,7 +11,7 @@ export default class Observer<T> {
         this.observers[event].push(callback);
     }
 
-    unsubscribe(event: string, callback: T): void {
+    unsubscribe(event: string, callback: () => void): void {
         if (!this.observers[event]) return;
 
         this.observers[event] = this.observers[event].filter(

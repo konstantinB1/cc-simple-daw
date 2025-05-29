@@ -9,6 +9,8 @@ import "./icons/StopIcon";
 import "./icons/UpAndDownIcon";
 import "./icons/MetronomeIcon";
 import "./icons/EqIcon";
+import "./icons/ForwardIcon";
+import "./icons/RewindIcon";
 
 export interface SVGIconInterface {
     name: string;

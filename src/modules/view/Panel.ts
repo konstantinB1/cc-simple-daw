@@ -16,8 +16,8 @@ import { styleMap } from "lit/directives/style-map.js";
 const ELEVATED_Z_INDEX = 100;
 const DEFAULT_Z_INDEX = 50;
 
-@customElement("card-component")
-export default class Card extends LitElement {
+@customElement("panel-card")
+export default class PanelCard extends LitElement {
     @state()
     private pos: [number, number] = [0, 0];
 

@@ -1,4 +1,4 @@
-export default class AudioManager {
+class AudioManager {
     private static instance: AudioContext | null = null;
 
     public static getInstance(): AudioContext {

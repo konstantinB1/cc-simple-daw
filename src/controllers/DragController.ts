@@ -1,6 +1,6 @@
 import Observer from "@/lib/Observer";
 
-const HOLD_TIMEOUT_MS = 200;
+const HOLD_TIMEOUT_MS = 100;
 
 export enum DragEvent {
     Start,
@@ -21,6 +21,12 @@ export default class DragController {
     private obs: Observer<DragControllerData> = new Observer();
 
     public isDragging: boolean = false;
+
+    private element?: HTMLElement;
+
+    public setElement(element: HTMLElement): void {
+        this.element = element;
+    }
 
     public handleMouseDown(event: MouseEvent): void {
         const [x, y] = this.pos;
@@ -50,13 +56,28 @@ export default class DragController {
         const newX = event.clientX - offsetX;
         const newY = event.clientY - offsetY;
 
-        this.pos = [newX < 0 ? 0 : newX, newY < 0 ? 0 : newY];
+        this.pos = [this.getX(newX), newY < 80 ? 80 : newY];
 
         this.obs.notify("dragChange", {
             event: DragEvent.Dragging,
             coords: this.pos,
         });
     };
+
+    private getX(pos: number): number {
+        const width = this.element?.getBoundingClientRect().width!;
+        const viewportWidth = document.documentElement.clientWidth;
+
+        if (pos + width > viewportWidth) {
+            return viewportWidth - width - 10; // 10px padding
+        }
+
+        if (pos < 0) {
+            return 0;
+        }
+
+        return pos;
+    }
 
     private handleWindowMouseUp = (_: MouseEvent) => {
         if (this.holdTimeout) {

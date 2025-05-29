@@ -1,12 +1,11 @@
 import { typography } from "@/global-styles";
+import WithPlaybackContext from "@/mixins/WithPlaybackContext";
+
 import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 
 @customElement("bpm-picker")
-export default class BpmPicker extends LitElement {
-    @property({ type: Number })
-    bpm: number = 120;
-
+export default class BpmPicker extends WithPlaybackContext(LitElement) {
     private isDragging: boolean = false;
     private iconBounds: DOMRect | null = null;
     private clickedPixel: number = 0;
@@ -75,32 +74,29 @@ export default class BpmPicker extends LitElement {
     };
 
     private onMouseMove = (e: MouseEvent) => {
-        if (!this.isDragging) return;
+        if (!this.isDragging) {
+            return;
+        }
 
         const mouseY = e.clientY - this.unsafeIconBounds.top;
         const diff = mouseY - this.clickedPixel;
+
         this.clickedPixel = mouseY;
+
         const diffBpm = Math.floor(diff / 2);
 
         if (diffBpm === 0) {
             return;
         }
 
-        if (diffBpm > 0) {
-            this.bpm = Math.max(0, this.bpm - diffBpm);
-        } else {
-            this.bpm = Math.min(999, this.bpm - diffBpm);
-        }
+        const currentBpm = this.playbackContext.bpm;
 
-        this.dispatchEvent(
-            new CustomEvent("bpm-changed", {
-                detail: {
-                    bpm: this.bpm,
-                },
-                bubbles: true,
-                composed: true,
-            }),
-        );
+        const bpm =
+            diffBpm > 0
+                ? Math.max(0, currentBpm - diffBpm)
+                : Math.min(999, currentBpm - diffBpm);
+
+        this.$setBpm(bpm);
     };
 
     private onMouseUp = () => {
@@ -110,10 +106,40 @@ export default class BpmPicker extends LitElement {
         window.removeEventListener("mouseup", this.onMouseUp);
     };
 
+    private onKeyDown = (e: KeyboardEvent) => {
+        let bpm: number | null = null;
+        if (e.key === "ArrowUp") {
+            bpm = Math.min(999, this.playbackContext.bpm + 1);
+        } else if (e.key === "ArrowDown") {
+            bpm = Math.max(0, this.playbackContext.bpm - 1);
+        }
+
+        if (bpm === null) {
+            throw new Error("BPM value is null somehow");
+        }
+
+        this.$setBpm(bpm);
+    };
+
+    private handleFocus = () => {
+        window.addEventListener("keydown", this.onKeyDown);
+    };
+
+    private handleBlur = () => {
+        window.removeEventListener("keydown", this.onKeyDown);
+    };
+
     render() {
-        return html`<div class="bpm-picker">
+        return html`<div
+            class="bpm-picker"
+            tabindex="0"
+            @focus=${this.handleFocus}
+            @blur=${this.handleBlur}
+        >
             <div class="bpm-input">
-                <p class="typography-300 bpm-text">${this.bpm}</p>
+                <p class="typography-300 bpm-text">
+                    ${this.playbackContext.bpm}
+                </p>
                 <div
                     class="bpm-input-icon-wrapper"
                     @mousedown=${this.onMouseDown}

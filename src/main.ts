@@ -3,6 +3,7 @@ if (window.location.pathname !== "/") {
 } else {
     document.body.innerHTML += `<root-app></root-app>`;
 }
+
 import "./components/Slider";
 import "./components/MpcButton";
 import "./components/Card";
