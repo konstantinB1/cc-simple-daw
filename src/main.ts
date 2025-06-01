@@ -1,17 +1,36 @@
-if (window.location.pathname !== "/") {
-    document.body.innerHTML += `<p style="text-align: center">Not found</p>`;
-} else {
-    document.body.innerHTML += `<root-app></root-app>`;
-}
-
 import "./components/Slider";
 import "./components/MpcButton";
 import "./components/Card";
 import "./components/Select";
-import "./components/Main";
 import "./components/Icon";
 import "./components/IconButton";
 
-import "./modules/vst/sampler/Pads";
+import "@/modules/navigation/Navigation";
+
+import "./modules/panels/sampler/Sampler";
 
 import "./App";
+
+function main() {
+    if (window.location.pathname !== "/") {
+        const notFoundElement: HTMLParagraphElement =
+            document.createElement("p");
+
+        notFoundElement.innerHTML = "Page not found";
+        notFoundElement.style.textAlign = "center";
+        notFoundElement.style.marginTop = "20px";
+        notFoundElement.style.fontSize = "24px";
+
+        document.body.appendChild(notFoundElement);
+    } else {
+        const element: App = document.createElement("root-app", {
+            is: "root-app",
+        });
+
+        document.body.appendChild(element);
+    }
+}
+
+import type { App } from "./App";
+
+main();

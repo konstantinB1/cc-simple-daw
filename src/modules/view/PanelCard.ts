@@ -1,5 +1,6 @@
 import DragController, { DragEvent } from "@/controllers/DragController";
-import PanelManager from "@/lib/PanelManager";
+import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
+import type PanelScreenManager from "@/lib/PanelScreenManager";
 import {
     CSSResult,
     LitElement,
@@ -16,55 +17,72 @@ import { styleMap } from "lit/directives/style-map.js";
 const ELEVATED_Z_INDEX = 100;
 const DEFAULT_Z_INDEX = 50;
 
-@customElement("card-component")
-export default class Card extends LitElement {
-    @state()
-    private pos: [number, number] = [0, 0];
+export interface PanelCardProps {
+    startPos?: [number, number];
+    cardId: string;
+    screenManagerInstance: PanelScreenManager;
+    cardWidth?: string;
+    cardHeight?: string;
+    isDraggable?: boolean;
+}
 
+@customElement("panel-card")
+export default class PanelCard extends LitElement implements PanelCardProps {
     @property({ type: Array })
-    public startPos?: [number, number];
+    startPos?: [number, number];
+
+    @property({ type: String, attribute: "card-id" })
+    cardId!: string;
+
+    @property({ type: Object })
+    screenManagerInstance!: PanelScreenManager;
+
+    @property({ type: String, attribute: "card-width" })
+    cardWidth: string = "auto";
+
+    @property({ type: String, attribute: "card-height" })
+    cardHeight: string = "auto";
+
+    @property({ type: Boolean })
+    isDraggable?: boolean;
+
+    @property({ type: Object, attribute: false })
+    keyboardManager?: LayeredKeyboardManager;
 
     @state()
     private isDragging: boolean = false;
 
-    @property({ type: String, attribute: "card-width" })
-    public cardWidth: string = "auto";
-
-    @property({ type: String, attribute: "card-height" })
-    public cardHeight: string = "auto";
+    @state()
+    private pos: [number, number] = [0, 0];
 
     private dragController: DragController = new DragController();
-
-    private panelManager: PanelManager = PanelManager.getInstance();
 
     private cardRef: Ref<HTMLElement> = createRef<HTMLElement>();
 
     @state()
     private elementZIndex: number = 0;
 
-    private cardId: string;
-
-    constructor() {
-        super();
-
-        const cardId = this.getAttribute("card-id");
-
-        if (cardId == null) {
-            throw new Error(
-                "Card ID is not set, panel manager for this card will not work",
-            );
-        }
-
-        this.cardId = cardId;
-    }
+    @state()
+    private isFocused: boolean = false;
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
-        const cardId = this.cardId;
-
         this.dragController.setElement(this.cardRef.value!);
 
-        this.panelManager.add(cardId).listen(cardId, ({ isCurrent }) => {
-            this.elementZIndex = isCurrent ? ELEVATED_Z_INDEX : DEFAULT_Z_INDEX;
+        if (!this.screenManagerInstance) {
+            return;
+        }
+
+        this.screenManagerInstance.onPanelFocused((panel) => {
+            if (panel?.name === this.cardId) {
+                this.keyboardManager?.attachEventListeners();
+                this.elementZIndex = ELEVATED_Z_INDEX;
+                this.isFocused = true;
+            } else {
+                this.keyboardManager?.detachEventListeners();
+                this.elementZIndex = DEFAULT_Z_INDEX;
+                this.isFocused = false;
+                this.screenManagerInstance.quetlyUnfocus();
+            }
         });
 
         this.dragController.onDragChange.call(
@@ -72,7 +90,7 @@ export default class Card extends LitElement {
             ({ event, coords: [x, y] }) => {
                 switch (event) {
                     case DragEvent.Start:
-                        this.panelManager.notify(cardId);
+                        this.screenManagerInstance.focus(this.cardId);
                         this.isDragging = true;
                         break;
                     case DragEvent.Dragging:
@@ -84,6 +102,10 @@ export default class Card extends LitElement {
                 }
             },
         );
+    }
+
+    private handleFocus(): void {
+        this.screenManagerInstance.focus(this.cardId);
     }
 
     connectedCallback(): void {
@@ -113,17 +135,25 @@ export default class Card extends LitElement {
             cursor: grabbing;
             border: 1px solid var(--color-tint-primary);
         }
+
+        .card.is-focused {
+            border: 1px solid var(--color-tint-primary);
+        }
     `;
 
-    render(): TemplateResult {
+    override render(): TemplateResult {
         const [x, y] = this.pos;
-        const handleMouseDown = this.dragController.handleMouseDown.bind(
-            this.dragController,
-        );
+        let handleMouseDown = (_: MouseEvent) => {};
+        if (this.isDraggable) {
+            handleMouseDown = this.dragController.handleMouseDown.bind(
+                this.dragController,
+            );
+        }
 
         const classes = classMap({
             card: true,
             "is-dragging": this.isDragging,
+            "is-focused": this.isFocused,
         });
 
         const styles = styleMap({
@@ -139,8 +169,14 @@ export default class Card extends LitElement {
             class=${classes}
             style=${styles}
             @mousedown="${handleMouseDown}"
+            @click="${this.handleFocus.bind(this)}"
         >
-            <slot></slot>
+            <div class="card-header">
+                <slot name="header">ewre</slot>
+            </div>
+            <div class="content-wrapper">
+                <slot></slot>
+            </div>
         </div> `;
     }
 }

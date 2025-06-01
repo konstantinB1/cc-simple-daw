@@ -1,6 +1,5 @@
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { KeyManager } from "./lib/KeyManager";
 
 import "@modules/view/View";
 import {
@@ -12,8 +11,6 @@ import { ContextProvider } from "@lit/context";
 
 @customElement("root-app")
 export class App extends LitElement {
-    private keyManager: KeyManager = KeyManager.getInstance();
-
     private playbackProvider = new ContextProvider<typeof playbackContext>(
         this,
         {
@@ -24,7 +21,6 @@ export class App extends LitElement {
 
     connectedCallback(): void {
         super.connectedCallback();
-        this.keyManager.createKeyListener();
 
         attachPlaybackContextEvents(this, this.playbackProvider);
     }

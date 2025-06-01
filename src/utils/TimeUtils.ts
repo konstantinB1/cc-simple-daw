@@ -22,11 +22,9 @@ export class StopWatch {
         if (this.running) {
             this.running = false;
             this.elapsedTime += performance.now() - this.startTime;
-            console.log("Stopwatch stopped at:", this.getElapsedTime());
         }
 
         if (this.requestId !== null) {
-            console.log("Cancelling animation frame:", this.requestId);
             window.cancelAnimationFrame(this.requestId);
             this.requestId = null;
         }
@@ -57,8 +55,10 @@ export class StopWatch {
     }
 
     public onTick(callback: () => void): () => void {
-        console.log(this.running);
-        if (!this.running) return () => {};
+        if (!this.running) {
+            return () => {};
+        }
+
         this.requestId = window.requestAnimationFrame(
             this.tick.bind(this, callback),
         );
@@ -71,3 +71,6 @@ export class StopWatch {
         };
     }
 }
+
+export const msToSeconds = (ms: number, fixed = 4): number =>
+    Number((ms / 1000).toFixed(fixed));

@@ -1,23 +1,23 @@
 import { typography } from "@/global-styles";
-import type { KeyMapping } from "@/lib/KeyManager";
 import { css, html, LitElement, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
+import type { MappedPadKeyWithPressed } from "./Pads";
 
 export type PadClickData = {
-    mapping: KeyMapping;
+    mapping: MappedPadKeyWithPressed | null;
 };
 
 @customElement("daw-pad")
 export default class Pad extends LitElement {
     @property({ type: Object })
-    private mapping: KeyMapping | null = null;
-
-    @property({ type: String })
-    name?: string = "Empty pad";
+    mappedPad!: MappedPadKeyWithPressed;
 
     @property({ type: Number })
     volume: number = 0;
+
+    @property({ type: Boolean })
+    isActive: boolean = true;
 
     static styles: CSSResultGroup = [
         typography,
@@ -66,7 +66,7 @@ export default class Pad extends LitElement {
         this.dispatchEvent(
             new CustomEvent<PadClickData>("pad-click", {
                 detail: {
-                    mapping: this.mapping as KeyMapping,
+                    mapping: this.mappedPad,
                 },
                 bubbles: true,
                 composed: true,
@@ -75,17 +75,21 @@ export default class Pad extends LitElement {
     }
 
     render() {
+        const name = this.mappedPad?.name || "Unnamed Pad";
+        const key = this.mappedPad?.description || "No Description";
+        const isActive = this.mappedPad?.pressed;
+
         return html`
             <div>
-                <p class="pad-name typography-300">${this.name}</p>
+                <p class="pad-name typography-300">${name}</p>
                 <button
                     @click=${this.emitClickData}
                     class=${classMap({
                         pad: true,
-                        active: this.mapping?.isPressed || false,
+                        active: isActive !== undefined && isActive,
                     })}
                 >
-                    <span class="key typography-500">${this.mapping?.key}</span>
+                    <span class="key typography-500">${key}</span>
                 </button>
             </div>
         `;

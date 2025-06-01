@@ -7,23 +7,15 @@ import Metronome from "./Metronome";
 
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import { StopWatch } from "@/utils/TimeUtils";
-import AudioRecorder from "@/lib/Recorder";
-import { KeyManager, KeyMapping } from "@/lib/KeyManager";
 
 @customElement("recorder-component")
 export default class Recorder extends WithPlaybackContext(LitElement) {
     private metronome!: Metronome;
 
-    private keyMgr: KeyManager = KeyManager.getInstance();
-
     @state()
     private isMetronomeOn: boolean = false;
 
     private stopWatch = new StopWatch();
-
-    private dest: MediaStreamAudioDestinationNode | null = null;
-
-    private recorderClass: AudioRecorder | null = null;
 
     static styles = [
         css`
@@ -49,34 +41,10 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
         );
 
         this.metronome.preloadTickSound();
-
-        this.keyMgr.addKeys([
-            new KeyMapping({
-                id: "rewind",
-                key: "Space",
-                handler: () => this.handlePlay(),
-            }),
-
-            new KeyMapping({
-                id: "rewind",
-                key: "ArrowLeft",
-                handler: () => this.handleRewind(),
-            }),
-        ]);
     }
 
     private toggleMetronome(): void {
         this.isMetronomeOn = !this.isMetronomeOn;
-
-        this.isMetronomeOn
-            ? this.metronome?.start(this.playbackContext.bpm)
-            : this.metronome?.stop();
-    }
-
-    private handleBpmChange(event: CustomEvent): void {
-        if (this.playbackContext.isPlaying) {
-            this.playbackContext.bpm = event.detail.bpm;
-        }
     }
 
     private handlePlay(): void {
@@ -100,7 +68,6 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     }
 
     private handleRewind(): void {
-        console.log("Rewind action triggered");
         this.$setCurrentTime(0);
         this.stopWatch.reset();
 
@@ -108,21 +75,25 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
             this.stopWatch.start(() => {
                 this.$setCurrentTime(this.stopWatch.getElapsedTime());
             })!;
+
+            if (this.isMetronomeOn) {
+                this.metronome.rewind();
+            }
         }
     }
 
     private handleRecord(): void {
-        if (this.playbackContext.isRecording) {
-            this.recorderClass?.stop();
-        } else {
-            this.dest =
-                this.playbackContext.master.audioContext.createMediaStreamDestination();
-            this.recorderClass = new AudioRecorder(this.dest.stream);
-            this.playbackContext.master.audioContext
-                .createMediaStreamSource(this.dest.stream)
-                .connect(this.playbackContext.master.audioContext.destination);
-            this.recorderClass.start();
-        }
+        // if (this.playbackContext.isRecording) {
+        //     this.recorderClass?.stop();
+        // } else {
+        //     this.dest =
+        //         this.playbackContext.master.audioContext.createMediaStreamDestination();
+        //     this.recorderClass = new AudioRecorder(this.dest.stream);
+        //     this.playbackContext.master.audioContext
+        //         .createMediaStreamSource(this.dest.stream)
+        //         .connect(this.playbackContext.master.audioContext.destination);
+        //     this.recorderClass.start();
+        // }
 
         this.$toggleIsRecording();
     }
@@ -155,9 +126,7 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
                     <icon-button size=${40}>
                         <forward-icon size=${20}></forward-icon>
                     </icon-button>
-                    <bpm-picker
-                        @bpm-changed=${this.handleBpmChange}
-                    ></bpm-picker>
+                    <bpm-picker></bpm-picker>
                     <icon-button
                         .isActive=${this.isMetronomeOn}
                         size=${40}

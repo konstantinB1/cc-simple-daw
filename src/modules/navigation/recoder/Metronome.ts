@@ -4,6 +4,8 @@ import { getAudioAsset } from "@/utils";
 export default class Metronome {
     private ctx?: AudioContext;
 
+    private bpm: number = 60; // Default BPM
+
     private interval: NodeJS.Timeout | null = null;
 
     private metronomeSound: Sample | null = null;
@@ -17,6 +19,8 @@ export default class Metronome {
             throw new Error("Metronome sound not loaded");
         }
 
+        this.bpm = bpm;
+
         this.metronomeSound?.play();
 
         this.interval = setInterval(() => {
@@ -28,6 +32,19 @@ export default class Metronome {
         if (this.interval) {
             clearInterval(this.interval);
         }
+    }
+
+    rewind(): void {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+
+        if (this.metronomeSound) {
+            this.metronomeSound.stop();
+        }
+
+        this.start(this.bpm);
     }
 
     public async preloadTickSound(): Promise<void> {

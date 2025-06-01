@@ -1,4 +1,5 @@
 import MasterAudio from "@/lib/audio/MasterAudio";
+import VSTRegistry from "@/lib/VSTRegistry";
 import { ContextProvider, createContext } from "@lit/context";
 import type { LitElement } from "lit";
 
@@ -14,6 +15,7 @@ export class PlaybackContextStore {
     master: MasterAudio = new MasterAudio();
     timeSignature: [number, number] = [4, 4];
     currentTime: number = 0;
+    vstRegistry: VSTRegistry = new VSTRegistry();
 }
 
 export function attachPlaybackContextEvents(

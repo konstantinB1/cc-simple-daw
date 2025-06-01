@@ -1,5 +1,3 @@
-import Observer from "@/lib/Observer";
-
 const HOLD_TIMEOUT_MS = 100;
 
 export enum DragEvent {
@@ -13,12 +11,10 @@ export type DragControllerData = {
     coords: [number, number];
 };
 
-export default class DragController {
+export default class DragController extends EventTarget {
     private holdTimeout: NodeJS.Timeout | null = null;
     private dragOffset: [number, number] = [0, 0];
     private pos: [number, number] = [0, 0];
-
-    private obs: Observer<DragControllerData> = new Observer();
 
     public isDragging: boolean = false;
 
@@ -26,6 +22,11 @@ export default class DragController {
 
     public setElement(element: HTMLElement): void {
         this.element = element;
+    }
+
+    public setStartPos(pos: [number, number]): void {
+        this.pos = pos;
+        this.dragOffset = pos;
     }
 
     public handleMouseDown(event: MouseEvent): void {
@@ -36,7 +37,7 @@ export default class DragController {
         this.holdTimeout = setTimeout(() => {
             this.isDragging = true;
 
-            this.obs.notify("dragChange", {
+            this.triggerDragEvent({
                 event: DragEvent.Start,
                 coords: this.pos,
             });
@@ -56,13 +57,26 @@ export default class DragController {
         const newX = event.clientX - offsetX;
         const newY = event.clientY - offsetY;
 
-        this.pos = [this.getX(newX), newY < 80 ? 80 : newY];
+        this.pos = [this.getX(newX), this.getY(newY)];
 
-        this.obs.notify("dragChange", {
+        this.triggerDragEvent({
             event: DragEvent.Dragging,
             coords: this.pos,
         });
     };
+
+    private getY(pos: number): number {
+        const viewportHeight = document.documentElement.clientHeight;
+
+        if (pos < 80) {
+            return 80; // Minimum Y position to avoid going off-screen
+        }
+
+        if (pos + 400 > viewportHeight) {
+            return viewportHeight - 400;
+        }
+        return pos;
+    }
 
     private getX(pos: number): number {
         const width = this.element?.getBoundingClientRect().width!;
@@ -79,13 +93,23 @@ export default class DragController {
         return pos;
     }
 
+    private triggerDragEvent(event: DragControllerData): void {
+        const customEvent = new CustomEvent<DragControllerData>("drag-change", {
+            detail: event,
+            bubbles: true,
+            composed: true,
+        });
+
+        this.dispatchEvent(customEvent);
+    }
+
     private handleWindowMouseUp = (_: MouseEvent) => {
         if (this.holdTimeout) {
             clearTimeout(this.holdTimeout);
             this.holdTimeout = null;
         }
 
-        this.obs.notify("dragChange", {
+        this.triggerDragEvent({
             event: DragEvent.End,
             coords: this.pos,
         });
@@ -95,6 +119,8 @@ export default class DragController {
     };
 
     public onDragChange(cb: (data: DragControllerData) => void): void {
-        this.obs.subscribe("dragChange", cb);
+        this.addEventListener("drag-change", (event: Event) => {
+            cb((event as CustomEvent<DragControllerData>).detail);
+        });
     }
 }

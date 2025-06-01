@@ -1,13 +1,15 @@
-import type { VSTPlugin } from "./VST";
+import type { VSTInstrument } from "@/modules/vst/VST";
 
 export default class VSTRegistry {
-    private vstPlugins: Map<string, VSTPlugin> = new Map();
+    private vstPlugins: Map<string, VSTInstrument> = new Map();
 
-    add(plugin: VSTPlugin): void {
+    public register(plugin: VSTInstrument): void {
         if (this.vstPlugins.has(plugin.id)) {
-            throw new Error(`Plugin with ID ${plugin.id} already exists.`);
+            console.warn(
+                `VST plugin with id ${plugin.id} is already registered.`,
+            );
+            return;
         }
-
         this.vstPlugins.set(plugin.id, plugin);
     }
 }
