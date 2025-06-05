@@ -1,7 +1,9 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+    base: "/cc-simple-daw/",
     build: {
+        assetsDir: "assets",
         outDir: "docs",
         emptyOutDir: true,
     },
