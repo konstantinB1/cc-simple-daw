@@ -36,7 +36,9 @@ export default class Metronome {
     }
 
     public async preloadTickSound(): Promise<void> {
-        const sound = await getAudioAsset("/assets/sounds/metronome-tick.wav");
+        const sound = await getAudioAsset(
+            "/cc-simple-daw/assets/sounds/metronome-tick.wav",
+        );
 
         if (!sound) {
             throw new Error("Metronome sound not found");
