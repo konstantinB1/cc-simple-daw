@@ -1,13 +1,9 @@
 import type AudioChannel from "./AudioChannel";
 
 export default class MasterMixer {
-    private ctx: AudioContext;
-
     private channels: Map<string, AudioChannel> = new Map();
 
-    constructor(ctx: AudioContext) {
-        this.ctx = ctx;
-    }
+    constructor(_: AudioContext) {}
 
     addChannel(channel: AudioChannel): void {
         this.channels.set(channel.id, channel);

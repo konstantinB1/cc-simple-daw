@@ -25,7 +25,7 @@ export default class Metronome {
         return nextBeat * interval;
     }
 
-    public start(currentTime: number, bpm: number) {}
+    public start() {}
 
     stop(): void {
         this.lastTick = -1;

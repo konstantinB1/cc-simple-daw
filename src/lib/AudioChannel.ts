@@ -39,8 +39,6 @@ export default class AudioChannel extends EventTarget {
 
     source: AudioSample;
 
-    private isPlaing: boolean = false;
-
     constructor(
         id: string,
         ctx: AudioContext,

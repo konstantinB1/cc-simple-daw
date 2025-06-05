@@ -134,6 +134,7 @@ export class SimpleKeyboardKanager
         });
     }
 
+    // @ts-ignore
     onMappingHit(callback: (event: KeyDataEvent) => void): void {
         this.addEventListener("key-pressed", (event: Event) => {
             callback(event as KeyDataEvent);

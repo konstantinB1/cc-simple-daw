@@ -117,10 +117,6 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
 
         if (this.playbackContext.isPlaying && this.isMetronomeOn) {
             if (!this.metronomeRafId) {
-                this.metronome.start(
-                    this.playbackContext.currentTime,
-                    this.playbackContext.bpm,
-                );
                 this.metronomeLoop();
             }
         } else if (this.metronomeRafId) {

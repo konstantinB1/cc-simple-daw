@@ -6,9 +6,6 @@ export default class DragIcon extends LitElement {
     @property({ type: Number })
     private size: number = 24;
 
-    @property({ type: Boolean })
-    private isActive: boolean = false;
-
     static styles = css`
         svg {
             width: 100%;

@@ -193,6 +193,8 @@ export default class Pads extends WithAudioChannelsContext(
                     pad.keys.join("-").toLowerCase(),
                 );
 
+                pad.pressed = mapping?.pressed ?? false;
+
                 if (mapping?.pressed !== undefined && mapping.pressed) {
                     pad.play();
 
@@ -207,10 +209,7 @@ export default class Pads extends WithAudioChannelsContext(
                     );
                 }
 
-                return {
-                    ...pad,
-                    pressed: mapping?.pressed ?? false,
-                };
+                return pad;
             });
         });
     }
@@ -302,12 +301,14 @@ export default class Pads extends WithAudioChannelsContext(
         this.samplerKeyMgr.removeKeys(this.currentBankPads);
         this.currentBank = bank;
 
-        const next = this.mappedKeyPads
-            .filter((pad) => pad.bank === this.currentBank)
-            .map((pad) => ({
-                ...pad,
-                pressed: false, // Reset pressed state when changing bank
-            }));
+        const next = this.mappedKeyPads.filter(
+            (pad) => pad.bank === this.currentBank,
+        );
+
+        // Reset pressed state when changing bank
+        next.forEach((pad) => {
+            pad.pressed = false;
+        });
 
         this.samplerKeyMgr.addKeys(next);
         this.currentView = next;
@@ -323,7 +324,7 @@ export default class Pads extends WithAudioChannelsContext(
         }
     }
 
-    private handleClick({ detail }: CustomEvent<PadClickData>) {}
+    private handleClick(_: CustomEvent<PadClickData>) {}
 
     render() {
         return html`

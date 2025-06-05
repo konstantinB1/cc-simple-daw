@@ -34,7 +34,7 @@ export default class SamplerPanel extends WithScreenManager(
         );
     }
 
-    private onSamplePlay(event: CustomEvent): void {}
+    private onSamplePlay(_: CustomEvent): void {}
 
     override render() {
         return html`
@@ -49,7 +49,6 @@ export default class SamplerPanel extends WithScreenManager(
                 <sampler-view
                     .keyManager=${this.keyboardManager}
                     @sample-play=${this.onSamplePlay.bind(this)}
-                    @channels-loaded=${(e) => {}}
                 ></sampler-view>
             </panel-card>
         `;

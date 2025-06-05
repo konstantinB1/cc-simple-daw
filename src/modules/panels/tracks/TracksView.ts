@@ -2,7 +2,6 @@ import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 
 import "./AddTrackDialog";
-import "./TracksCanvas";
 import "./PlayheadNode";
 import "./TrackViewEvents";
 
