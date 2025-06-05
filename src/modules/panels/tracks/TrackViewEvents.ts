@@ -42,8 +42,6 @@ export default class TrackEvents extends LitElement {
     @state()
     private zIndex = 1;
 
-    private played = new Set<string>();
-
     static styles = [
         css`
             .event-container {
