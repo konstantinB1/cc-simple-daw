@@ -81,23 +81,20 @@ export default class TrackEvents extends LitElement {
     }
 
     private playTrack() {
-        const currentTime = this.currentTime;
-
-        this.events.forEach((ev) => {
-            if (this.played.has(ev.id)) {
-                return;
-            }
-
-            if (ev.startTime && currentTime > ev.startTime) {
-                this.played.add(ev.id);
-                queueMicrotask(() => {
-                    console.log("Playing track", this.track.id, ev.id);
-                    this.track.channel.play(0, 0);
-                });
-            }
-
-            return ev;
-        });
+        // const currentTime = this.currentTime;
+        // this.events.forEach((ev) => {
+        //     if (this.played.has(ev.id)) {
+        //         return;
+        //     }
+        //     if (ev.startTime && currentTime > ev.startTime) {
+        //         this.played.add(ev.id);
+        //         queueMicrotask(() => {
+        //             console.log("Playing track", this.track.id, ev.id);
+        //             this.track.channel.play(0, 0);
+        //         });
+        //     }
+        //     return ev;
+        // });
     }
 
     connectedCallback(): void {
