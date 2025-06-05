@@ -12,23 +12,11 @@ import "./modules/panels/sampler/Sampler";
 import "./App";
 
 function main() {
-    if (window.location.pathname !== "/") {
-        const notFoundElement: HTMLParagraphElement =
-            document.createElement("p");
+    const element: App = document.createElement("root-app", {
+        is: "root-app",
+    });
 
-        notFoundElement.innerHTML = "Page not found";
-        notFoundElement.style.textAlign = "center";
-        notFoundElement.style.marginTop = "20px";
-        notFoundElement.style.fontSize = "24px";
-
-        document.body.appendChild(notFoundElement);
-    } else {
-        const element: App = document.createElement("root-app", {
-            is: "root-app",
-        });
-
-        document.body.appendChild(element);
-    }
+    document.body.appendChild(element);
 }
 
 import type { App } from "./App";
