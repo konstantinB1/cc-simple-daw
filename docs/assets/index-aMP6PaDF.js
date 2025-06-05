@@ -4012,7 +4012,6 @@ let Pads = class extends WithAudioChannelsContext(
         const mapping2 = this.samplerKeyMgr.keys.get(
           pad.keys.join("-").toLowerCase()
         );
-        pad.pressed = (mapping2 == null ? void 0 : mapping2.pressed) ?? false;
         if ((mapping2 == null ? void 0 : mapping2.pressed) !== void 0 && mapping2.pressed) {
           pad.play();
           this.dispatchEvent(
@@ -4025,7 +4024,10 @@ let Pads = class extends WithAudioChannelsContext(
             })
           );
         }
-        return pad;
+        return {
+          ...pad,
+          pressed: (mapping2 == null ? void 0 : mapping2.pressed) ?? false
+        };
       });
     });
   }
@@ -4096,12 +4098,11 @@ let Pads = class extends WithAudioChannelsContext(
     const bank = e3.detail.bank;
     this.samplerKeyMgr.removeKeys(this.currentBankPads);
     this.currentBank = bank;
-    const next = this.mappedKeyPads.filter(
-      (pad) => pad.bank === this.currentBank
-    );
-    next.forEach((pad) => {
-      pad.pressed = false;
-    });
+    const next = this.mappedKeyPads.filter((pad) => pad.bank === this.currentBank).map((pad) => ({
+      ...pad,
+      pressed: false
+      // Reset pressed state when changing bank
+    }));
     this.samplerKeyMgr.addKeys(next);
     this.currentView = next;
   }
