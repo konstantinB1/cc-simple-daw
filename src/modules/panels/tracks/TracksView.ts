@@ -1,34 +1,39 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 
 import "./AddTrackDialog";
 import "./TracksCanvas";
+import "./PlayheadNode";
+import "./TrackViewEvents";
 
 import { typography } from "@/global-styles";
-import type { DialogEventDetail } from "./AddTrackDialog";
-import { styleMap } from "lit/directives/style-map.js";
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
-import { msToSeconds } from "@/utils/TimeUtils";
-import type { VSTInstrument } from "@/modules/vst/VST";
-import type PanelScreenManager from "@/lib/PanelScreenManager";
+import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
+import type AudioChannel from "@/lib/AudioChannel";
+import { classMap } from "lit/directives/class-map.js";
+import { NEEDLE_START_POS } from "./PlayheadNode";
 
-const MAX_TIME_BEATS = 8;
-const BEAT_WIDTH = 40;
-const TRACK_SLOTS = 10;
+const MAX_TIME_BEATS = 4;
+const BEAT_WIDTH = 70;
 
-class TrackRecord {
-    constructor(
-        public id: string,
-        public name: string,
-        public color: string,
-        public beats: number[],
-        public vsti: VSTInstrument,
-    ) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.beats = beats;
-        this.vsti = vsti;
+export class Track {
+    channel: AudioChannel;
+
+    id: string;
+
+    parent?: Track;
+
+    constructor(channel: AudioChannel, parent?: Track) {
+        this.channel = channel;
+        this.id = channel.id;
+        this.parent = parent;
+    }
+
+    mute(): void {
+        this.channel.setMuted(true);
+    }
+
+    unmute(): void {
+        this.channel.setMuted(false);
     }
 }
 
@@ -41,16 +46,12 @@ export enum QuantisizeOptions {
     "1/64" = 64,
 }
 
-@customElement("tracks-component")
-export default class TracksView extends WithPlaybackContext(LitElement) {
-    @property({ type: Array })
-    private tracks: TrackRecord[] = [];
-
-    private dialogElement?: HTMLDialogElement;
-
+@customElement("tracks-view")
+export default class TracksView extends WithAudioChannelsContext(LitElement) {
     private currentQuantisize: QuantisizeOptions = QuantisizeOptions["1/4"];
 
-    screenManagerInstance!: PanelScreenManager;
+    @state()
+    private selectedTrack?: Track;
 
     static styles = [
         typography,
@@ -58,37 +59,19 @@ export default class TracksView extends WithPlaybackContext(LitElement) {
             .tracks-container {
                 width: 100%;
                 min-height: 300px;
-                height: 100%;
-            }
-
-            .no-tracks-div {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .no-track-text {
-                margin: 0;
+                max-height: 500px;
             }
 
             .times-container {
                 display: flex;
-                flex-wrap: nowrap;
                 width: 100%;
                 height: 30px;
-            }
-
-            .track-data {
-                width: 180px;
+                margin-left: ${NEEDLE_START_POS}px;
+                border-left: 1px solid var(--color-accent);
             }
 
             .track-pool {
                 position: relative;
-                flex-wrap: nowrap;
                 width: 100%;
                 overflow: auto;
             }
@@ -108,38 +91,98 @@ export default class TracksView extends WithPlaybackContext(LitElement) {
                 min-width: ${BEAT_WIDTH}px;
                 max-width: ${BEAT_WIDTH}px;
                 background-color: var(--color-secondary);
-                height: 100%;
-                padding-left: 10px;
+                height: 35px;
+                padding: 0 5px;
+            }
+
+            .time-cell {
+                display: flex;
+                justify-content: flex;
+                align-items: center;
+                font-size: 0.7em;
+                border-bottom: 1px solid var(--color-accent);
+                min-width: ${BEAT_WIDTH}px;
+                max-width: ${BEAT_WIDTH}px;
+                height: 50px;
+                padding: 0 5px;
+            }
+
+            .sub-track {
+                position: sticky;
+                left: 0;
+                min-width: ${NEEDLE_START_POS - 1}px;
+                max-width: ${NEEDLE_START_POS - 1}px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                z-index: 50;
+                background-color: var(--color-primary);
+                border-right: 1px solid var(--color-accent);
+                border-bottom: 1px solid var(--color-accent);
+
+                cursor: pointer;
+                transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+                &:hover {
+                    background-color: var(--color-secondary);
+                }
+            }
+
+            .muted-button {
+                width: 6px;
+                height: 6px;
+                background-color: var(--color-success);
+                border-radius: 50%;
+                cursor: pointer;
+                margin-right: 8px;
+            }
+
+            .track-name {
+                font-size: 0.7em;
+                margin-left: 5px;
+                max-width: 80px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
             .track-row {
-                height: 50px;
-                display: flex;
-                flex-wrap: nowrap;
                 width: 100%;
-                border-bottom: 1px solid var(--color-accent);
-                position: relative;
+                display: flex;
                 background-color: var(--color-secondary);
+                position: relative;
             }
 
-            .current-time-indicator {
+            .selected-row {
+                border: 1px solid var(--color-tint-primary);
+                border-left: 0;
+            }
+
+            .selected {
+                border: 1px solid var(--color-tint-primary);
+            }
+
+            .sound-sequence {
                 position: absolute;
-                width: 1px;
-                border-left: 1px solid var(--color-tint-primary);
                 height: 100%;
-                z-index: 10;
+                background-color: var(--color-tint-primary);
+                border-radius: 2px;
+                transition: width 0.2s ease-in-out;
             }
         `,
     ];
 
-    private setDialogElement({
-        detail: { dialogRef },
-    }: CustomEvent<DialogEventDetail>): void {
-        if (!dialogRef) {
-            throw new Error("Dialog element is not provided.");
-        }
+    private get tracks(): Track[] {
+        return this.audioChannels.channels.flatMap((channel: AudioChannel) => {
+            const track = new Track(channel);
 
-        this.dialogElement = dialogRef;
+            return [
+                track,
+                ...(channel.subChannels?.map((subChannel) => {
+                    return new Track(subChannel, track);
+                }) || []),
+            ];
+        });
     }
 
     renderQuantisisedLines() {
@@ -148,67 +191,73 @@ export default class TracksView extends WithPlaybackContext(LitElement) {
         const totalBeats = Math.ceil(MAX_TIME_BEATS * BEAT_WIDTH);
 
         for (let i = 0; i < totalBeats; i += quantisizedBeats) {
-            lines.push(html`<div class="typography-300 time-beat">${i}</div>`);
+            lines.push(html`<div class="typography-300 time-cell">${i}</div>`);
         }
 
         return lines;
     }
 
-    renderQuantisisedTrackCells() {
+    private generateCells(id: string): TemplateResult[] {
         const lines = [];
         const quantisizedBeats = this.currentQuantisize;
         const totalBeats = Math.ceil(MAX_TIME_BEATS * BEAT_WIDTH);
 
         for (let i = 0; i < totalBeats; i += quantisizedBeats) {
-            lines.push(html`<div class="typography-300 time-beat"></div>`);
+            lines.push(
+                html`<div id=${id + i} class="typography-300 time-beat"></div>`,
+            );
         }
 
         return lines;
     }
 
-    private renderTimeIndicator() {
-        return html`<div
-            class="current-time-indicator"
-            style=${styleMap({
-                transform: `translateX(${this.getPlayheadPosition()}px)`,
-            })}
-        ></div>`;
+    private setSelectedTrack(track: Track): void {
+        this.selectedTrack = track;
     }
 
-    private getPlayheadPosition(): number {
-        const secondsPerBeat = 60 / this.playbackContext.bpm;
-        const pxPerSecond = 51 / secondsPerBeat;
+    renderQuantisisedTrackCells(
+        tracks: Track[] = this.tracks,
+        isSub: boolean = false,
+    ): TemplateResult[] {
+        return tracks.map((track: Track) => {
+            const classes = classMap({
+                "track-name": true,
+                "typography-200": isSub,
+                "typography-500": !isSub,
+            });
 
-        return msToSeconds(this.playbackContext.currentTime) * pxPerSecond;
-    }
+            const rowClasses = classMap({
+                "track-row": true,
+                "selected-row": this.selectedTrack?.id === track.id,
+            });
 
-    private renderTrackSlots(): TemplateResult[] {
-        const slots: TemplateResult[] = [];
-
-        for (let i = 0; i < TRACK_SLOTS; i++) {
-            slots.push(
-                html`<div class="track-row">
-                    ${this.renderQuantisisedTrackCells()}
-                </div>`,
-            );
-        }
-
-        return slots;
+            return html`
+                <div
+                    class="${rowClasses}"
+                    @click=${() => this.setSelectedTrack(track)}
+                >
+                    <div class="sub-track">
+                        <div class="${classes}">${track.channel.name}</div>
+                        <div class="muted-button"></div>
+                    </div>
+                    <track-event .track=${track as any}></track-event>
+                    ${this.generateCells(track.id)}
+                </div>
+            `;
+        });
     }
 
     protected render(): TemplateResult {
         return html`
-            <add-track-dialog
-                @dialog-ready=${this.setDialogElement}
-            ></add-track-dialog>
             <div class="tracks-container">
-                <div class="track-data">qweqw</div>
                 <div class="track-pool">
-                    ${this.renderTimeIndicator()}
+                    <playhead-node></playhead-node>
                     <div class="times-container">
                         ${this.renderQuantisisedLines()}
                     </div>
-                    <div class="tracks-slots">${this.renderTrackSlots()}</div>
+                    <div class="tracks-slots">
+                        ${this.renderQuantisisedTrackCells()}
+                    </div>
                 </div>
             </div>
         `;

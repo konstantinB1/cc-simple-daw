@@ -1,5 +1,4 @@
 import type { VSTInstrument } from "@/modules/vst/VST";
-import type { TemplateResult } from "lit";
 
 export enum PanelType {
     VSTI,
@@ -18,7 +17,7 @@ export type FocusPanelEvent = {
 export type PanelArgs = [
     PanelScreenManager,
     string,
-    PanelHTMLElement,
+    HTMLElement,
     PanelType,
     boolean?,
     boolean?,
@@ -42,10 +41,10 @@ export interface PanelRenderer {
     render(): void;
 }
 
-export abstract class Panel extends EventTarget implements PanelRenderer {
+export abstract class Panel extends EventTarget {
     name: string;
     element: HTMLElement;
-    isCurrent: boolean;
+    isCurrent: boolean = false;
     isVisible: boolean;
 
     // The instance of PanelScreenManager that this panel belongs to.
@@ -59,7 +58,6 @@ export abstract class Panel extends EventTarget implements PanelRenderer {
             name,
             element,
             type,
-            isCurrent = false,
             isVisible = false,
         ]: PanelArgs
     ) {
@@ -69,7 +67,6 @@ export abstract class Panel extends EventTarget implements PanelRenderer {
         this.name = name;
         this.element = element;
         this.type = type;
-        this.isCurrent = isCurrent;
         this.isVisible = isVisible;
     }
 
@@ -79,13 +76,6 @@ export abstract class Panel extends EventTarget implements PanelRenderer {
 
     setVisible(isVisible: boolean): void {
         this.isVisible = isVisible;
-    }
-
-    // Initially it was implemented to render a specific
-    // card web component. PanelCardRenderer is now used and this
-    // method only exists to satisfy the PanelRenderer interface.
-    render(): TemplateResult {
-        throw new Error("Method 'render' not implemented.");
     }
 }
 
@@ -169,8 +159,8 @@ export default class PanelScreenManager extends EventTarget {
             }
         }
 
-        this.dispatchFocusEvent(panel);
         panel.setCurrent(true);
+        this.dispatchFocusEvent(panel);
 
         return panel;
     }

@@ -32,7 +32,7 @@ export default class Sample {
 
     public async play() {
         const clonedBuffer = this.buffer.slice(0);
-        await this.decodeSource(this.buffer as ArrayBuffer);
+        await this.decodeSource(this.buffer);
 
         this.source?.start(0);
         this.buffer = clonedBuffer;

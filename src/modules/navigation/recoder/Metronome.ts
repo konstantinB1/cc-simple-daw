@@ -1,50 +1,38 @@
-import Sample from "@/lib/audio/Sample";
+import type AudioChannel from "@/lib/AudioChannel";
 import { getAudioAsset } from "@/utils";
 
 export default class Metronome {
-    private ctx?: AudioContext;
+    private channel: AudioChannel;
 
-    private bpm: number = 60; // Default BPM
+    private lastTick: number = -1;
 
-    private interval: NodeJS.Timeout | null = null;
-
-    private metronomeSound: Sample | null = null;
-
-    constructor(audioContext: AudioContext) {
-        this.ctx = audioContext;
+    constructor(channel: AudioChannel) {
+        this.channel = channel;
     }
 
-    public async start(bpm: number): Promise<void> {
-        if (!this.metronomeSound) {
-            throw new Error("Metronome sound not loaded");
+    public tick(currentTime: number, bpm: number) {
+        const nextBeatTime = this.getNextBeatTime(currentTime, bpm);
+
+        if (nextBeatTime > this.lastTick) {
+            this.lastTick = nextBeatTime;
+            this.channel.play();
         }
-
-        this.bpm = bpm;
-
-        this.metronomeSound?.play();
-
-        this.interval = setInterval(() => {
-            this.metronomeSound?.play();
-        }, this.metronomeInterval(bpm));
     }
 
-    public stop(): void {
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
+    private getNextBeatTime(currentTime: number, bpm: number): number {
+        const interval = this.metronomeInterval(bpm);
+        const nextBeat = Math.floor(currentTime / interval) + 1;
+        return nextBeat * interval;
+    }
+
+    public start(currentTime: number, bpm: number) {}
+
+    stop(): void {
+        this.lastTick = -1;
     }
 
     rewind(): void {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-
-        if (this.metronomeSound) {
-            this.metronomeSound.stop();
-        }
-
-        this.start(this.bpm);
+        this.lastTick = -1;
     }
 
     public async preloadTickSound(): Promise<void> {
@@ -54,7 +42,9 @@ export default class Metronome {
             throw new Error("Metronome sound not found");
         }
 
-        this.metronomeSound = new Sample(this.ctx!, sound, "metronome");
+        await this.channel.load(sound).catch((err) => {
+            console.error("Failed to load metronome sound:", err);
+        });
     }
 
     private metronomeInterval(bpm: number): number {

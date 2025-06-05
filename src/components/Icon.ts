@@ -11,6 +11,7 @@ import "./icons/MetronomeIcon";
 import "./icons/EqIcon";
 import "./icons/ForwardIcon";
 import "./icons/RewindIcon";
+import "./icons/ClockIcon";
 
 export interface SVGIconInterface {
     name: string;

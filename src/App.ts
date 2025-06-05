@@ -8,16 +8,14 @@ import {
     PlaybackContextStore,
 } from "./context/playbackContext";
 import { ContextProvider } from "@lit/context";
+import type Store from "./store/Store";
 
 @customElement("root-app")
 export class App extends LitElement {
-    private playbackProvider = new ContextProvider<typeof playbackContext>(
-        this,
-        {
-            context: playbackContext,
-            initialValue: new PlaybackContextStore(),
-        },
-    );
+    private playbackProvider = new ContextProvider(this, {
+        context: playbackContext,
+        initialValue: new PlaybackContextStore(),
+    });
 
     connectedCallback(): void {
         super.connectedCallback();

@@ -2,13 +2,103 @@ import {
     playbackContext,
     PlaybackContextStore,
 } from "@/context/playbackContext";
+import type { Constructor } from "@/utils/types";
 import { consume } from "@lit/context";
 import { LitElement } from "lit";
 import { state } from "lit/decorators.js";
 
-type Constructor<T = {}> = new (...args: any[]) => T;
+// Standalone, reusable event dispatcher
+export class PlaybackContextConsumerBase {
+    protected host: LitElement;
 
-const WithPlaybackContext = <T extends Constructor<LitElement>>(
+    constructor(host: LitElement) {
+        this.host = host;
+    }
+
+    $setBpm(bpm: number) {
+        this.host.dispatchEvent(
+            new CustomEvent<number>("playback-context/bpm", {
+                detail: bpm,
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $play() {
+        this.host.dispatchEvent(
+            new CustomEvent("playback-context/play", {
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $stop() {
+        this.host.dispatchEvent(
+            new CustomEvent("playback-context/stop", {
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $toggleIsPlaying() {
+        this.host.dispatchEvent(
+            new CustomEvent("playback-context/toggle-is-playing", {
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $toggleIsRecording() {
+        this.host.dispatchEvent(
+            new CustomEvent("playback-context/record", {
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $setCurrentTime(currentTime: number) {
+        this.host.dispatchEvent(
+            new CustomEvent<number>("playback-context/set-current-time", {
+                detail: currentTime,
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $onBpmChange(callback: (bpm: number) => void) {
+        this.host.addEventListener("playback-context/bpm", (event: Event) => {
+            callback((event as CustomEvent<number>).detail);
+        });
+    }
+
+    $onCurrentTimeChange(callback: (currentTime: number) => void) {
+        this.host.addEventListener(
+            "playback-context/set-current-time",
+            (event: Event) => {
+                callback((event as CustomEvent<number>).detail);
+            },
+        );
+    }
+}
+
+export const WithPlaybackContextConsumer = <T extends Constructor<LitElement>>(
+    superClass: T,
+) => {
+    class PlaybackContextConsumer extends superClass {
+        public consumer = new PlaybackContextConsumerBase(this);
+    }
+
+    return PlaybackContextConsumer as unknown as T &
+        Constructor<PlaybackContextConsumer>;
+};
+
+export const WithPlaybackContext = <T extends Constructor<LitElement>>(
     superClass: T,
 ) => {
     class PlaybackContextConsumer extends superClass {
@@ -16,61 +106,7 @@ const WithPlaybackContext = <T extends Constructor<LitElement>>(
         @state()
         protected playbackContext!: PlaybackContextStore;
 
-        protected $setBpm(bpm: number) {
-            this.dispatchEvent(
-                new CustomEvent<number>("playback-context/bpm", {
-                    detail: bpm,
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        }
-
-        protected $play() {
-            this.dispatchEvent(
-                new CustomEvent("playback-context/play", {
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        }
-
-        protected $stop() {
-            this.dispatchEvent(
-                new CustomEvent("playback-context/stop", {
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        }
-
-        protected $toggleIsPlaying() {
-            this.dispatchEvent(
-                new CustomEvent("playback-context/toggle-is-playing", {
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        }
-
-        protected $toggleIsRecording() {
-            this.dispatchEvent(
-                new CustomEvent("playback-context/record", {
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        }
-
-        protected $setCurrentTime(currentTime: number) {
-            this.dispatchEvent(
-                new CustomEvent<number>("playback-context/set-current-time", {
-                    detail: currentTime,
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        }
+        public consumer = new PlaybackContextConsumerBase(this);
     }
 
     return PlaybackContextConsumer as unknown as T &

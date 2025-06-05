@@ -1,5 +1,11 @@
-import { css, html, LitElement, type TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import {
+    css,
+    html,
+    LitElement,
+    type PropertyValues,
+    type TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 
 import "./BpmPicker";
 import "./TimeIndicator";
@@ -7,9 +13,13 @@ import Metronome from "./Metronome";
 
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import { StopWatch } from "@/utils/TimeUtils";
+import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 @customElement("recorder-component")
 export default class Recorder extends WithPlaybackContext(LitElement) {
+    @property({ type: Object })
+    keyboardManager!: LayeredKeyboardManager;
+
     private metronome!: Metronome;
 
     @state()
@@ -33,14 +43,40 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
         `,
     ];
 
+    private metronomeRafId: number | undefined = undefined;
+
     connectedCallback(): void {
         super.connectedCallback();
 
-        this.metronome = new Metronome(
-            this.playbackContext.master.audioContext,
-        );
-
+        this.metronome = new Metronome(this.playbackContext.preview);
         this.metronome.preloadTickSound();
+
+        this.keyboardManager.addKeys([
+            {
+                active: true,
+                keys: ["Shift", "r"],
+                description: "Toggle Recording",
+                handler: () => this.handleRecord(),
+            },
+            {
+                active: true,
+                keys: ["Space"],
+                description: "Toggle Play/Pause",
+                handler: () => this.handlePlay(),
+            },
+            {
+                active: true,
+                keys: ["Shift", "m"],
+                description: "Toggle Metronome",
+                handler: () => this.toggleMetronome(),
+            },
+            {
+                active: true,
+                keys: ["Shift", "ArrowLeft"],
+                description: "Rewind to Start",
+                handler: () => this.handleRewind(),
+            },
+        ]);
     }
 
     private toggleMetronome(): void {
@@ -48,7 +84,7 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     }
 
     private handlePlay(): void {
-        this.$toggleIsPlaying();
+        this.consumer.$toggleIsPlaying();
 
         const isPlaying = !this.playbackContext.isPlaying;
 
@@ -56,24 +92,51 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
             this.stopWatch.stop();
         }
 
-        this.isMetronomeOn && this.playbackContext.isPlaying
-            ? this.metronome?.start(this.playbackContext.bpm)
-            : this.metronome?.stop();
-
         if (!isPlaying) {
             this.stopWatch.start(() => {
-                this.$setCurrentTime(this.stopWatch.getElapsedTime());
+                this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
             })!;
         }
     }
 
+    private metronomeLoop() {
+        if (this.isMetronomeOn && this.playbackContext.isPlaying) {
+            this.metronome.tick(
+                this.playbackContext.currentTime,
+                this.playbackContext.bpm,
+            );
+        }
+
+        this.metronomeRafId = requestAnimationFrame(
+            this.metronomeLoop.bind(this),
+        );
+    }
+
+    protected updated(_changedProperties: PropertyValues) {
+        super.updated?.(_changedProperties);
+
+        if (this.playbackContext.isPlaying && this.isMetronomeOn) {
+            if (!this.metronomeRafId) {
+                this.metronome.start(
+                    this.playbackContext.currentTime,
+                    this.playbackContext.bpm,
+                );
+                this.metronomeLoop();
+            }
+        } else if (this.metronomeRafId) {
+            cancelAnimationFrame(this.metronomeRafId);
+            this.metronome.stop();
+            this.metronomeRafId = undefined;
+        }
+    }
+
     private handleRewind(): void {
-        this.$setCurrentTime(0);
+        this.consumer.$setCurrentTime(0);
         this.stopWatch.reset();
 
         if (this.playbackContext.isPlaying) {
             this.stopWatch.start(() => {
-                this.$setCurrentTime(this.stopWatch.getElapsedTime());
+                this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
             })!;
 
             if (this.isMetronomeOn) {
@@ -83,19 +146,7 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     }
 
     private handleRecord(): void {
-        // if (this.playbackContext.isRecording) {
-        //     this.recorderClass?.stop();
-        // } else {
-        //     this.dest =
-        //         this.playbackContext.master.audioContext.createMediaStreamDestination();
-        //     this.recorderClass = new AudioRecorder(this.dest.stream);
-        //     this.playbackContext.master.audioContext
-        //         .createMediaStreamSource(this.dest.stream)
-        //         .connect(this.playbackContext.master.audioContext.destination);
-        //     this.recorderClass.start();
-        // }
-
-        this.$toggleIsRecording();
+        this.consumer.$toggleIsRecording();
     }
 
     private get renderIsPlayingIcon(): TemplateResult {

@@ -218,7 +218,12 @@ export class LayeredKeyboardManager
     }
 
     private handleKeyDown(event: KeyboardEvent): void {
-        const key = event.key.toLowerCase();
+        let key = event.key.toLowerCase();
+
+        if ("code" in event && event.code === "Space") {
+            key = event.code.toLowerCase();
+        }
+
         const prevKey =
             this.currentCombination[this.currentCombination.length - 1];
 
@@ -233,8 +238,8 @@ export class LayeredKeyboardManager
                 ? key
                 : this.currentCombination.join("-").toLowerCase();
 
-        if (this.currentCombination.length > 2) {
-            this.currentCombination.shift(); // Limit the length of the combination
+        if (this.currentCombination.length > 3) {
+            this.currentCombination.shift();
         }
 
         if (this.keyMappings.has(keyCombination)) {
@@ -264,8 +269,6 @@ export class LayeredKeyboardManager
         this.interval = setTimeout(() => {
             this.currentCombination = [];
         }, 300);
-
-        event.preventDefault();
     }
 
     onMappingHit(callback: (event: CustomEvent<KeyMapping>) => void): void {

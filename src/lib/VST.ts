@@ -16,10 +16,6 @@ export interface VSTPlugin {
     ): void;
 }
 
-export interface VSTView {
-    render(): HTMLElement;
-    updateParameters(parameters: Record<string, any>): void;
-    onActivate(): void;
-    onDeactivate(): void;
-    onParameterChange(parameter: string, value: any): void;
+export interface VSTInstrument {
+    delegateChannelData: (channel: number, data: Float32Array) => void;
 }

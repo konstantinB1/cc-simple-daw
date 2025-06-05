@@ -69,8 +69,7 @@ export default class TracksCanvas extends WithPlaybackContext(LitElement) {
 
     private drawPlayhead() {
         const ctx = this.canvasElement.getContext("2d")!;
-        const currentTime =
-            this.playbackContext.master.audioContext.currentTime;
+        const currentTime = this.playbackContext.audioContext.currentTime;
         const currentBeat = Math.floor(
             (currentTime / (60 / this.playbackContext.bpm)) * 4,
         );

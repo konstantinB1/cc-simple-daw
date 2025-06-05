@@ -1,6 +1,6 @@
 import DragController, { DragEvent } from "@/controllers/DragController";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-import type PanelScreenManager from "@/lib/PanelScreenManager";
+import WithScreenManager from "@/mixins/WithScreenManager";
 import {
     CSSResult,
     LitElement,
@@ -20,22 +20,21 @@ const DEFAULT_Z_INDEX = 50;
 export interface PanelCardProps {
     startPos?: [number, number];
     cardId: string;
-    screenManagerInstance: PanelScreenManager;
     cardWidth?: string;
     cardHeight?: string;
     isDraggable?: boolean;
 }
 
 @customElement("panel-card")
-export default class PanelCard extends LitElement implements PanelCardProps {
+export default class PanelCard
+    extends WithScreenManager(LitElement)
+    implements PanelCardProps
+{
     @property({ type: Array })
     startPos?: [number, number];
 
     @property({ type: String, attribute: "card-id" })
     cardId!: string;
-
-    @property({ type: Object })
-    screenManagerInstance!: PanelScreenManager;
 
     @property({ type: String, attribute: "card-width" })
     cardWidth: string = "auto";
@@ -68,11 +67,11 @@ export default class PanelCard extends LitElement implements PanelCardProps {
     protected firstUpdated(_changedProperties: PropertyValues): void {
         this.dragController.setElement(this.cardRef.value!);
 
-        if (!this.screenManagerInstance) {
+        if (!this.screenManager) {
             return;
         }
 
-        this.screenManagerInstance.onPanelFocused((panel) => {
+        this.screenManager.onPanelFocused((panel) => {
             if (panel?.name === this.cardId) {
                 this.keyboardManager?.attachEventListeners();
                 this.elementZIndex = ELEVATED_Z_INDEX;
@@ -81,7 +80,7 @@ export default class PanelCard extends LitElement implements PanelCardProps {
                 this.keyboardManager?.detachEventListeners();
                 this.elementZIndex = DEFAULT_Z_INDEX;
                 this.isFocused = false;
-                this.screenManagerInstance.quetlyUnfocus();
+                this.screenManager.quetlyUnfocus();
             }
         });
 
@@ -90,7 +89,7 @@ export default class PanelCard extends LitElement implements PanelCardProps {
             ({ event, coords: [x, y] }) => {
                 switch (event) {
                     case DragEvent.Start:
-                        this.screenManagerInstance.focus(this.cardId);
+                        this.screenManager.focus(this.cardId);
                         this.isDragging = true;
                         break;
                     case DragEvent.Dragging:
@@ -105,7 +104,7 @@ export default class PanelCard extends LitElement implements PanelCardProps {
     }
 
     private handleFocus(): void {
-        this.screenManagerInstance.focus(this.cardId);
+        this.screenManager.focus(this.cardId);
     }
 
     connectedCallback(): void {
@@ -164,6 +163,8 @@ export default class PanelCard extends LitElement implements PanelCardProps {
         });
 
         return html`<div
+            tabindex="0"
+            @focus=${this.handleFocus}
             ${ref(this.cardRef)}
             id=${this.cardId}
             class=${classes}
@@ -172,7 +173,7 @@ export default class PanelCard extends LitElement implements PanelCardProps {
             @click="${this.handleFocus.bind(this)}"
         >
             <div class="card-header">
-                <slot name="header">ewre</slot>
+                <slot name="header"></slot>
             </div>
             <div class="content-wrapper">
                 <slot></slot>

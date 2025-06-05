@@ -1,4 +1,4 @@
-import MasterAudio from "@/lib/audio/MasterAudio";
+import AudioChannel from "@/lib/AudioChannel";
 import VSTRegistry from "@/lib/VSTRegistry";
 import { ContextProvider, createContext } from "@lit/context";
 import type { LitElement } from "lit";
@@ -7,12 +7,20 @@ export const playbackContext = createContext<PlaybackContextStore>(
     Symbol("playbackContext"),
 );
 
+const audioContext = new AudioContext();
+
 export class PlaybackContextStore {
+    audioContext: AudioContext = audioContext;
     isPlaying = false;
     isRecording = false;
     isLooping = false;
     bpm = 120;
-    master: MasterAudio = new MasterAudio();
+    master: AudioChannel = new AudioChannel("master", audioContext, "Master");
+    preview: AudioChannel = new AudioChannel(
+        "preview",
+        audioContext,
+        "Preview",
+    );
     timeSignature: [number, number] = [4, 4];
     currentTime: number = 0;
     vstRegistry: VSTRegistry = new VSTRegistry();

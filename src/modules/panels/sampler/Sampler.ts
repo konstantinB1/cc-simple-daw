@@ -1,62 +1,56 @@
-import PanelScreenManager, {
-    PanelType,
-    VSTIPanel,
-} from "@/lib/PanelScreenManager";
+import { PanelType, VSTIPanel } from "@/lib/PanelScreenManager";
 import "./Pads";
-import type Pads from "./Pads";
-import { SoundChannel, VSTInstrument } from "@/modules/vst/VST";
-import type MasterAudio from "@/lib/audio/MasterAudio";
-import { html } from "lit";
+import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
+import WithPlaybackContext from "@/mixins/WithPlaybackContext";
+import { customElement } from "lit/decorators.js";
+import { VSTInstrument } from "@/modules/vst/VST";
+import WithScreenManager from "@/mixins/WithScreenManager";
 
-const elementName = "sampler-pads";
+const elementName = "sampler-root";
 
-export default class SamplerPanel extends VSTIPanel {
+@customElement(elementName)
+export default class SamplerPanel extends WithScreenManager(
+    WithPlaybackContext(LitElement),
+) {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
 
-    constructor(ctx: MasterAudio, screenManagerInstance: PanelScreenManager) {
-        const id = elementName;
-        const pads = document.createElement(id) as Pads;
-        const channels = new Array(64)
-            .fill(null)
-            .map<SoundChannel>((_, index) => ({
-                id: `pad-${index + 1}`,
-                name: `Pad ${index + 1}`,
-                ctx,
-                volume: 1.0,
-                pan: 0.0,
-                mute: false,
-                solo: false,
-                isActive: true,
-            }));
+    connectedCallback(): void {
+        super.connectedCallback();
 
-        super(
-            new VSTInstrument(id, id, channels),
-            screenManagerInstance,
-            id,
-            pads,
-            PanelType.VSTI,
+        const vstInstrument = new VSTInstrument("Sampler", "sampler");
+
+        this.screenManager.add(
+            elementName,
+            new VSTIPanel(
+                vstInstrument,
+                this.screenManager,
+                "sampler-view",
+                this,
+                PanelType.VSTI,
+                true,
+            ),
         );
-
-        this.screenManagerInstance = screenManagerInstance;
     }
+
+    private onSamplePlay(event: CustomEvent): void {}
 
     override render() {
         return html`
             <panel-card
                 card-height="auto"
                 card-width="500px"
-                card-id=${elementName}
+                card-id="sampler-view"
                 .startPos=${[10, 80] as const}
                 .isDraggable=${true}
                 .keyboardManager=${this.keyboardManager}
-                .screenManagerInstance=${this.screenManagerInstance}
             >
-                <sampler-pads
+                <sampler-view
                     .keyManager=${this.keyboardManager}
-                    .screenManagerInstance=${this.screenManagerInstance}
-                ></sampler-pads>
+                    @sample-play=${this.onSamplePlay.bind(this)}
+                    @channels-loaded=${(e) => {}}
+                ></sampler-view>
             </panel-card>
         `;
     }

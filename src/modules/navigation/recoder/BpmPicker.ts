@@ -96,7 +96,7 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
                 ? Math.max(0, currentBpm - diffBpm)
                 : Math.min(999, currentBpm - diffBpm);
 
-        this.$setBpm(bpm);
+        this.consumer.$setBpm(bpm);
     };
 
     private onMouseUp = () => {
@@ -118,7 +118,7 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
             throw new Error("BPM value is null somehow");
         }
 
-        this.$setBpm(bpm);
+        this.consumer.$setBpm(bpm);
     };
 
     private handleFocus = () => {

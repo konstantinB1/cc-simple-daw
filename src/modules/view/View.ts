@@ -1,17 +1,33 @@
 import PanelScreenManager from "@/lib/PanelScreenManager";
-import "./PanelCard";
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, query } from "lit/decorators.js";
-import SamplerPanel from "@modules//panels/sampler/Sampler";
-import TracksPanel from "../panels/tracks/Tracks";
+import { customElement } from "lit/decorators.js";
+import "./PanelCard";
+import "../panels/tracks/Tracks";
+import "../panels/sampler/Sampler";
+import { provide } from "@lit/context";
+import screenManagerContext from "@/context/screenManagerContext";
+
+import channelsContext, {
+    attachChannelContextEvents,
+} from "@/context/channelsContext";
+import { ContextProvider } from "@lit/context";
+import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 @customElement("app-view")
-export default class AppView extends WithPlaybackContext(LitElement) {
-    private panelMgr = new PanelScreenManager();
+export default class AppView extends LitElement {
+    @provide({ context: screenManagerContext })
+    screenManager: PanelScreenManager = new PanelScreenManager();
 
-    @query(".container")
-    private container!: HTMLDivElement;
+    channelsCtx: ContextProvider<typeof channelsContext> = new ContextProvider<
+        typeof channelsContext
+    >(this, {
+        context: channelsContext,
+        initialValue: {
+            channels: [],
+        },
+    });
+
+    keyboardManager: LayeredKeyboardManager = new LayeredKeyboardManager();
 
     static styles = css`
         .container {
@@ -21,17 +37,11 @@ export default class AppView extends WithPlaybackContext(LitElement) {
         }
     `;
 
-    protected firstUpdated(_changedProperties: PropertyValues): void {
-        super.firstUpdated(_changedProperties);
+    connectedCallback(): void {
+        super.connectedCallback();
+        attachChannelContextEvents(this, this.channelsCtx);
 
-        const ctx = this.playbackContext.master;
-        const sampler = new SamplerPanel(ctx, this.panelMgr);
-        const tracks = new TracksPanel(this.panelMgr);
-
-        this.panelMgr.add(sampler.name, sampler);
-        this.panelMgr.add(tracks.name, tracks);
-
-        this.requestUpdate();
+        this.keyboardManager.attachEventListeners();
     }
 
     private handleClick(event: MouseEvent): void {
@@ -43,10 +53,23 @@ export default class AppView extends WithPlaybackContext(LitElement) {
         }
     }
 
+    protected firstUpdated(_changedProperties: PropertyValues): void {
+        const firstPanel = this.screenManager.panels?.[0];
+
+        if (firstPanel) {
+            setTimeout(() => {
+                this.screenManager.focus(firstPanel.name);
+            });
+        }
+    }
+
     override render() {
-        return html` <top-nav></top-nav>
+        return html` <top-nav
+                .keyboardManager=${this.keyboardManager}
+            ></top-nav>
             <div class="container" @click="${this.handleClick}">
-                ${this.panelMgr.panels.map((panel) => panel.render())}
+                <sampler-root></sampler-root>
+                <tracks-panel></tracks-panel>
             </div>`;
     }
 }

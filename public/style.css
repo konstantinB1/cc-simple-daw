@@ -23,6 +23,10 @@ html {
     background-color: var(--color-background);
 }
 
+* {
+    box-sizing: border-box;
+}
+
 p,
 h1,
 h2,

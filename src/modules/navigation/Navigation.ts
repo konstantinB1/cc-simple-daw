@@ -1,10 +1,14 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 
 import "./recoder/Recorder";
+import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 @customElement("top-nav")
 export default class Navigation extends LitElement {
+    @property({ type: Object })
+    keyboardManager!: LayeredKeyboardManager;
+
     static styles = [
         css`
             header {
@@ -41,9 +45,6 @@ export default class Navigation extends LitElement {
                 align-items: flex-end;
                 width: 100%;
             }
-
-            .recorder-wrapper {
-            }
         `,
     ];
 
@@ -53,7 +54,9 @@ export default class Navigation extends LitElement {
                 <div class="container">
                     <div class="controls-and-time">
                         <div class="recorder-wrapper">
-                            <recorder-component></recorder-component>
+                            <recorder-component
+                                .keyboardManager=${this.keyboardManager}
+                            ></recorder-component>
                         </div>
                         <div class="time-indicator-wrapper">
                             <time-indicator></time-indicator>

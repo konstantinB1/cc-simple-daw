@@ -1,34 +1,49 @@
-import PanelScreenManager, {
-    CustomPanel,
-    PanelType,
-} from "@/lib/PanelScreenManager";
+import { CustomPanel, PanelType } from "@/lib/PanelScreenManager";
+import { html, LitElement } from "lit";
+import { customElement } from "lit/decorators.js";
+import WithScreenManager from "@/mixins/WithScreenManager";
 import "./TracksView";
-import type TracksView from "./TracksView";
-import { html } from "lit";
+import { msToSeconds } from "@/utils/TimeUtils";
 
-const elementName = "tracks-component";
+export const tracksPanelElement = "tracks-panel";
 
-export default class TracksPanel extends CustomPanel {
-    constructor(screenManagerInstance: PanelScreenManager) {
-        const id = elementName;
-        const tracks = document.createElement(id) as TracksView;
+export const getPlayheadPosition = (
+    bpm: number,
+    currentTime: number,
+): number => {
+    const secondsPerBeat = 60 / bpm;
+    const pxPerSecond = 81 / secondsPerBeat;
+    return msToSeconds(currentTime) * pxPerSecond;
+};
 
-        super(screenManagerInstance, id, tracks, PanelType.VSTI);
+@customElement(tracksPanelElement)
+export default class TracksPanel extends WithScreenManager(LitElement) {
+    connectedCallback(): void {
+        super.connectedCallback();
 
-        this.screenManagerInstance = screenManagerInstance;
+        const panel = new CustomPanel(
+            this.screenManager,
+            "tracks-view",
+            this,
+            PanelType.Custom,
+            true,
+            true,
+        );
+
+        this.screenManager.add(tracksPanelElement, panel);
     }
 
     override render() {
         return html`
             <panel-card
-                card-id=${elementName}
+                card-id="tracks-view"
                 card-height="auto"
                 card-width="1100px"
                 .startPos=${[570, 80] as const}
                 .isDraggable=${true}
-                .screenManagerInstance=${this.screenManagerInstance as any}
+                .screenManagerInstance=${this.screenManager as any}
             >
-                <tracks-component></tracks-component>
+                <tracks-view></tracks-view>
             </panel-card>
         `;
     }

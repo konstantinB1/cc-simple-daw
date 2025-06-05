@@ -10,11 +10,14 @@ import type { ProgramLoadedData } from "./Load";
 import "./PadBank";
 import "./Load";
 import "./Pad";
-import type PanelScreenManager from "@/lib/PanelScreenManager";
 import {
     KeyMappingWithPressed,
     SimpleKeyboardKanager,
 } from "@/lib/KeyboardManager";
+import WithPlaybackContext from "@/mixins/WithPlaybackContext";
+import WithScreenManager from "@/mixins/WithScreenManager";
+import AudioChannel from "@/lib/AudioChannel";
+import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
 
 const noop = () => {};
 
@@ -42,7 +45,10 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
     bank: PadBankSelector;
     index: number;
 
+    sample: AudioChannel;
+
     constructor(
+        ctx: AudioContext,
         mapping: KeyMappingWithPressed,
         data: AudioFile,
         bank: PadBankSelector,
@@ -61,6 +67,23 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
         this.data = data;
         this.bank = bank;
         this.index = index;
+
+        this.sample = new AudioChannel(
+            `pad-${mapping.name}-${bank}-${index}`,
+            ctx,
+            mapping.name,
+        );
+
+        this.sample.load(data.data).catch((err) => {
+            console.error(
+                `Failed to load sample for pad ${mapping.name} in bank ${bank}:`,
+                err,
+            );
+        });
+    }
+
+    async play() {
+        await this.sample.play();
     }
 }
 
@@ -87,8 +110,12 @@ const getBank = (index: number) => {
     return nextBank;
 };
 
-@customElement("sampler-pads")
-export default class Pads extends LitElement {
+const element = "sampler-view";
+
+@customElement(element)
+export default class Pads extends WithAudioChannelsContext(
+    WithScreenManager(WithPlaybackContext(LitElement)),
+) {
     private samplerKeyMgr: SimpleKeyboardKanager = new SimpleKeyboardKanager();
 
     // Do not use this for rendering view, this is only used
@@ -106,10 +133,7 @@ export default class Pads extends LitElement {
     public programData: Program | null = null;
 
     @property({ type: Number })
-    private currentBank: PadBankSelector = PadBankSelector.B;
-
-    @property({ type: Object })
-    screenManagerInstance!: PanelScreenManager;
+    private currentBank: PadBankSelector = PadBankSelector.A;
 
     @property({ type: Boolean })
     isFocused: boolean = false;
@@ -141,16 +165,17 @@ export default class Pads extends LitElement {
 
     connectedCallback(): void {
         super.connectedCallback();
+        const self = this;
 
-        this.screenManagerInstance.onPanelFocused((p) => {
-            if (p?.name === "sampler-pads") {
+        this.screenManager.onPanelFocused((p) => {
+            if (p?.name === self.nodeName.toLowerCase()) {
                 this.samplerKeyMgr.attachEventListeners();
             } else {
                 this.samplerKeyMgr.detachEventListeners();
             }
         });
 
-        this.samplerKeyMgr?.onMappingHit(({ detail: { pressed, mapping } }) => {
+        this.samplerKeyMgr?.onMappingHit(({ detail: { mapping } }) => {
             const index = this.currentBankPads.findIndex(
                 (pad) => pad.name === mapping.name,
             );
@@ -167,6 +192,20 @@ export default class Pads extends LitElement {
                 const mapping = this.samplerKeyMgr.keys.get(
                     pad.keys.join("-").toLowerCase(),
                 );
+
+                if (mapping?.pressed !== undefined && mapping.pressed) {
+                    pad.play();
+
+                    this.dispatchEvent(
+                        new CustomEvent<PadClickData>("sample-play", {
+                            detail: {
+                                mapping: pad,
+                            },
+                            bubbles: true,
+                            composed: true,
+                        }),
+                    );
+                }
 
                 return {
                     ...pad,
@@ -205,7 +244,15 @@ export default class Pads extends LitElement {
                     data.name,
                 );
 
-                return new MappedPadKeyWithPressed(mapping, data, bank, index);
+                const ctx = this.playbackContext.audioContext;
+
+                return new MappedPadKeyWithPressed(
+                    ctx,
+                    mapping,
+                    data,
+                    bank,
+                    index,
+                );
             },
         );
 
@@ -228,6 +275,20 @@ export default class Pads extends LitElement {
 
         if (changed.includes("programData")) {
             this.createMappings();
+
+            const mainMaster = this.playbackContext.master;
+            const samplerMaster = new AudioChannel(
+                "sampler-master",
+                this.playbackContext.audioContext,
+                "Sampler Master",
+                mainMaster,
+            );
+
+            this.mappedKeyPads.forEach(({ sample }) =>
+                samplerMaster.addSubChannel(sample),
+            );
+
+            this.$addChannel(samplerMaster);
         }
     }
 
