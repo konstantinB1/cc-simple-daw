@@ -1,6 +1,6 @@
 import type { ChannelsContext } from "@/context/channelsContext";
 import channelsContext from "@/context/channelsContext";
-import AudioChannel from "@/lib/AudioChannel";
+import AudioSource from "@/lib/AudioSource";
 import type { Constructor } from "@/utils/types";
 import { consume } from "@lit/context";
 import { LitElement } from "lit";
@@ -14,13 +14,13 @@ const WithAudioChannelsContext = <T extends Constructor<LitElement>>(
         @state()
         protected audioChannels!: ChannelsContext;
 
-        hasChannel(channel: AudioChannel): boolean {
+        hasChannel(channel: AudioSource): boolean {
             return this.audioChannels.channels.some((c) => c.id === channel.id);
         }
 
-        $addChannel(channel: AudioChannel): void {
+        $addChannel(channel: AudioSource): void {
             this.dispatchEvent(
-                new CustomEvent<AudioChannel>("channels-context/add-channel", {
+                new CustomEvent<AudioSource>("channels-context/add-channel", {
                     detail: channel,
                     bubbles: true,
                     composed: true,

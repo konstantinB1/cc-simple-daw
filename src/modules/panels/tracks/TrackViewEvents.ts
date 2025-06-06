@@ -15,7 +15,6 @@ export type TrackEvent = {
     xStart?: number;
     zIndex: number;
     startTime?: number;
-
     isPlaying?: boolean;
 };
 
@@ -47,14 +46,21 @@ export default class TrackEvents extends LitElement {
             .event-container {
                 position: relative;
                 width: 100%;
-                height: 80%;
+                height: 60%;
             }
 
             .event {
                 position: absolute;
-                background-color: var(--color-tint-primary);
+                background: #fd1d1d;
+                background: linear-gradient(
+                    90deg,
+                    rgba(131, 58, 180, 1) 0%,
+                    rgba(253, 29, 29, 1) 50%,
+                    rgba(252, 176, 69, 1) 100%
+                );
                 box-shadow: 0 0px 10px rgba(0, 0, 0, 0.5);
-                border-left: 4px solid var(--color-accent);
+                border-left: 14px solid var(--color-accent);
+                border-radius: var(--border-radius);
             }
 
             .event-drawing {
@@ -70,28 +76,22 @@ export default class TrackEvents extends LitElement {
     protected updated(_changedProperties: PropertyValues): void {
         super.updated(_changedProperties);
 
-        if (_changedProperties.has("currentTime")) {
+        if (_changedProperties.has("isPlaying")) {
             if (this.isPlaying) {
-                this.playTrack();
+                this.events.forEach((ev) => {
+                    this.track.channel.play(ev.startTime);
+                });
+            } else {
+                this.events.forEach(() => {
+                    this.track.channel.stop();
+                });
+
+                this.events = this.events.map((ev) => ({
+                    ...ev,
+                    done: true,
+                }));
             }
         }
-    }
-
-    private playTrack() {
-        // const currentTime = this.currentTime;
-        // this.events.forEach((ev) => {
-        //     if (this.played.has(ev.id)) {
-        //         return;
-        //     }
-        //     if (ev.startTime && currentTime > ev.startTime) {
-        //         this.played.add(ev.id);
-        //         queueMicrotask(() => {
-        //             console.log("Playing track", this.track.id, ev.id);
-        //             this.track.channel.play(0, 0);
-        //         });
-        //     }
-        //     return ev;
-        // });
     }
 
     connectedCallback(): void {
@@ -107,7 +107,7 @@ export default class TrackEvents extends LitElement {
             this.events = [
                 {
                     id,
-                    done: false,
+                    done: this.isPlaying && this.isRecording,
                     xStart: getPlayheadPosition(this.bpm, this.currentTime),
                     xEnd: msToSeconds(duration ?? 0),
                     zIndex,
@@ -120,19 +120,17 @@ export default class TrackEvents extends LitElement {
             this.zIndex = zIndex;
         });
 
-        this.track.channel.onStop(({ detail: { id } }) => {
+        this.track.channel.onStop(({ detail: { id, xStart } }) => {
             if (!this.isRecording && !this.isPlaying) {
                 return;
             }
 
             this.events = this.events.map((ev) => {
-                if (ev.id === id) {
+                if (ev.id === id && !ev.done) {
                     return {
                         ...ev,
                         done: true,
-                        xEnd:
-                            getPlayheadPosition(this.bpm, this.currentTime) -
-                            (ev.xStart ?? 0),
+                        xEnd: xStart + 50,
                     };
                 }
 

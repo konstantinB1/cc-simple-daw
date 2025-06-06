@@ -1,12 +1,12 @@
-import type AudioChannel from "@/lib/AudioChannel";
+import type AudioSource from "@/lib/AudioSource";
 import { getAudioAsset } from "@/utils";
 
 export default class Metronome {
-    private channel: AudioChannel;
+    private channel: AudioSource;
 
     private lastTick: number = -1;
 
-    constructor(channel: AudioChannel) {
+    constructor(channel: AudioSource) {
         this.channel = channel;
     }
 

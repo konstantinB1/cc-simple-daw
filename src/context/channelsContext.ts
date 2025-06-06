@@ -1,4 +1,4 @@
-import type AudioChannel from "@/lib/AudioChannel";
+import type AudioSource from "@/lib/AudioSource";
 import { ContextProvider, createContext } from "@lit/context";
 import type { LitElement } from "lit";
 
@@ -7,7 +7,7 @@ const channelsContext = createContext<ChannelsContext>(
 );
 
 export type ChannelsContext = {
-    channels: AudioChannel[];
+    channels: AudioSource[];
 };
 
 export function attachChannelContextEvents(
@@ -15,7 +15,7 @@ export function attachChannelContextEvents(
     ctx: ContextProvider<typeof channelsContext>,
 ): void {
     host.addEventListener("channels-context/add-channel", (event: Event) => {
-        const channel = (event as CustomEvent).detail as AudioChannel;
+        const channel = (event as CustomEvent).detail as AudioSource;
 
         const id = channel.id;
 

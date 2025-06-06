@@ -32,12 +32,19 @@ export class App extends LitElement {
                 --container-width: 1200px;
                 --container-height: 60vh;
                 --card-color: #2c2c2c;
-                --color-tint-primary: #d95656;
+                --color-tint-primary: #fd1d1d;
                 --border-radius: 10px;
+                --nav-bg-color: #595959;
+                --color-success: #5ace5e;
+                --color-error: #f44336;
+                --color-warning: #ff9800;
+                --color-info: #2196f3;
+                --color-border: #333333;
+                --color-border-light: #444444;
             }
 
             html {
-                background-color: var(--color-background);
+                background-color: red;
             }
 
             .container {

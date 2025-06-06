@@ -1,4 +1,4 @@
-import AudioChannel from "@/lib/AudioChannel";
+import AudioSource from "@/lib/AudioSource";
 import VSTRegistry from "@/lib/VSTRegistry";
 import { ContextProvider, createContext } from "@lit/context";
 import type { LitElement } from "lit";
@@ -15,12 +15,8 @@ export class PlaybackContextStore {
     isRecording = false;
     isLooping = false;
     bpm = 120;
-    master: AudioChannel = new AudioChannel("master", audioContext, "Master");
-    preview: AudioChannel = new AudioChannel(
-        "preview",
-        audioContext,
-        "Preview",
-    );
+    master: AudioSource = new AudioSource("master", audioContext, "Master");
+    preview: AudioSource = new AudioSource("preview", audioContext, "Preview");
     timeSignature: [number, number] = [4, 4];
     currentTime: number = 0;
     vstRegistry: VSTRegistry = new VSTRegistry();

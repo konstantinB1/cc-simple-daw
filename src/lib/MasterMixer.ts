@@ -1,4 +1,4 @@
-import type AudioChannel from "./AudioChannel";
+import type AudioChannel from "./AudioSource";
 
 export default class MasterMixer {
     private channels: Map<string, AudioChannel> = new Map();

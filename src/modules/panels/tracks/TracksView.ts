@@ -7,7 +7,7 @@ import "./TrackViewEvents";
 
 import { typography } from "@/global-styles";
 import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
-import type AudioChannel from "@/lib/AudioChannel";
+import type AudioSource from "@/lib/AudioSource";
 import { classMap } from "lit/directives/class-map.js";
 import { NEEDLE_START_POS } from "./PlayheadNode";
 
@@ -15,13 +15,13 @@ const MAX_TIME_BEATS = 4;
 const BEAT_WIDTH = 70;
 
 export class Track {
-    channel: AudioChannel;
+    channel: AudioSource;
 
     id: string;
 
     parent?: Track;
 
-    constructor(channel: AudioChannel, parent?: Track) {
+    constructor(channel: AudioSource, parent?: Track) {
         this.channel = channel;
         this.id = channel.id;
         this.parent = parent;
@@ -117,6 +117,7 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
                 background-color: var(--color-primary);
                 border-right: 1px solid var(--color-accent);
                 border-bottom: 1px solid var(--color-accent);
+                border-bottom-left-radius: var(--border-radius);
 
                 cursor: pointer;
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -149,6 +150,8 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
                 display: flex;
                 background-color: var(--color-secondary);
                 position: relative;
+                border-bottom-left-radius: 100px;
+                border-top-left-radius: 100px;
             }
 
             .selected-row {
@@ -159,19 +162,11 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
             .selected {
                 border: 1px solid var(--color-tint-primary);
             }
-
-            .sound-sequence {
-                position: absolute;
-                height: 100%;
-                background-color: var(--color-tint-primary);
-                border-radius: 2px;
-                transition: width 0.2s ease-in-out;
-            }
         `,
     ];
 
     private get tracks(): Track[] {
-        return this.audioChannels.channels.flatMap((channel: AudioChannel) => {
+        return this.audioChannels.channels.flatMap((channel: AudioSource) => {
             const track = new Track(channel);
 
             return [

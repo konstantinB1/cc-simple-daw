@@ -16,7 +16,7 @@ import {
 } from "@/lib/KeyboardManager";
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import WithScreenManager from "@/mixins/WithScreenManager";
-import AudioChannel from "@/lib/AudioChannel";
+import AudioSource from "@/lib/AudioSource";
 import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
 
 const noop = () => {};
@@ -45,7 +45,7 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
     bank: PadBankSelector;
     index: number;
 
-    sample: AudioChannel;
+    sample: AudioSource;
 
     constructor(
         ctx: AudioContext,
@@ -68,7 +68,7 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
         this.bank = bank;
         this.index = index;
 
-        this.sample = new AudioChannel(
+        this.sample = new AudioSource(
             `pad-${mapping.name}-${bank}-${index}`,
             ctx,
             mapping.name,
@@ -178,6 +178,8 @@ export default class Pads extends WithAudioChannelsContext(
                                 err,
                             );
                         });
+                    } else if (!pressed && pad.pressed) {
+                        pad.sample.stop();
                     }
 
                     return {
@@ -258,7 +260,7 @@ export default class Pads extends WithAudioChannelsContext(
         this.createMappings();
 
         const mainMaster = this.playbackContext.master;
-        const samplerMaster = new AudioChannel(
+        const samplerMaster = new AudioSource(
             "sampler-master",
             this.playbackContext.audioContext,
             "Sampler Master",

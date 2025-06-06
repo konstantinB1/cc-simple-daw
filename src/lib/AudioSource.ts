@@ -39,6 +39,8 @@ export default class AudioChannel extends EventTarget {
 
     source: AudioSample;
 
+    private bufferSource?: AudioBufferSourceNode;
+
     constructor(
         id: string,
         ctx: AudioContext,
@@ -127,22 +129,22 @@ export default class AudioChannel extends EventTarget {
             return Promise.resolve();
         }
 
-        const source = this.ctx.createBufferSource();
-        source.buffer = this.buffer;
+        this.bufferSource = this.ctx.createBufferSource();
+        this.bufferSource.buffer = this.buffer;
 
-        source.connect(this.getGainNode);
+        this.bufferSource.connect(this.getGainNode);
 
-        source.start(when, offset, duration);
+        this.bufferSource.start(when, offset, duration);
 
         if (loopStart !== undefined && loopEnd !== undefined) {
-            source.loop = true;
-            source.loopStart = loopStart;
-            source.loopEnd = loopEnd;
+            this.bufferSource.loop = true;
+            this.bufferSource.loopStart = loopStart;
+            this.bufferSource.loopEnd = loopEnd;
         } else {
-            source.loop = false;
+            this.bufferSource.loop = false;
         }
 
-        source.connect(this.ctx.destination);
+        this.bufferSource.connect(this.ctx.destination);
 
         const id = generateUUID();
 
@@ -158,7 +160,7 @@ export default class AudioChannel extends EventTarget {
         this.dispatchEvent(new CustomEvent("audio-channel/play", event));
 
         return new Promise((resolve) => {
-            source.onended = () => {
+            this.bufferSource.onended = () => {
                 const event = new CustomEvent<StopEvent>(
                     "audio-channel/ended",
                     {
@@ -191,7 +193,9 @@ export default class AudioChannel extends EventTarget {
 
     stop(): void {
         this.getGainNode.disconnect();
+        this.bufferSource?.stop();
         this.dispatchEvent(new CustomEvent("stop"));
+        this.bufferSource = undefined;
     }
 
     addSubChannel(channel: AudioChannel): void {

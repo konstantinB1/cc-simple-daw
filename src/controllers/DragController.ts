@@ -11,6 +11,8 @@ export type DragControllerData = {
     coords: [number, number];
 };
 
+const Y_BOTTOM_PADDING = 40; // 10px padding + 30px for the bottom bar
+
 export default class DragController extends EventTarget {
     private holdTimeout: NodeJS.Timeout | null = null;
     private dragOffset: [number, number] = [0, 0];
@@ -77,6 +79,10 @@ export default class DragController extends EventTarget {
         });
     };
 
+    private get height(): number {
+        return this.element?.getBoundingClientRect().height || 0;
+    }
+
     private getY(pos: number): number {
         const viewportHeight = document.documentElement.clientHeight;
 
@@ -84,8 +90,8 @@ export default class DragController extends EventTarget {
             return 80;
         }
 
-        if (pos > viewportHeight) {
-            return viewportHeight - 400;
+        if (pos + this.height > viewportHeight - Y_BOTTOM_PADDING) {
+            return viewportHeight - this.height - Y_BOTTOM_PADDING; // 10px padding
         }
         return pos;
     }
