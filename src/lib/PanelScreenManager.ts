@@ -137,6 +137,65 @@ export default class PanelScreenManager extends EventTarget {
         }
     }
 
+    private getCurrentPanel(): Panel | undefined {
+        return this.panels.find((panel) => panel.isCurrent);
+    }
+
+    public focusNext(): Panel | undefined {
+        const currentPanel = this.getCurrentPanel();
+
+        if (!currentPanel) {
+            const first = this.panels[0];
+
+            if (!first) {
+                console.warn("No panels available to focus.");
+                return undefined;
+            }
+
+            return this.focus(first.name);
+        }
+
+        const currentIndex = this.panels.indexOf(currentPanel);
+        const nextIndex = (currentIndex + 1) % this.panels.length;
+        const nextPanel = this.panels[nextIndex];
+
+        if (nextPanel) {
+            return this.focus(nextPanel.name);
+        }
+
+        console.warn("No next panel to focus.");
+
+        return undefined;
+    }
+
+    public focusPrevious(): Panel | undefined {
+        const currentPanel = this.getCurrentPanel();
+
+        if (!currentPanel) {
+            const last = this.panels[this.panels.length - 1];
+
+            if (!last) {
+                console.warn("No panels available to focus.");
+                return undefined;
+            }
+
+            return this.focus(last.name);
+        }
+
+        const currentIndex = this.panels.indexOf(currentPanel);
+        const previousIndex =
+            (currentIndex - 1 + this.panels.length) % this.panels.length;
+        const previousPanel = this.panels[previousIndex];
+
+        if (previousPanel) {
+            return this.focus(previousPanel.name);
+        }
+
+        console.warn("No previous panel to focus.");
+
+        return undefined;
+    }
+
     // Focuses on a panel by its name.
     // If the panel is already focused, it returns the panel.
     // If the panel does not exist, it throws an error.

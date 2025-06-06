@@ -77,7 +77,6 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
 
             .tracks-container {
                 display: flex;
-                background-color: var(--color-primary);
             }
 
             .time-beat {

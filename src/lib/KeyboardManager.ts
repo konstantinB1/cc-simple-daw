@@ -25,6 +25,10 @@ export class KeyMapping {
 
 export class KeyMappingWithPressed extends KeyMapping {
     pressed: boolean;
+    startTime?: number;
+    duration?: number;
+    endTime?: number;
+    oneShot: boolean;
 
     constructor(
         keys: string[],
@@ -34,9 +38,11 @@ export class KeyMappingWithPressed extends KeyMapping {
         description?: string,
         name?: string,
         pressed: boolean = false,
+        oneShot: boolean = true,
     ) {
         super(keys, index, handler, active, description, name);
         this.pressed = pressed;
+        this.oneShot = oneShot;
     }
 }
 
@@ -56,6 +62,10 @@ export type SimpleKeyboardManager<T> = CustomEvent<{
     pressed: boolean;
 }>;
 
+export type PressedKeyMetadata = {
+    startTime: number;
+};
+
 export interface KeyboardManager<T> {
     attachEventListeners(): void;
     detachEventListeners(): void;
@@ -74,6 +84,8 @@ export class SimpleKeyboardKanager
     keys: Map<string, KeyMappingWithPressed> = new Map();
 
     private pressedKeys: Set<string> = new Set();
+
+    private pressedKeysMetadata: Map<string, PressedKeyMetadata> = new Map();
 
     attached: boolean = false;
 
@@ -157,7 +169,10 @@ export class SimpleKeyboardKanager
 
             if (padKey && !padKey.pressed) {
                 padKey.pressed = true;
-                this.pressedKeys.add(key);
+
+                this.pressedKeysMetadata.set(key, {
+                    startTime: performance.now(),
+                });
 
                 this.dispatchEvent(this.pressedEvent(padKey, true));
             }
@@ -167,10 +182,20 @@ export class SimpleKeyboardKanager
     private handleKeyUp(event: KeyboardEvent): void {
         const key = event.key.toLowerCase();
         if (this.keys.has(key)) {
+            const metadata = this.pressedKeysMetadata.get(key);
+
+            if (!metadata) {
+                throw new Error(`No metadata found for key: ${key}`);
+            }
+
             const padKey = this.keys.get(key);
             if (padKey && padKey.pressed) {
                 padKey.pressed = false;
-                this.pressedKeys.delete(key);
+
+                padKey.startTime = metadata.startTime;
+                padKey.endTime = performance.now();
+                padKey.duration = padKey.endTime - padKey.startTime;
+
                 this.dispatchEvent(this.pressedEvent(padKey, false));
             }
         }

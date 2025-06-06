@@ -71,7 +71,6 @@ export default class TrackEvents extends LitElement {
         super.updated(_changedProperties);
 
         if (_changedProperties.has("currentTime")) {
-            console.log(123);
             if (this.isPlaying) {
                 this.playTrack();
             }

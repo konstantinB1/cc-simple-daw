@@ -81,10 +81,6 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
             );
         });
     }
-
-    async play() {
-        await this.sample.play();
-    }
 }
 
 export const PADS_PER_BANK = padMappings.length;
@@ -139,9 +135,6 @@ export default class Pads extends WithAudioChannelsContext(
     isFocused: boolean = false;
 
     static styles: CSSResultGroup = css`
-        .root {
-            background-color: red;
-        }
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -165,53 +158,35 @@ export default class Pads extends WithAudioChannelsContext(
 
     connectedCallback(): void {
         super.connectedCallback();
-        const self = this;
 
         this.screenManager.onPanelFocused((p) => {
-            if (p?.name === self.nodeName.toLowerCase()) {
+            if (p?.name === this.nodeName.toLowerCase()) {
                 this.samplerKeyMgr.attachEventListeners();
             } else {
                 this.samplerKeyMgr.detachEventListeners();
             }
         });
 
-        this.samplerKeyMgr?.onMappingHit(({ detail: { mapping } }) => {
-            const index = this.currentBankPads.findIndex(
-                (pad) => pad.name === mapping.name,
-            );
+        this.samplerKeyMgr?.onMappingHit(({ detail: { mapping, pressed } }) => {
+            this.currentView = this.currentView.map((pad) => {
+                if (pad.name === mapping.name) {
+                    if (pressed) {
+                        // Only trigger sample playback on keydown
+                        pad.sample.play().catch((err) => {
+                            console.error(
+                                `Failed to play sample for pad ${pad.name}:`,
+                                err,
+                            );
+                        });
+                    }
 
-            if (index === -1) {
-                console.warn(
-                    `No pad found for mapping: ${mapping.name}. Index: ${index}`,
-                );
-
-                return;
-            }
-
-            // @ts-ignore
-            this.currentView = this.currentBankPads.map((pad) => {
-                const mapping = this.samplerKeyMgr.keys.get(
-                    pad.keys.join("-").toLowerCase(),
-                );
-
-                if (mapping?.pressed !== undefined && mapping.pressed) {
-                    pad.play();
-
-                    this.dispatchEvent(
-                        new CustomEvent<PadClickData>("sample-play", {
-                            detail: {
-                                mapping: pad,
-                            },
-                            bubbles: true,
-                            composed: true,
-                        }),
-                    );
+                    return {
+                        ...pad,
+                        pressed,
+                    };
                 }
 
-                return {
-                    ...pad,
-                    pressed: mapping?.pressed ?? false,
-                };
+                return pad;
             });
         });
     }
@@ -219,7 +194,7 @@ export default class Pads extends WithAudioChannelsContext(
     disconnectedCallback(): void {
         super.disconnectedCallback();
 
-        this.samplerKeyMgr?.detachEventListeners();
+        this.samplerKeyMgr.detachEventListeners();
     }
 
     private getBankAndRealIndex(index: number): {
@@ -275,22 +250,26 @@ export default class Pads extends WithAudioChannelsContext(
         const changed = Array.from(changedProperties.keys());
 
         if (changed.includes("programData")) {
-            this.createMappings();
-
-            const mainMaster = this.playbackContext.master;
-            const samplerMaster = new AudioChannel(
-                "sampler-master",
-                this.playbackContext.audioContext,
-                "Sampler Master",
-                mainMaster,
-            );
-
-            this.mappedKeyPads.forEach(({ sample }) =>
-                samplerMaster.addSubChannel(sample),
-            );
-
-            this.$addChannel(samplerMaster);
+            this.createMappedKeysFromProgram();
         }
+    }
+
+    private createMappedKeysFromProgram() {
+        this.createMappings();
+
+        const mainMaster = this.playbackContext.master;
+        const samplerMaster = new AudioChannel(
+            "sampler-master",
+            this.playbackContext.audioContext,
+            "Sampler Master",
+            mainMaster,
+        );
+
+        this.mappedKeyPads.forEach(({ sample }) =>
+            samplerMaster.addSubChannel(sample),
+        );
+
+        this.$addChannel(samplerMaster);
     }
 
     private setPadBankFromEvent(
@@ -311,18 +290,17 @@ export default class Pads extends WithAudioChannelsContext(
             }));
 
         this.samplerKeyMgr.addKeys(next);
-        // @ts-ignore
         this.currentView = next;
     }
 
     private setProgramFromEvent(e: CustomEvent<ProgramLoadedData>) {
         const program = e.detail.program;
 
-        if (program) {
-            this.programData = program;
-        } else {
-            throw new Error("No program found in event");
+        if (!program) {
+            throw new Error("No program data provided");
         }
+
+        this.programData = program;
     }
 
     private handleClick(_: CustomEvent<PadClickData>) {}

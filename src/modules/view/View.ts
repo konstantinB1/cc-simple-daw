@@ -37,11 +37,34 @@ export default class AppView extends LitElement {
         }
     `;
 
-    connectedCallback(): void {
+    firstUpdated(): void {
         super.connectedCallback();
         attachChannelContextEvents(this, this.channelsCtx);
 
         this.keyboardManager.attachEventListeners();
+
+        const firstPanel = this.screenManager.panels?.[0];
+
+        this.keyboardManager.addKeys([
+            {
+                active: true,
+                keys: ["Shift", "C", "ArrowRight"],
+                description: "Focus next panel",
+                handler: () => this.screenManager.focusNext(),
+            },
+            {
+                active: true,
+                keys: ["Shift", "C", "ArrowLeft"],
+                description: "Focus previous panel",
+                handler: () => this.screenManager.focusPrevious(),
+            },
+        ]);
+
+        if (firstPanel) {
+            setTimeout(() => {
+                this.screenManager.focus(firstPanel.name);
+            });
+        }
     }
 
     private handleClick(event: MouseEvent): void {
@@ -50,16 +73,6 @@ export default class AppView extends LitElement {
             event.target.classList.contains("container")
         ) {
             PanelScreenManager.handleBackgroundClick();
-        }
-    }
-
-    protected firstUpdated(_changedProperties: PropertyValues): void {
-        const firstPanel = this.screenManager.panels?.[0];
-
-        if (firstPanel) {
-            setTimeout(() => {
-                this.screenManager.focus(firstPanel.name);
-            });
         }
     }
 

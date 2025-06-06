@@ -20,16 +20,28 @@ export default class DragController extends EventTarget {
 
     private element?: HTMLElement;
 
+    constructor(startPos: [number, number] = [0, 0]) {
+        super();
+        this.setStartPos(startPos);
+        this.handleWindowMouseMove = this.handleWindowMouseMove.bind(this);
+        this.handleWindowMouseUp = this.handleWindowMouseUp.bind(this);
+    }
+
     public setElement(element: HTMLElement): void {
         this.element = element;
     }
 
     public setStartPos(pos: [number, number]): void {
         this.pos = pos;
-        this.dragOffset = pos;
     }
 
     public handleMouseDown(event: MouseEvent): void {
+        if (
+            !(event.target as HTMLElement).classList.contains("card-draggable")
+        ) {
+            return;
+        }
+
         const [x, y] = this.pos;
 
         this.dragOffset = [event.clientX - x, event.clientY - y];
@@ -69,10 +81,10 @@ export default class DragController extends EventTarget {
         const viewportHeight = document.documentElement.clientHeight;
 
         if (pos < 80) {
-            return 80; // Minimum Y position to avoid going off-screen
+            return 80;
         }
 
-        if (pos + 400 > viewportHeight) {
+        if (pos > viewportHeight) {
             return viewportHeight - 400;
         }
         return pos;

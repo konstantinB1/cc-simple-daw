@@ -3,14 +3,14 @@
     --color-secondary: #171717;
     --color-accent: hwb(0 13% 87%);
     --color-text: #ffffff;
-    --color-background: #161616;
+    --color-background: #202020;
     --container-width: 1200px;
     --container-height: 60vh;
-    --card-color: #4e4e4e;
+    --card-color: #414141;
     --color-tint-primary: #d95656;
-    --color-tint-primary-active: #250e0e;
+    --color-tint-primary-active: #461a1a;
     --border-radius: 2px;
-    --nav-bg-color: #595959;
+    --nav-bg-color: #000000;
     --color-success: #5ace5e;
     --color-error: #f44336;
     --color-warning: #ff9800;

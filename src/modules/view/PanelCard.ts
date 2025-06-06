@@ -48,13 +48,16 @@ export default class PanelCard
     @property({ type: Object, attribute: false })
     keyboardManager?: LayeredKeyboardManager;
 
+    @property({ type: Boolean, attribute: true })
+    padded: boolean = false;
+
     @state()
     private isDragging: boolean = false;
 
     @state()
     private pos: [number, number] = [0, 0];
 
-    private dragController: DragController = new DragController();
+    private dragController!: DragController;
 
     private cardRef: Ref<HTMLElement> = createRef<HTMLElement>();
 
@@ -65,6 +68,7 @@ export default class PanelCard
     private isFocused: boolean = false;
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
+        this.dragController = new DragController(this.startPos);
         this.dragController.setElement(this.cardRef.value!);
 
         if (!this.screenManager) {
@@ -123,11 +127,11 @@ export default class PanelCard
         .card {
             display: flex;
             flex-direction: column;
-            padding: 20px;
             background-color: var(--card-color);
             border-radius: var(--border-radius);
             border: 1px solid var(--color-accent);
             position: absolute;
+            box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
         }
 
         .card.is-dragging {
@@ -138,12 +142,32 @@ export default class PanelCard
         .card.is-focused {
             border: 1px solid var(--color-tint-primary);
         }
+
+        .card-header {
+            width: 100%;
+            height: 50px;
+            background-color: var(--color-secondary);
+            border-top-left-radius: inherit;
+            border-top-right-radius: inherit;
+        }
+
+        .content-wrapper {
+            border-top: none;
+            border-bottom-left-radius: inherit;
+            border-bottom-right-radius: inherit;
+            background-color: var(--card-color);
+        }
+
+        .card-padded {
+            padding: 0 20px 20px 20px;
+        }
     `;
 
     override render(): TemplateResult {
         const [x, y] = this.pos;
         let handleMouseDown = (_: MouseEvent) => {};
-        if (this.isDraggable) {
+
+        if (this.isDraggable && this.dragController) {
             handleMouseDown = this.dragController.handleMouseDown.bind(
                 this.dragController,
             );
@@ -153,6 +177,16 @@ export default class PanelCard
             card: true,
             "is-dragging": this.isDragging,
             "is-focused": this.isFocused,
+        });
+
+        const headerClasses = classMap({
+            "card-header": true,
+            "card-draggable": !!this.isDraggable,
+        });
+
+        const contentClasses = classMap({
+            "content-wrapper": true,
+            "card-padded": this.padded,
         });
 
         const styles = styleMap({
@@ -172,10 +206,10 @@ export default class PanelCard
             @mousedown="${handleMouseDown}"
             @click="${this.handleFocus.bind(this)}"
         >
-            <div class="card-header">
+            <div class=${headerClasses}>
                 <slot name="header"></slot>
             </div>
-            <div class="content-wrapper">
+            <div class=${contentClasses}>
                 <slot></slot>
             </div>
         </div> `;

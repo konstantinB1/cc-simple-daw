@@ -1,6 +1,6 @@
 import { PanelType, VSTIPanel } from "@/lib/PanelScreenManager";
 import "./Pads";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import { customElement } from "lit/decorators.js";
@@ -15,6 +15,13 @@ export default class SamplerPanel extends WithScreenManager(
 ) {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
+
+    static styles = [
+        css`
+            .sampler-root {
+            }
+        `,
+    ];
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -38,19 +45,22 @@ export default class SamplerPanel extends WithScreenManager(
 
     override render() {
         return html`
-            <panel-card
-                card-height="auto"
-                card-width="500px"
-                card-id="sampler-view"
-                .startPos=${[10, 80] as const}
-                .isDraggable=${true}
-                .keyboardManager=${this.keyboardManager}
-            >
-                <sampler-view
-                    .keyManager=${this.keyboardManager}
-                    @sample-play=${this.onSamplePlay.bind(this)}
-                ></sampler-view>
-            </panel-card>
+            <div class="sampler-root">
+                <panel-card
+                    card-height="auto"
+                    card-width="500px"
+                    card-id="sampler-view"
+                    .startPos=${[10, 80] as const}
+                    .isDraggable=${true}
+                    padded
+                    .keyboardManager=${this.keyboardManager}
+                >
+                    <sampler-view
+                        .keyManager=${this.keyboardManager}
+                        @sample-play=${this.onSamplePlay.bind(this)}
+                    ></sampler-view>
+                </panel-card>
+            </div>
         `;
     }
 }

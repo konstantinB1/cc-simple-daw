@@ -26,15 +26,15 @@ export default class MpcButton extends LitElement {
                 border: 1px solid transparent;
                 height: 40px;
                 cursor: pointer;
-                transition: all 0.15s ease-in-out;
+                transition: all 0.2s ease-in-out;
 
                 &:hover {
-                    transform: scale(0.96);
+                    transform: scale(0.98);
                     border-color: var(--color-tint-primary);
                 }
 
                 &:active {
-                    transform: scale(0.91);
+                    transform: scale(0.95);
                 }
             }
 
