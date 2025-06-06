@@ -12,3 +12,5 @@ Almost nothing, but the basic structure is there.
 - [ ] Basic quantization (snap to grid)
 - [ ] Make more robust and intuitive keyboard interface
 - [ ] Drag and drop pads to switch between them, so it's easier to switch between them
+- [ ] Playhead dragging to move current time position
+- [ ] Notes dragging to move them around
