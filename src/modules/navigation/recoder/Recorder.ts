@@ -25,6 +25,9 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     @state()
     private isMetronomeOn: boolean = false;
 
+    @state()
+    private countdown: boolean = false;
+
     private stopWatch = new StopWatch();
 
     static styles = [
@@ -76,6 +79,12 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
                 description: "Rewind to Start",
                 handler: () => this.handleRewind(),
             },
+            {
+                active: true,
+                keys: ["Shift", "c"],
+                description: "Toggle Countdown",
+                handler: () => this.toggleCountdown(),
+            },
         ]);
     }
 
@@ -83,19 +92,31 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
         this.isMetronomeOn = !this.isMetronomeOn;
     }
 
-    private handlePlay(): void {
+    private async handlePlay(): Promise<void> {
         this.consumer.$toggleIsPlaying();
-
         const isPlaying = !this.playbackContext.isPlaying;
 
         if (isPlaying) {
+            this.metronome.cancelCountdown();
             this.stopWatch.stop();
         }
 
         if (!isPlaying) {
-            this.stopWatch.start(() => {
-                this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
-            })!;
+            if (this.countdown) {
+                await this.metronome.fixedCountdown(this.playbackContext.bpm);
+
+                this.stopWatch.start(() => {
+                    this.consumer.$setCurrentTime(
+                        this.stopWatch.getElapsedTime(),
+                    );
+                })!;
+            } else {
+                this.stopWatch.start(() => {
+                    this.consumer.$setCurrentTime(
+                        this.stopWatch.getElapsedTime(),
+                    );
+                })!;
+            }
         }
     }
 
@@ -153,6 +174,10 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
         return html`<stop-icon size=${15}></stop-icon>`;
     }
 
+    private toggleCountdown(): void {
+        this.countdown = !this.countdown;
+    }
+
     render() {
         return html`
             <div class="container">
@@ -180,6 +205,13 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
                         @handle-click=${this.toggleMetronome}
                     >
                         <metronome-icon></metronome-icon>
+                    </icon-button>
+                    <icon-button
+                        .isActive=${this.countdown}
+                        size=${40}
+                        @handle-click=${this.toggleCountdown}
+                    >
+                        <clock-icon .size=${20}></clock-icon>
                     </icon-button>
                 </div>
             </div>

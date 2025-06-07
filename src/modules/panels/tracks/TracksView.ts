@@ -10,6 +10,7 @@ import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
 import type AudioSource from "@/lib/AudioSource";
 import { classMap } from "lit/directives/class-map.js";
 import { NEEDLE_START_POS } from "./PlayheadNode";
+import type { TrackEventData, TrackEventDataEvent } from "./TrackViewEvents";
 
 const MAX_TIME_BEATS = 4;
 const BEAT_WIDTH = 70;
@@ -51,6 +52,9 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
 
     @state()
     private selectedTrack?: Track;
+
+    @state()
+    eventData: TrackEventData[] = [];
 
     static styles = [
         typography,
@@ -208,6 +212,12 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
         this.selectedTrack = track;
     }
 
+    private getEventDataForTrack({
+        detail: { id, events },
+    }: CustomEvent<TrackEventDataEvent>): void {
+        console.log("Upcoming events for track:", id, events);
+    }
+
     renderQuantisisedTrackCells(
         tracks: Track[] = this.tracks,
         isSub: boolean = false,
@@ -233,7 +243,10 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
                         <div class="${classes}">${track.channel.name}</div>
                         <div class="muted-button"></div>
                     </div>
-                    <track-event .track=${track as any}></track-event>
+                    <track-event
+                        @upcoming-events=${this.getEventDataForTrack}
+                        .track=${track as any}
+                    ></track-event>
                     ${this.generateCells(track.id)}
                 </div>
             `;

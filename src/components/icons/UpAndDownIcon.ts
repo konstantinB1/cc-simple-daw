@@ -1,11 +1,10 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
+import IconConsumerMixin from "./IconConsumerMixin";
 
+// @ts-ignore
 @customElement("up-down-icon")
-export default class DragIcon extends LitElement {
-    @property({ type: Number })
-    private size: number = 24;
-
+export default class UpAndDownIcon extends IconConsumerMixin(LitElement) {
     static styles = css`
         svg {
             width: 100%;

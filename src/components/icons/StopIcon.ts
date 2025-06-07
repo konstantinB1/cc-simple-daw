@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 @customElement("stop-icon")
-export default class DragIcon extends LitElement {
+export default class StopIcon extends LitElement {
     @property({ type: Number })
     private size: number = 24;
 

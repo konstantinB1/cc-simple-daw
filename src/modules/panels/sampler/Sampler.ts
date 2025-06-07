@@ -1,6 +1,6 @@
 import { PanelType, VSTIPanel } from "@/lib/PanelScreenManager";
 import "./Pads";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import { customElement } from "lit/decorators.js";
@@ -15,13 +15,6 @@ export default class SamplerPanel extends WithScreenManager(
 ) {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
-
-    static styles = [
-        css`
-            .sampler-root {
-            }
-        `,
-    ];
 
     connectedCallback(): void {
         super.connectedCallback();

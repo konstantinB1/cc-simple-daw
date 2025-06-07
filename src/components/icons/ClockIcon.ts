@@ -2,9 +2,9 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 @customElement("clock-icon")
-export default class DragIcon extends LitElement {
+export default class ClockIcon extends LitElement {
     @property({ type: String })
-    private color: string = "var(--color-primary)";
+    private color: string = "var(--color-tint-primary)";
 
     @property({ type: Number })
     private size: number = 24;
@@ -21,8 +21,6 @@ export default class DragIcon extends LitElement {
         return html`
             <icon-component size=${this.size}>
                 <svg
-                    height="800px"
-                    width="800px"
                     version="1.1"
                     id="_x32_"
                     xmlns="http://www.w3.org/2000/svg"

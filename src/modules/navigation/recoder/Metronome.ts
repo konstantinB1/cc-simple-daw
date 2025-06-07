@@ -6,8 +6,16 @@ export default class Metronome {
 
     private lastTick: number = -1;
 
+    private countdownInterval: NodeJS.Timeout | null = null;
+
     constructor(channel: AudioSource) {
         this.channel = channel;
+    }
+
+    private getNextBeatTime(currentTime: number, bpm: number): number {
+        const interval = this.metronomeInterval(bpm);
+        const nextBeat = Math.floor(currentTime / interval) + 1;
+        return nextBeat * interval;
     }
 
     public tick(currentTime: number, bpm: number) {
@@ -19,13 +27,30 @@ export default class Metronome {
         }
     }
 
-    private getNextBeatTime(currentTime: number, bpm: number): number {
-        const interval = this.metronomeInterval(bpm);
-        const nextBeat = Math.floor(currentTime / interval) + 1;
-        return nextBeat * interval;
+    public fixedCountdown(bpm: number, timeSignature: number = 4) {
+        return new Promise<void>((resolve) => {
+            let ticks = 3;
+
+            this.countdownInterval = setInterval(() => {
+                if (ticks === 0) {
+                    clearInterval(this.countdownInterval!);
+                    this.lastTick = -1;
+                    resolve();
+                } else {
+                    this.channel.play();
+                }
+
+                ticks--;
+            }, this.metronomeInterval(bpm));
+        });
     }
 
-    public start() {}
+    public cancelCountdown() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+    }
 
     stop(): void {
         this.lastTick = -1;

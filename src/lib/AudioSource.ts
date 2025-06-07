@@ -7,10 +7,12 @@ export type PlayEvent = {
     when: number;
     offset: number;
     duration?: number;
+    isPlaying?: boolean;
 };
 
 export type StopEvent = {
     id: string;
+    isPlaying: boolean;
 };
 
 // AudioChannel is responsible for separation of audio channels
@@ -40,6 +42,8 @@ export default class AudioChannel extends EventTarget {
     source: AudioSample;
 
     private bufferSource?: AudioBufferSourceNode;
+
+    public isPlaying: boolean = false;
 
     constructor(
         id: string,
@@ -118,8 +122,11 @@ export default class AudioChannel extends EventTarget {
         when: number = this.ctx.currentTime,
         offset: number = 0,
         duration?: number,
+        emitEvents: boolean = true,
         loopStart?: number,
         loopEnd?: number,
+        onStart?: () => void,
+        onEnd?: () => void,
     ): Promise<void> {
         if (!this.buffer) {
             throw new Error("No sample loaded to play");
@@ -135,6 +142,10 @@ export default class AudioChannel extends EventTarget {
         this.bufferSource.connect(this.getGainNode);
 
         this.bufferSource.start(when, offset, duration);
+
+        onStart?.();
+
+        this.isPlaying = true;
 
         if (loopStart !== undefined && loopEnd !== undefined) {
             this.bufferSource.loop = true;
@@ -154,24 +165,35 @@ export default class AudioChannel extends EventTarget {
                 when,
                 offset,
                 duration: duration ?? this.buffer.duration,
+                isPlaying: true,
             },
         });
 
-        this.dispatchEvent(new CustomEvent("audio-channel/play", event));
+        if (emitEvents) {
+            this.dispatchEvent(new CustomEvent("audio-channel/play", event));
+        }
 
         return new Promise((resolve) => {
-            this.bufferSource.onended = () => {
-                const event = new CustomEvent<StopEvent>(
-                    "audio-channel/ended",
-                    {
-                        detail: {
-                            id,
+            this.bufferSource!.onended = () => {
+                this.isPlaying = false;
+
+                if (emitEvents) {
+                    const event = new CustomEvent<StopEvent>(
+                        "audio-channel/ended",
+                        {
+                            detail: {
+                                id,
+                                isPlaying: false,
+                            },
                         },
-                    },
-                );
-                this.dispatchEvent(
-                    new CustomEvent("audio-channel/ended", event),
-                );
+                    );
+
+                    this.dispatchEvent(
+                        new CustomEvent("audio-channel/ended", event),
+                    );
+                }
+
+                onEnd?.();
                 resolve();
             };
         });
