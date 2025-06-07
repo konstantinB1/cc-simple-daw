@@ -212,12 +212,6 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
         this.selectedTrack = track;
     }
 
-    private getEventDataForTrack({
-        detail: { id, events },
-    }: CustomEvent<TrackEventDataEvent>): void {
-        console.log("Upcoming events for track:", id, events);
-    }
-
     renderQuantisisedTrackCells(
         tracks: Track[] = this.tracks,
         isSub: boolean = false,
@@ -243,10 +237,7 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
                         <div class="${classes}">${track.channel.name}</div>
                         <div class="muted-button"></div>
                     </div>
-                    <track-event
-                        @upcoming-events=${this.getEventDataForTrack}
-                        .track=${track as any}
-                    ></track-event>
+                    <track-event .track=${track as any}></track-event>
                     ${this.generateCells(track.id)}
                 </div>
             `;

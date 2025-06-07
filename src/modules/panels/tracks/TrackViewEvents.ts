@@ -6,6 +6,8 @@ import { playbackContext } from "@/context/playbackContext";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import { getPlayheadPosition } from "./Tracks";
+import type { PlayEvent, StopEvent } from "@/lib/AudioSource";
+import { msToSeconds } from "@/utils/TimeUtils";
 
 export type TrackEventData = {
     id: string;
@@ -27,6 +29,9 @@ export type TrackEventDataEvent = {
 
 @customElement("track-event")
 export default class TrackEvents extends LitElement {
+    @consumeProp({ context: playbackContext })
+    audioContext!: AudioContext;
+
     @consumeProp({ context: playbackContext, subscribe: true })
     currentTime!: number;
 
@@ -48,6 +53,10 @@ export default class TrackEvents extends LitElement {
     @state()
     private zIndex = 1;
 
+    private scheduledPlaying = false;
+
+    private prevStartTime = 0;
+
     @query(".event-container")
     private eventContainer!: HTMLDivElement;
 
@@ -56,21 +65,22 @@ export default class TrackEvents extends LitElement {
             .event-container {
                 position: relative;
                 width: 100%;
-                height: 60%;
+                height: 40%;
+                display: flex;
             }
 
             .event {
                 position: absolute;
-                background: #fd1d1d;
                 background: var(--color-tint-primary);
                 box-shadow: 0 0px 5 px rgba(0, 0, 0, 0.2);
-                border-left: 1px solid var(--color-accent);
-                border-radius: 2px;
+                border-radius: 4px;
                 min-width: 10px;
             }
 
             .event-drawing {
                 border-right: none;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
             }
 
             .event-done {
@@ -82,53 +92,90 @@ export default class TrackEvents extends LitElement {
     connectedCallback(): void {
         super.connectedCallback();
 
-        this.track.channel.onPlay(({ detail: { id } }) => {
-            if (!this.isRecording) {
-                return;
-            }
-
-            const zIndex = this.zIndex + 1;
-
-            this.events = [
-                {
-                    id,
-                    startTime: this.currentTime,
-                    done: false,
-                    xStart: getPlayheadPosition(this.bpm, this.currentTime),
-                    zIndex,
-                },
-                ...this.events,
-            ];
-
-            this.zIndex = zIndex;
-        });
-
-        this.track.channel.onStop(({ detail: { id } }) => {
-            if (!this.isRecording) {
-                return;
-            }
-
-            this.events = this.events.map((ev) => {
-                if (ev.id === id && !ev?.done) {
-                    return {
-                        ...ev,
-                        done: true,
-                        endTime: this.currentTime,
-                        xEnd: getPlayheadPosition(this.bpm, this.currentTime),
-                    };
-                }
-
-                return ev;
-            });
-        });
+        this.track.channel.onPlay(this.handlePlayEvent.bind(this));
+        this.track.channel.onStop(this.handleStopEvent.bind(this));
     }
 
-    protected updated(_changedProperties: PropertyValues): void {
-        if (_changedProperties.has("currentTime")) {
-            Array.from(this.eventContainer.children).forEach(
-                this.animateWidth.bind(this),
-            );
+    updated(_changedProperties: PropertyValues): void {
+        const children = Array.from(this.eventContainer.children);
+
+        if (_changedProperties.has("isPlaying")) {
+            this.handlePlayback();
         }
+
+        if (_changedProperties.has("currentTime")) {
+            children.forEach(this.animateWidth.bind(this));
+        }
+
+        super.updated(_changedProperties);
+    }
+
+    private handlePlayback() {
+        const currentTime = this.currentTime;
+        const startTime = this.audioContext.currentTime;
+
+        if (
+            this.isPlaying &&
+            this.prevStartTime !== startTime &&
+            !this.scheduledPlaying
+        ) {
+            this.scheduledPlaying = true;
+
+            this.events.forEach((ev) => {
+                const when =
+                    startTime + (msToSeconds(ev.startTime) - currentTime);
+
+                this.track.channel
+                    .play(when, 0, ev.endTime, false)
+                    .catch((err) => {
+                        console.error(`Failed to play event ${ev.id}:`, err);
+                    });
+
+                this.prevStartTime = startTime;
+            });
+
+            this.scheduledPlaying = false;
+        }
+    }
+
+    private handlePlayEvent({ detail: { id } }: CustomEvent<PlayEvent>) {
+        if (!this.isRecording) {
+            return;
+        }
+
+        const zIndex = this.zIndex + 1;
+
+        this.events = [
+            {
+                id,
+                startTime: this.currentTime,
+                done: false,
+                xStart: getPlayheadPosition(this.bpm, this.currentTime),
+                zIndex,
+            },
+            ...this.events,
+        ];
+
+        this.zIndex = zIndex;
+    }
+
+    private handleStopEvent({ detail: { id } }: CustomEvent<StopEvent>) {
+        if (!this.isRecording) {
+            return;
+        }
+
+        this.events = this.events.map((ev) => {
+            if (ev.id === id && !ev?.done) {
+                return {
+                    ...ev,
+                    done: true,
+                    endTime: this.currentTime,
+                    xEnd: getPlayheadPosition(this.bpm, this.currentTime),
+                };
+            }
+
+            return ev;
+        });
     }
 
     private animateWidth(el: Element) {
