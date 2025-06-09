@@ -1,4 +1,4 @@
-import { CustomPanel, PanelType } from "@/lib/PanelScreenManager";
+import { CustomPanel } from "@/lib/PanelScreenManager";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import WithScreenManager from "@/mixins/WithScreenManager";
@@ -25,7 +25,6 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
             this.screenManager,
             "tracks-view",
             this,
-            PanelType.Custom,
             true,
             true,
         );

@@ -6,11 +6,12 @@ import "./PlayheadNode";
 import "./TrackViewEvents";
 
 import { typography } from "@/global-styles";
-import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
 import type AudioSource from "@/lib/AudioSource";
 import { classMap } from "lit/directives/class-map.js";
 import { NEEDLE_START_POS } from "./PlayheadNode";
-import type { TrackEventData, TrackEventDataEvent } from "./TrackViewEvents";
+import type { TrackEventData } from "./TrackViewEvents";
+import { consumeProp } from "@/decorators/sync";
+import { playbackContext } from "@/context/playbackContext";
 
 const MAX_TIME_BEATS = 4;
 const BEAT_WIDTH = 70;
@@ -47,14 +48,20 @@ export enum QuantisizeOptions {
 }
 
 @customElement("tracks-view")
-export default class TracksView extends WithAudioChannelsContext(LitElement) {
+export default class TracksView extends LitElement {
     private currentQuantisize: QuantisizeOptions = QuantisizeOptions["1/4"];
+
+    @consumeProp({ context: playbackContext, subscribe: true })
+    sources!: AudioSource[];
 
     @state()
     private selectedTrack?: Track;
 
     @state()
     eventData: TrackEventData[] = [];
+
+    @consumeProp({ context: playbackContext })
+    master!: AudioSource;
 
     static styles = [
         typography,
@@ -169,17 +176,14 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
         `,
     ];
 
-    private get tracks(): Track[] {
-        return this.audioChannels.channels.flatMap((channel: AudioSource) => {
-            const track = new Track(channel);
-
-            return [
-                track,
-                ...(channel.subChannels?.map((subChannel) => {
-                    return new Track(subChannel, track);
-                }) || []),
-            ];
+    firstUpdated(): void {
+        this.master.addEventListener("audio-channel/sub-channel-added", (e) => {
+            console.log("Sub-channel added:", e);
         });
+    }
+
+    private get tracks(): Track[] {
+        return this.sources.map((source) => new Track(source));
     }
 
     renderQuantisisedLines() {
@@ -216,6 +220,7 @@ export default class TracksView extends WithAudioChannelsContext(LitElement) {
         tracks: Track[] = this.tracks,
         isSub: boolean = false,
     ): TemplateResult[] {
+        console.log("Rendering tracks", tracks);
         return tracks.map((track: Track) => {
             const classes = classMap({
                 "track-name": true,

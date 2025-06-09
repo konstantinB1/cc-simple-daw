@@ -1,4 +1,5 @@
 import AudioSource from "@/lib/AudioSource";
+import Scheduler from "@/lib/Scheduler";
 import VSTRegistry from "@/lib/VSTRegistry";
 import { ContextProvider, createContext } from "@lit/context";
 import type { LitElement } from "lit";
@@ -7,19 +8,56 @@ export const playbackContext = createContext<PlaybackContextStore>(
     Symbol("playbackContext"),
 );
 
-const audioContext = new AudioContext();
+export enum TimeEventChange {
+    Rewinded,
+    Forwarded,
+    SeekStart,
+    SeekEnd,
+    Natural,
+}
 
 export class PlaybackContextStore {
-    audioContext: AudioContext = audioContext;
+    // This sources are only exposed to the root of the context
+    // so the UI parts can subscribe to changes
+    // All tracks belong to the master AudioSource,
+    // and can be accessed via playbackContext.master.subChannels aswell
+    // So every time you add a track, you should also add it to the master AudioSource
+    // via master.addSubChannel(track);
+    sources: AudioSource[] = [];
+    audioContext: AudioContext;
     isPlaying = false;
     isRecording = false;
     isLooping = false;
     bpm = 120;
-    master: AudioSource = new AudioSource("master", audioContext, "Master");
-    preview: AudioSource = new AudioSource("preview", audioContext, "Preview");
+    master: AudioSource;
+    preview: AudioSource;
     timeSignature: [number, number] = [4, 4];
     currentTime: number = 0;
+    scheduler: Scheduler;
     vstRegistry: VSTRegistry = new VSTRegistry();
+    lastTimeEventChange?: TimeEventChange = undefined;
+
+    constructor() {
+        this.audioContext = new AudioContext();
+
+        this.master = new AudioSource(
+            "master",
+            this.audioContext,
+            "Master",
+            undefined,
+            true,
+        );
+
+        this.preview = new AudioSource(
+            "preview",
+            this.audioContext,
+            "Preview",
+            this.master,
+            true,
+        );
+
+        this.scheduler = new Scheduler(this);
+    }
 }
 
 export function attachPlaybackContextEvents(
@@ -29,6 +67,7 @@ export function attachPlaybackContextEvents(
     host.addEventListener("playback-context/bpm", (event: Event) => {
         ctx.setValue({
             ...ctx.value,
+            lastTimeEventChange: TimeEventChange.Natural,
             bpm: (event as CustomEvent<number>).detail,
         });
     });
@@ -94,7 +133,62 @@ export function attachPlaybackContextEvents(
             ctx.setValue({
                 ...ctx.value,
                 currentTime: (event as CustomEvent<number>).detail,
+                lastTimeEventChange: TimeEventChange.Natural,
             });
         },
     );
+
+    host.addEventListener("playback-context/rewind", (event: Event) => {
+        const value = (event as CustomEvent<number>)?.detail ?? 0;
+
+        ctx.setValue({
+            ...ctx.value,
+            currentTime: value,
+            lastTimeEventChange: TimeEventChange.Rewinded,
+        });
+    });
+
+    host.addEventListener("playback-context/forward", (event: Event) => {
+        const value = (event as CustomEvent<number>)?.detail ?? 0;
+
+        ctx.setValue({
+            ...ctx.value,
+            currentTime: value,
+            lastTimeEventChange: TimeEventChange.Forwarded,
+        });
+    });
+
+    host.addEventListener("playback-context/seek-start", (event: Event) => {
+        const value = (event as CustomEvent<number>)?.detail ?? 0;
+
+        ctx.setValue({
+            ...ctx.value,
+            currentTime: value,
+            lastTimeEventChange: TimeEventChange.SeekStart,
+        });
+    });
+
+    host.addEventListener("playback-context/seek-end", (event: Event) => {
+        const value = (event as CustomEvent<number>)?.detail ?? 0;
+        ctx.setValue({
+            ...ctx.value,
+            currentTime: value,
+            lastTimeEventChange: TimeEventChange.SeekEnd,
+        });
+    });
+
+    host.addEventListener("playback-context/add-channel", (event: Event) => {
+        const source = (event as CustomEvent<AudioSource[]>).detail;
+
+        if (ctx.value.sources.some((s) => s.id === source[0].id)) {
+            console.warn(
+                `AudioSource with id ${source[0].id} already exists in playback context.`,
+            );
+        }
+
+        ctx.setValue({
+            ...ctx.value,
+            sources: [...ctx.value.sources, ...source],
+        });
+    });
 }

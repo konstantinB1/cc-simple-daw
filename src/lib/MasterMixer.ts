@@ -1,11 +1,11 @@
-import type AudioChannel from "./AudioSource";
+import type AudioSource from "./AudioSource";
 
 export default class MasterMixer {
-    private channels: Map<string, AudioChannel> = new Map();
+    private channels: Map<string, AudioSource> = new Map();
 
     constructor(_: AudioContext) {}
 
-    addChannel(channel: AudioChannel): void {
+    addChannel(channel: AudioSource): void {
         this.channels.set(channel.id, channel);
         channel.setVolume(1); // Set default volume
     }
@@ -14,7 +14,7 @@ export default class MasterMixer {
         this.channels.delete(channelId);
     }
 
-    getChannel(channelId: string): AudioChannel | undefined {
+    getChannel(channelId: string): AudioSource | undefined {
         return this.channels.get(channelId);
     }
 }

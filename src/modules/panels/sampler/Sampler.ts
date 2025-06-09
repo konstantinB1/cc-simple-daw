@@ -24,12 +24,12 @@ export default class SamplerPanel extends WithScreenManager(
         this.screenManager.add(
             elementName,
             new VSTIPanel(
-                vstInstrument,
                 this.screenManager,
                 "sampler-view",
                 this,
-                PanelType.VSTI,
                 true,
+                true,
+                vstInstrument,
             ),
         );
     }

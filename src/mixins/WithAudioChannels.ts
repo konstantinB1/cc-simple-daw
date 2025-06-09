@@ -6,16 +6,16 @@ import { consume } from "@lit/context";
 import { LitElement } from "lit";
 import { state } from "lit/decorators.js";
 
-const WithAudioChannelsContext = <T extends Constructor<LitElement>>(
+const WithAudioSourcesContext = <T extends Constructor<LitElement>>(
     superClass: T,
 ) => {
-    class AudioChannelsConsumer extends superClass {
+    class AudioSourcesConsumer extends superClass {
         @consume({ context: channelsContext, subscribe: true })
         @state()
-        protected audioChannels!: ChannelsContext;
+        protected AudioSources!: ChannelsContext;
 
         hasChannel(channel: AudioSource): boolean {
-            return this.audioChannels.channels.some((c) => c.id === channel.id);
+            return this.AudioSources.channels.some((c) => c.id === channel.id);
         }
 
         $addChannel(channel: AudioSource): void {
@@ -29,8 +29,8 @@ const WithAudioChannelsContext = <T extends Constructor<LitElement>>(
         }
     }
 
-    return AudioChannelsConsumer as unknown as T &
-        Constructor<AudioChannelsConsumer>;
+    return AudioSourcesConsumer as unknown as T &
+        Constructor<AudioSourcesConsumer>;
 };
 
-export default WithAudioChannelsContext;
+export default WithAudioSourcesContext;

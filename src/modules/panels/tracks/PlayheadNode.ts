@@ -16,6 +16,8 @@ export default class PlayheadNode extends LitElement {
     @consumeProp({ context: playbackContext, subscribe: true })
     currentTime!: number;
 
+    private isDragging: boolean = false;
+
     static styles = [
         css`
             .current-time-indicator {
@@ -27,6 +29,19 @@ export default class PlayheadNode extends LitElement {
                 height: 100%;
                 z-index: 10;
                 left: ${NEEDLE_START_POS}px;
+                cursor: grabbing;
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: -6px;
+                    width: 0;
+                    height: 0;
+                    border-top: 6px solid var(--color-tint-primary);
+                    border-left: 6px solid transparent;
+                    border-right: 6px solid transparent;
+                }
             }
         `,
     ];

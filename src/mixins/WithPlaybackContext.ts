@@ -2,6 +2,7 @@ import {
     playbackContext,
     PlaybackContextStore,
 } from "@/context/playbackContext";
+import type AudioSource from "@/lib/AudioSource";
 import type { Constructor } from "@/utils/types";
 import { consume } from "@lit/context";
 import { LitElement } from "lit";
@@ -28,6 +29,16 @@ export class PlaybackContextConsumerBase {
     $play() {
         this.host.dispatchEvent(
             new CustomEvent("playback-context/play", {
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $addChannel(...channel: AudioSource[]) {
+        this.host.dispatchEvent(
+            new CustomEvent<AudioSource[]>("playback-context/add-channel", {
+                detail: channel,
                 bubbles: true,
                 composed: true,
             }),
@@ -65,6 +76,26 @@ export class PlaybackContextConsumerBase {
         this.host.dispatchEvent(
             new CustomEvent<number>("playback-context/set-current-time", {
                 detail: currentTime,
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $setRewindTime(rewindTime: number) {
+        this.host.dispatchEvent(
+            new CustomEvent<number>("playback-context/rewind", {
+                detail: rewindTime,
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    $setForwardTime(forwardTime: number) {
+        this.host.dispatchEvent(
+            new CustomEvent<number>("playback-context/forward", {
+                detail: forwardTime,
                 bubbles: true,
                 composed: true,
             }),

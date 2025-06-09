@@ -51,7 +51,10 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     connectedCallback(): void {
         super.connectedCallback();
 
-        this.metronome = new Metronome(this.playbackContext.preview);
+        this.metronome = new Metronome(
+            this.playbackContext.preview,
+            this.playbackContext.audioContext,
+        );
         this.metronome.preloadTickSound();
 
         this.keyboardManager.addKeys([
@@ -99,9 +102,9 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
         if (isPlaying) {
             this.metronome.cancelCountdown();
             this.stopWatch.stop();
-        }
-
-        if (!isPlaying) {
+            this.playbackContext.scheduler.stop();
+        } else {
+            this.playbackContext.scheduler.start();
             if (this.countdown) {
                 await this.metronome.fixedCountdown(this.playbackContext.bpm);
 
@@ -110,6 +113,8 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
                         this.stopWatch.getElapsedTime(),
                     );
                 })!;
+
+                this.playbackContext.master.stop();
             } else {
                 this.stopWatch.start(() => {
                     this.consumer.$setCurrentTime(
@@ -148,7 +153,7 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     }
 
     private handleRewind(): void {
-        this.consumer.$setCurrentTime(0);
+        this.consumer.$setRewindTime(0);
         this.stopWatch.reset();
 
         if (this.playbackContext.isPlaying) {

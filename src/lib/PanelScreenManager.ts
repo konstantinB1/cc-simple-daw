@@ -82,15 +82,43 @@ export abstract class Panel extends EventTarget {
 export class VSTIPanel extends Panel {
     vstData: VSTInstrument;
 
-    constructor(vstData: VSTInstrument, ...args: PanelArgs) {
-        super(...args);
+    constructor(
+        screenManagerInstance: PanelScreenManager,
+        name: string,
+        element: HTMLElement,
+        isVisible: boolean = false,
+        isDraggable: boolean = true,
+        vstData: VSTInstrument,
+    ) {
+        super(
+            screenManagerInstance,
+            name,
+            element,
+            PanelType.VSTI,
+            isVisible,
+            isDraggable,
+        );
+
         this.vstData = vstData;
     }
 }
 
 export class CustomPanel extends Panel {
-    constructor(...args: PanelArgs) {
-        super(...args);
+    constructor(
+        screenManagerInstance: PanelScreenManager,
+        name: string,
+        element: HTMLElement,
+        isVisible: boolean = false,
+        isDraggable: boolean = true,
+    ) {
+        super(
+            screenManagerInstance,
+            name,
+            element,
+            PanelType.Custom,
+            isVisible,
+            isDraggable,
+        );
     }
 }
 

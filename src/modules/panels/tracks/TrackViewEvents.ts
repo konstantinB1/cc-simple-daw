@@ -2,12 +2,13 @@ import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import type { Track } from "./TracksView";
 import { consumeProp } from "@/decorators/sync";
-import { playbackContext } from "@/context/playbackContext";
+import { playbackContext, TimeEventChange } from "@/context/playbackContext";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import { getPlayheadPosition } from "./Tracks";
 import type { PlayEvent, StopEvent } from "@/lib/AudioSource";
 import { msToSeconds } from "@/utils/TimeUtils";
+import type Scheduler from "@/lib/Scheduler";
 
 export type TrackEventData = {
     id: string;
@@ -32,6 +33,9 @@ export default class TrackEvents extends LitElement {
     @consumeProp({ context: playbackContext })
     audioContext!: AudioContext;
 
+    @consumeProp({ context: playbackContext })
+    scheduler!: Scheduler;
+
     @consumeProp({ context: playbackContext, subscribe: true })
     currentTime!: number;
 
@@ -44,6 +48,9 @@ export default class TrackEvents extends LitElement {
     @consumeProp({ context: playbackContext, subscribe: true })
     bpm!: number;
 
+    @consumeProp({ context: playbackContext, subscribe: true })
+    lastTimeEventChange?: TimeEventChange;
+
     @property({ type: Object })
     track!: Track;
 
@@ -52,10 +59,6 @@ export default class TrackEvents extends LitElement {
 
     @state()
     private zIndex = 1;
-
-    private scheduledPlaying = false;
-
-    private prevStartTime = 0;
 
     @query(".event-container")
     private eventContainer!: HTMLDivElement;
@@ -99,7 +102,7 @@ export default class TrackEvents extends LitElement {
     updated(_changedProperties: PropertyValues): void {
         const children = Array.from(this.eventContainer.children);
 
-        if (_changedProperties.has("isPlaying")) {
+        if (_changedProperties.has("lastTimeEventChange")) {
             this.handlePlayback();
         }
 
@@ -111,30 +114,21 @@ export default class TrackEvents extends LitElement {
     }
 
     private handlePlayback() {
-        const currentTime = this.currentTime;
-        const startTime = this.audioContext.currentTime;
+        if (this.lastTimeEventChange === TimeEventChange.Rewinded) {
+            this.scheduler.removeFromQueue(this.track.channel);
+            return;
+        }
 
-        if (
-            this.isPlaying &&
-            this.prevStartTime !== startTime &&
-            !this.scheduledPlaying
-        ) {
-            this.scheduledPlaying = true;
-
+        if (this.isPlaying) {
             this.events.forEach((ev) => {
-                const when =
-                    startTime + (msToSeconds(ev.startTime) - currentTime);
+                const startTime = msToSeconds(ev.startTime);
+                const endTime = msToSeconds(ev.endTime ?? 0);
 
-                this.track.channel
-                    .play(when, 0, ev.endTime, false)
-                    .catch((err) => {
-                        console.error(`Failed to play event ${ev.id}:`, err);
-                    });
-
-                this.prevStartTime = startTime;
+                this.scheduler.addToQueue(this.track.channel, {
+                    startTime,
+                    endTime,
+                });
             });
-
-            this.scheduledPlaying = false;
         }
     }
 

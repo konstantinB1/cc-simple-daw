@@ -10,6 +10,7 @@ import type { ProgramLoadedData } from "./Load";
 import "./PadBank";
 import "./Load";
 import "./Pad";
+
 import {
     KeyMappingWithPressed,
     SimpleKeyboardKanager,
@@ -17,7 +18,6 @@ import {
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import WithScreenManager from "@/mixins/WithScreenManager";
 import AudioSource from "@/lib/AudioSource";
-import WithAudioChannelsContext from "@/mixins/WithAudioChannels";
 
 const noop = () => {};
 
@@ -53,6 +53,7 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
         data: AudioFile,
         bank: PadBankSelector,
         index: number,
+        master: AudioSource,
     ) {
         super(
             mapping.keys,
@@ -72,6 +73,7 @@ export class MappedPadKeyWithPressed extends KeyMappingWithPressed {
             `pad-${mapping.name}-${bank}-${index}`,
             ctx,
             mapping.name,
+            master,
         );
 
         this.sample.load(data.data).catch((err) => {
@@ -109,8 +111,8 @@ const getBank = (index: number) => {
 const element = "sampler-view";
 
 @customElement(element)
-export default class Pads extends WithAudioChannelsContext(
-    WithScreenManager(WithPlaybackContext(LitElement)),
+export default class Pads extends WithScreenManager(
+    WithPlaybackContext(LitElement),
 ) {
     private samplerKeyMgr: SimpleKeyboardKanager = new SimpleKeyboardKanager();
 
@@ -133,6 +135,8 @@ export default class Pads extends WithAudioChannelsContext(
 
     @property({ type: Boolean })
     isFocused: boolean = false;
+
+    private samplerMaster!: AudioSource;
 
     static styles: CSSResultGroup = css`
         .top-bar {
@@ -158,6 +162,16 @@ export default class Pads extends WithAudioChannelsContext(
 
     connectedCallback(): void {
         super.connectedCallback();
+
+        this.samplerMaster = new AudioSource(
+            "sampler-master",
+            this.playbackContext.audioContext,
+            "Sampler Master",
+            this.playbackContext.master,
+            true,
+        );
+
+        this.playbackContext.master.addSubChannel(this.samplerMaster);
 
         this.screenManager.onPanelFocused((p) => {
             if (p?.name === this.nodeName.toLowerCase()) {
@@ -230,6 +244,7 @@ export default class Pads extends WithAudioChannelsContext(
                     data,
                     bank,
                     index,
+                    this.samplerMaster,
                 );
             },
         );
@@ -259,19 +274,10 @@ export default class Pads extends WithAudioChannelsContext(
     private createMappedKeysFromProgram() {
         this.createMappings();
 
-        const mainMaster = this.playbackContext.master;
-        const samplerMaster = new AudioSource(
-            "sampler-master",
-            this.playbackContext.audioContext,
-            "Sampler Master",
-            mainMaster,
-        );
-
-        this.mappedKeyPads.forEach(({ sample }) =>
-            samplerMaster.addSubChannel(sample),
-        );
-
-        this.$addChannel(samplerMaster);
+        this.mappedKeyPads.forEach(({ sample }) => {
+            this.samplerMaster.addSubChannel(sample);
+            this.consumer.$addChannel(sample);
+        });
     }
 
     private setPadBankFromEvent(

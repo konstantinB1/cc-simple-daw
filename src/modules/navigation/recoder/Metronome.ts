@@ -1,4 +1,4 @@
-import type AudioSource from "@/lib/AudioSource";
+import AudioSource from "@/lib/AudioSource";
 import { getAudioAsset } from "@/utils";
 
 export default class Metronome {
@@ -8,8 +8,17 @@ export default class Metronome {
 
     private countdownInterval: NodeJS.Timeout | null = null;
 
-    constructor(channel: AudioSource) {
-        this.channel = channel;
+    constructor(channel: AudioSource, context: AudioContext) {
+        const sub = channel.addSubChannel(
+            new AudioSource(
+                "metronome-tick",
+                context,
+                "Metronome tick sound",
+                channel,
+            ),
+        );
+
+        this.channel = sub;
     }
 
     private getNextBeatTime(currentTime: number, bpm: number): number {

@@ -163,6 +163,8 @@ export default class PanelCard
         }
     `;
 
+    private handleDoubleClick(): void {}
+
     override render(): TemplateResult {
         const [x, y] = this.pos;
         let handleMouseDown = (_: MouseEvent) => {};
@@ -204,6 +206,7 @@ export default class PanelCard
             class=${classes}
             style=${styles}
             @mousedown="${handleMouseDown}"
+            @dblclick="${this.handleDoubleClick.bind(this)}"
             @click="${this.handleFocus.bind(this)}"
         >
             <div class=${headerClasses}>

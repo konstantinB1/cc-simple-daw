@@ -1,6 +1,7 @@
 import { generateUUID } from "@/utils/uuid";
 import type AudioEffect from "./AudioEffect";
 import AudioSample from "./AudioSample";
+import Logger from "./Logger";
 
 export type PlayEvent = {
     id: string;
@@ -15,13 +16,15 @@ export type StopEvent = {
     isPlaying: boolean;
 };
 
-// AudioChannel is responsible for separation of audio channels
+// AudioSource is responsible for separation of audio channels
 // from WebAudio API into more coherent structure, so it can be used
 // with pub/sub system for communication between different parts of the application.
-// AudioChannel is a base class for multiple parts of the app such as
+// AudioSource is a base class for multiple parts of the app such as
 // mixer, tracks sequencer, and all VSTs that need to handle audio data.
-export default class AudioChannel extends EventTarget {
+export default class AudioSource extends EventTarget {
     private ctx: AudioContext;
+
+    logger = Logger.getInstance();
 
     id: string;
 
@@ -35,21 +38,27 @@ export default class AudioChannel extends EventTarget {
 
     private gainNode?: GainNode;
 
-    subChannels: AudioChannel[] = [];
+    subChannels: Map<string, AudioSource> = new Map<string, AudioSource>();
 
-    master?: AudioChannel;
+    master?: AudioSource;
 
     source: AudioSample;
 
-    private bufferSource?: AudioBufferSourceNode;
+    private bufferSources: Set<AudioBufferSourceNode> = new Set();
 
     public isPlaying: boolean = false;
+
+    // Flag to indicate if this channel is only used for mixing
+    // and does not represent a track or a sample, so we dont
+    // need to render it in the UI on the sequencer for example.
+    isMixerChannel: boolean = false;
 
     constructor(
         id: string,
         ctx: AudioContext,
         name?: string,
-        master?: AudioChannel,
+        master?: AudioSource,
+        isMixerChannel: boolean = false,
     ) {
         super();
 
@@ -57,6 +66,7 @@ export default class AudioChannel extends EventTarget {
         this.id = id;
         this.name = name;
         this.master = master;
+        this.isMixerChannel = isMixerChannel;
 
         this.source = new AudioSample(ctx);
 
@@ -103,6 +113,10 @@ export default class AudioChannel extends EventTarget {
     }
 
     async load(sample: ArrayBuffer): Promise<void> {
+        if (this.isMixerChannel) {
+            throw new Error("Cannot load sample into a mixer channel");
+        }
+
         const audioBuffer = await this.source.load(sample);
 
         if (!audioBuffer) {
@@ -128,71 +142,60 @@ export default class AudioChannel extends EventTarget {
         onStart?: () => void,
         onEnd?: () => void,
     ): Promise<void> {
-        if (!this.buffer) {
-            throw new Error("No sample loaded to play");
-        }
+        if (!this.buffer) throw new Error("No sample loaded to play");
+        if (this.muted) return Promise.resolve();
 
-        if (this.muted) {
-            return Promise.resolve();
-        }
+        const source = this.ctx.createBufferSource();
+        source.buffer = this.buffer;
+        const uuid = generateUUID();
 
-        this.bufferSource = this.ctx.createBufferSource();
-        this.bufferSource.buffer = this.buffer;
-
-        this.bufferSource.connect(this.getGainNode);
-
-        this.bufferSource.start(when, offset, duration);
-
-        onStart?.();
-
-        this.isPlaying = true;
+        source.onended = () => {
+            this.bufferSources.delete(source);
+            // ...existing onended logic...
+            if (emitEvents) {
+                const event = new CustomEvent<StopEvent>(
+                    "audio-channel/ended",
+                    {
+                        detail: { id: uuid, isPlaying: false },
+                    },
+                );
+                this.dispatchEvent(event);
+            }
+            onEnd?.();
+        };
 
         if (loopStart !== undefined && loopEnd !== undefined) {
-            this.bufferSource.loop = true;
-            this.bufferSource.loopStart = loopStart;
-            this.bufferSource.loopEnd = loopEnd;
+            source.loop = true;
+            source.loopStart = loopStart;
+            source.loopEnd = loopEnd;
         } else {
-            this.bufferSource.loop = false;
+            source.loop = false;
         }
 
-        this.bufferSource.connect(this.ctx.destination);
-
-        const id = generateUUID();
-
-        const event = new CustomEvent<PlayEvent>("audio-channel/play", {
-            detail: {
-                id,
-                when,
-                offset,
-                duration: duration ?? this.buffer.duration,
-                isPlaying: true,
-            },
-        });
+        source.connect(this.ctx.destination);
+        source.start(when, offset, duration);
 
         if (emitEvents) {
+            const event = new CustomEvent<PlayEvent>("audio-channel/play", {
+                detail: {
+                    id: uuid,
+                    when,
+                    offset,
+                    duration: duration ?? this.buffer.duration,
+                    isPlaying: true,
+                },
+            });
+
             this.dispatchEvent(new CustomEvent("audio-channel/play", event));
         }
 
+        this.bufferSources.add(source);
+
+        onStart?.();
+
         return new Promise((resolve) => {
-            this.bufferSource!.onended = () => {
-                this.isPlaying = false;
-
-                if (emitEvents) {
-                    const event = new CustomEvent<StopEvent>(
-                        "audio-channel/ended",
-                        {
-                            detail: {
-                                id,
-                                isPlaying: false,
-                            },
-                        },
-                    );
-
-                    this.dispatchEvent(
-                        new CustomEvent("audio-channel/ended", event),
-                    );
-                }
-
+            source.onended = () => {
+                this.bufferSources.delete(source);
                 onEnd?.();
                 resolve();
             };
@@ -213,17 +216,27 @@ export default class AudioChannel extends EventTarget {
         });
     }
 
-    stop(): void {
-        this.getGainNode.disconnect();
-        this.bufferSource?.stop();
-        this.dispatchEvent(new CustomEvent("stop"));
-        this.bufferSource = undefined;
+    stop(when: number = 0, emitEvents: boolean = true): void {
+        this.bufferSources.forEach((source) => {
+            try {
+                source.stop(this.ctx.currentTime + when);
+            } catch {}
+            source.disconnect();
+        });
+        this.bufferSources.clear();
+
+        if (emitEvents) {
+            this.dispatchEvent(new CustomEvent("stop"));
+        }
     }
 
-    addSubChannel(channel: AudioChannel): void {
-        this.subChannels.push(channel);
+    addSubChannel(channel: AudioSource): AudioSource {
+        if (this.subChannels.has(channel.id)) {
+            throw new Error(`SubChannel with id ${channel.id} already exists`);
+        }
 
-        // Set initial volume/mute state
+        this.subChannels.set(channel.id, channel);
+
         channel.setVolume(this.getGainNode.gain.value);
         channel.setMuted(this.muted);
 
@@ -235,5 +248,13 @@ export default class AudioChannel extends EventTarget {
 
             subChannel.getGainNode.connect(this.ctx.destination);
         });
+
+        this.dispatchEvent(
+            new CustomEvent("audio-channel/sub-channel-added", {
+                detail: { channel },
+            }),
+        );
+
+        return channel;
     }
 }
