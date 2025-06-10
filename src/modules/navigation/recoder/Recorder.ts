@@ -141,6 +141,10 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     protected updated(_changedProperties: PropertyValues) {
         super.updated?.(_changedProperties);
 
+        if (_changedProperties.has("lastTimeEventChange")) {
+            this.playbackContext.scheduler.stop();
+        }
+
         if (this.playbackContext.isPlaying && this.isMetronomeOn) {
             if (!this.metronomeRafId) {
                 this.metronomeLoop();
@@ -157,6 +161,8 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
         this.stopWatch.reset();
 
         if (this.playbackContext.isPlaying) {
+            this.playbackContext.scheduler.reschedule();
+
             this.stopWatch.start(() => {
                 this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
             })!;

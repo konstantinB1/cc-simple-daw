@@ -83,8 +83,6 @@ export class SimpleKeyboardKanager
 {
     keys: Map<string, KeyMappingWithPressed> = new Map();
 
-    private pressedKeys: Set<string> = new Set();
-
     private pressedKeysMetadata: Map<string, PressedKeyMetadata> = new Map();
 
     attached: boolean = false;
@@ -216,8 +214,12 @@ export class LayeredKeyboardManager
 
     private currentKeys: string[] = [];
 
-    constructor() {
+    private ignoreFn: ((event: KeyboardEvent) => boolean) | null = null;
+
+    constructor(ignoreFn?: (event: KeyboardEvent) => boolean) {
         super();
+
+        this.ignoreFn = ignoreFn || null;
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
@@ -248,6 +250,10 @@ export class LayeredKeyboardManager
 
         if ("code" in event && event.code === "Space") {
             key = event.code.toLowerCase();
+        }
+
+        if (this.ignoreFn?.(event)) {
+            return;
         }
 
         const prevKey =

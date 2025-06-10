@@ -136,11 +136,11 @@ export default class PanelCard
 
         .card.is-dragging {
             cursor: grabbing;
-            border: 1px solid var(--color-tint-primary);
+            box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
         }
 
         .card.is-focused {
-            border: 1px solid var(--color-tint-primary);
+            border: 1px solid #533f3f;
         }
 
         .card-header {

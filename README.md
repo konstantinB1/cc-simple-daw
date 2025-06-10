@@ -7,10 +7,11 @@ Almost nothing, but the basic structure is there.
 ## Thins to do for next CC
 
 - [ ] Add a way to add tracks
-- [ ] Fix playback in the sequencer
+- [ ] Fix playback in the sequencer (currently the focus)
 - [x] ~~Fix drag and drop panels~~
 - [ ] Basic quantization (snap to grid)
 - [ ] Make more robust and intuitive keyboard interface
 - [ ] Drag and drop pads to switch between them, so it's easier to switch between them
 - [ ] Playhead dragging to move current time position
 - [ ] Notes dragging to move them around
+- [ ] More efficient context state management by utilizing `reselect` with `lit-context`

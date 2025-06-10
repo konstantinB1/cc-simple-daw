@@ -8,6 +8,7 @@ import {
     PlaybackContextStore,
 } from "./context/playbackContext";
 import { ContextProvider } from "@lit/context";
+
 @customElement("root-app")
 export class App extends LitElement {
     private playbackProvider = new ContextProvider(this, {

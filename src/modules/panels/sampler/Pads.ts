@@ -111,8 +111,8 @@ const getBank = (index: number) => {
 const element = "sampler-view";
 
 @customElement(element)
-export default class Pads extends WithScreenManager(
-    WithPlaybackContext(LitElement),
+export default class Pads extends WithPlaybackContext(
+    WithScreenManager(LitElement),
 ) {
     private samplerKeyMgr: SimpleKeyboardKanager = new SimpleKeyboardKanager();
 

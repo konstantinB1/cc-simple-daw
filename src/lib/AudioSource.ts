@@ -142,16 +142,22 @@ export default class AudioSource extends EventTarget {
         onStart?: () => void,
         onEnd?: () => void,
     ): Promise<void> {
-        if (!this.buffer) throw new Error("No sample loaded to play");
-        if (this.muted) return Promise.resolve();
+        if (!this.buffer) {
+            throw new Error("No sample loaded to play");
+        }
+
+        if (this.muted) {
+            return Promise.resolve();
+        }
 
         const source = this.ctx.createBufferSource();
         source.buffer = this.buffer;
+
         const uuid = generateUUID();
 
         source.onended = () => {
             this.bufferSources.delete(source);
-            // ...existing onended logic...
+
             if (emitEvents) {
                 const event = new CustomEvent<StopEvent>(
                     "audio-channel/ended",
@@ -195,6 +201,18 @@ export default class AudioSource extends EventTarget {
 
         return new Promise((resolve) => {
             source.onended = () => {
+                const event = new CustomEvent<StopEvent>(
+                    "audio-channel/ended",
+                    {
+                        detail: {
+                            id: uuid,
+                            isPlaying: false,
+                        },
+                    },
+                );
+
+                this.dispatchEvent(event);
+
                 this.bufferSources.delete(source);
                 onEnd?.();
                 resolve();
@@ -218,11 +236,10 @@ export default class AudioSource extends EventTarget {
 
     stop(when: number = 0, emitEvents: boolean = true): void {
         this.bufferSources.forEach((source) => {
-            try {
-                source.stop(this.ctx.currentTime + when);
-            } catch {}
+            source.stop(this.ctx.currentTime + when);
             source.disconnect();
         });
+
         this.bufferSources.clear();
 
         if (emitEvents) {

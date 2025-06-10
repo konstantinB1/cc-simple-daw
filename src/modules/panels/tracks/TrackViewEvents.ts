@@ -31,9 +31,6 @@ export type TrackEventDataEvent = {
 @customElement("track-event")
 export default class TrackEvents extends LitElement {
     @consumeProp({ context: playbackContext })
-    audioContext!: AudioContext;
-
-    @consumeProp({ context: playbackContext })
     scheduler!: Scheduler;
 
     @consumeProp({ context: playbackContext, subscribe: true })
@@ -99,40 +96,52 @@ export default class TrackEvents extends LitElement {
         this.track.channel.onStop(this.handleStopEvent.bind(this));
     }
 
-    updated(_changedProperties: PropertyValues): void {
+    updated(
+        _changedProperties: PropertyValues<{
+            lastTimeEventChange: TimeEventChange;
+            currentTime: number;
+            isPlaying: boolean;
+            isRecording: boolean;
+            bpm: number;
+            track: Track;
+        }>,
+    ): void {
         const children = Array.from(this.eventContainer.children);
 
-        if (_changedProperties.has("lastTimeEventChange")) {
-            this.handlePlayback();
+        if (_changedProperties.has("isPlaying")) {
+            this.scheduleEvents();
         }
 
-        if (_changedProperties.has("currentTime")) {
+        if (
+            _changedProperties.has("currentTime") &&
+            this.isPlaying &&
+            this.isRecording
+        ) {
             children.forEach(this.animateWidth.bind(this));
         }
 
         super.updated(_changedProperties);
     }
 
-    private handlePlayback() {
-        if (this.lastTimeEventChange === TimeEventChange.Rewinded) {
-            this.scheduler.removeFromQueue(this.track.channel);
+    private scheduleEvents() {
+        if (!this.isPlaying) {
             return;
         }
 
-        if (this.isPlaying) {
-            this.events.forEach((ev) => {
-                const startTime = msToSeconds(ev.startTime);
-                const endTime = msToSeconds(ev.endTime ?? 0);
+        this.events.forEach((ev) => {
+            const startTime = msToSeconds(ev.startTime);
+            const endTime = msToSeconds(ev.endTime ?? 0);
 
-                this.scheduler.addToQueue(this.track.channel, {
-                    startTime,
-                    endTime,
-                });
+            this.scheduler.addToQueue(this.track.channel, {
+                startTime,
+                endTime,
             });
-        }
+        });
     }
 
-    private handlePlayEvent({ detail: { id } }: CustomEvent<PlayEvent>) {
+    private handlePlayEvent({
+        detail: { id, duration },
+    }: CustomEvent<PlayEvent>) {
         if (!this.isRecording) {
             return;
         }
@@ -144,6 +153,7 @@ export default class TrackEvents extends LitElement {
                 id,
                 startTime: this.currentTime,
                 done: false,
+                endTime: duration,
                 xStart: getPlayheadPosition(this.bpm, this.currentTime),
                 zIndex,
             },

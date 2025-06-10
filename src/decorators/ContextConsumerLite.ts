@@ -19,7 +19,7 @@ export interface Options<C extends Context<unknown, unknown>> {
 // and comments, and most importantly, it does not trigger a requestUpdate
 // when the context value changes, but it allows you to
 // use a callback to handle the changes manually, depending on the use case.
-export class ContextConsumerCustom<
+export class ContextConsumerLite<
     C extends Context<unknown, unknown>,
     HostElement extends ReactiveControllerHost & HTMLElement,
 > implements ReactiveController

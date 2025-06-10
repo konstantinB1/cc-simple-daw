@@ -2,13 +2,8 @@ import type { PlaybackContextStore } from "@/context/playbackContext";
 import type AudioSource from "./AudioSource";
 
 export type QueueItemParams = {
-    startTime: number; // Time in seconds when the audio should start playing
-    endTime?: number; // Optional time in seconds when the audio should stop playing
-    loop?: boolean; // Whether the audio should loop
-    volume?: number; // Volume level for the audio playback
-    pitch?: number; // Pitch adjustment for the audio playback
-    fadeIn?: number; // Fade-in duration in seconds
-    fadeOut?: number; // Fade-out duration in seconds
+    startTime: number;
+    endTime?: number;
 };
 
 export type QueueItem = {
@@ -17,17 +12,15 @@ export type QueueItem = {
 };
 
 export default class Scheduler {
-    private master: AudioSource;
-    private audioContext: AudioContext;
-
     private playbackQueue: QueueItem[] = [];
     private stopQueue: QueueItem[] = [];
 
     private interval: NodeJS.Timeout | null = null;
 
+    private store: PlaybackContextStore;
+
     constructor(store: PlaybackContextStore) {
-        this.audioContext = store.audioContext;
-        this.master = store.master;
+        this.store = store;
 
         this.workLoop = this.workLoop.bind(this);
     }
@@ -39,43 +32,49 @@ export default class Scheduler {
         });
     }
 
-    removeFromQueue(source: AudioSource): void {}
-
-    clearQueue(): void {
-        this.playbackQueue = [];
-        this.interval = null;
-    }
-
     start(): void {
         if (this.interval != null) {
             return;
         }
 
         this.workLoop();
+        this.interval = setInterval(this.workLoop, 25);
+    }
 
-        this.interval = setInterval(this.workLoop.bind(this), 1);
+    reschedule(): void {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+
+        for (const item of this.stopQueue) {
+            item.audioSource.stop(0);
+        }
+
+        this.playbackQueue = this.stopQueue;
+        this.stopQueue = [];
+
+        this.start();
     }
 
     stop(): void {
-        console.log("Stopping scheduler...", this.interval);
-        if (this.interval) {
-            for (const item of this.stopQueue) {
-                console.log(
-                    `Stopping audio source ${item.audioSource.id} at time ${this.audioContext.currentTime}`,
-                );
-                item.audioSource.stop(0);
-            }
-
-            clearInterval(this.interval);
-            this.interval = null;
-
-            this.playbackQueue = [];
-            this.stopQueue = [];
+        if (!this.interval) {
+            return;
         }
+
+        for (const item of this.stopQueue) {
+            item.audioSource.stop(0);
+        }
+
+        clearInterval(this.interval);
+
+        this.playbackQueue = [];
+        this.stopQueue = [];
+        this.interval = null;
     }
 
     private async workLoop(): Promise<void> {
-        const currentTime = this.audioContext.currentTime;
+        const currentTime = this.store.audioContext.currentTime;
         const next = this.playbackQueue?.[0];
 
         if (!next) {
@@ -84,16 +83,22 @@ export default class Scheduler {
 
         const { audioSource, params } = next;
 
-        audioSource.play(currentTime + params.startTime, 0, undefined, false);
-        console.log(
-            `Playing audio source ${audioSource.id} at time ${currentTime + params.startTime}`,
-        );
+        const endTime = params.endTime
+            ? currentTime + params.endTime
+            : undefined;
+
+        audioSource.play(currentTime + params.startTime, 0, endTime, false);
+
+        if (params?.endTime && this.store.currentTime >= params.endTime) {
+            audioSource.stop(0, true);
+        } else {
+            this.stopQueue.push({
+                audioSource,
+                params,
+            });
+        }
 
         this.playbackQueue.shift();
-        this.stopQueue.push({
-            audioSource,
-            params,
-        });
 
         if (this.playbackQueue.length > 0) {
             requestAnimationFrame(this.workLoop);

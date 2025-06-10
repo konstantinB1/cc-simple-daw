@@ -1,6 +1,5 @@
 import "./components/Slider";
 import "./components/MpcButton";
-import "./components/Card";
 import "./components/Select";
 import "./components/Icon";
 import "./components/IconButton";

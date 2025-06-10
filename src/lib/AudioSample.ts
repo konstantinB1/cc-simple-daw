@@ -20,6 +20,7 @@ export default class AudioSample {
             console.warn(
                 "Audio buffer already loaded, do not call load() again",
             );
+
             return this.audioBuffer;
         }
 
