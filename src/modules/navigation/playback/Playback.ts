@@ -178,7 +178,7 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
         const currentTime = this.playbackContext.currentTime;
 
         if (this.playbackContext.isPlaying) {
-            this.playbackContext.scheduler.reschedule(currentTime);
+            this.playbackContext.scheduler.reschedule();
 
             this.stopWatch.start();
 

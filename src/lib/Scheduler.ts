@@ -28,7 +28,7 @@ export default class Scheduler {
 
     private prevTimeWindow: number = 0;
 
-    constructor(store: PlaybackContextStore, lookahead: number = 0.5) {
+    constructor(store: PlaybackContextStore, lookahead: number = 0.1) {
         this.store = store;
         this.lookahead = lookahead;
     }
