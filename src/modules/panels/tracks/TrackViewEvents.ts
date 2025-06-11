@@ -5,10 +5,10 @@ import { consumeProp } from "@/decorators/sync";
 import { playbackContext, TimeEventChange } from "@/context/playbackContext";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
-import { getPlayheadPosition } from "./Tracks";
 import type { PlayEvent, StopEvent } from "@/lib/AudioSource";
 import { msToSeconds } from "@/utils/TimeUtils";
 import type Scheduler from "@/lib/Scheduler";
+import { getPlayheadPosition } from "./TimeTracker";
 
 export type TrackEventData = {
     id: string;

@@ -1,11 +1,9 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { css, html, LitElement, type TemplateResult } from "lit";
+import { customElement } from "lit/decorators.js";
+import IconConsumerMixin from "./IconConsumerMixin";
 
 @customElement("play-icon")
-export default class PlayIcon extends LitElement {
-    @property({ type: Number })
-    private size: number = 24;
-
+export default class PlayIcon extends IconConsumerMixin(LitElement) {
     static styles = css`
         svg {
             width: 100%;
@@ -14,41 +12,39 @@ export default class PlayIcon extends LitElement {
         }
     `;
 
-    render() {
+    protected override renderIcon(): TemplateResult {
         return html`
-            <icon-component size=${this.size}>
-                <svg
-                    width=${0}
-                    height=${0}
-                    viewBox="-3 0 28 28"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+            <svg
+                width=${0}
+                height=${0}
+                viewBox="-3 0 28 28"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+            >
+                <g
+                    id="Page-1"
+                    stroke="none"
+                    stroke-width="1"
+                    fill="none"
+                    fill-rule="evenodd"
+                    sketch:type="MSPage"
                 >
                     <g
-                        id="Page-1"
-                        stroke="none"
-                        stroke-width="1"
-                        fill="none"
-                        fill-rule="evenodd"
-                        sketch:type="MSPage"
+                        id="Icon-Set-Filled"
+                        sketch:type="MSLayerGroup"
+                        transform="translate(-419.000000, -571.000000)"
+                        fill="var(--color-text)"
                     >
-                        <g
-                            id="Icon-Set-Filled"
-                            sketch:type="MSLayerGroup"
-                            transform="translate(-419.000000, -571.000000)"
-                            fill="var(--color-text)"
-                        >
-                            <path
-                                d="M440.415,583.554 L421.418,571.311 C420.291,570.704 419,570.767 419,572.946 L419,597.054 C419,599.046 420.385,599.36 421.418,598.689 L440.415,586.446 C441.197,585.647 441.197,584.353 440.415,583.554"
-                                id="play"
-                                sketch:type="MSShapeGroup"
-                            ></path>
-                        </g>
+                        <path
+                            d="M440.415,583.554 L421.418,571.311 C420.291,570.704 419,570.767 419,572.946 L419,597.054 C419,599.046 420.385,599.36 421.418,598.689 L440.415,586.446 C441.197,585.647 441.197,584.353 440.415,583.554"
+                            id="play"
+                            sketch:type="MSShapeGroup"
+                        ></path>
                     </g>
-                </svg>
-            </icon-component>
+                </g>
+            </svg>
         `;
     }
 }

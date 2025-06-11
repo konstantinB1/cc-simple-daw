@@ -4,17 +4,18 @@ import { customElement, state } from "lit/decorators.js";
 import "./AddTrackDialog";
 import "./PlayheadNode";
 import "./TrackViewEvents";
+import "./TimeTracker";
 
 import { typography } from "@/global-styles";
 import type AudioSource from "@/lib/AudioSource";
 import { classMap } from "lit/directives/class-map.js";
-import { NEEDLE_START_POS } from "./PlayheadNode";
 import type { TrackEventData } from "./TrackViewEvents";
 import { consumeProp } from "@/decorators/sync";
 import { playbackContext } from "@/context/playbackContext";
 
-const MAX_TIME_BEATS = 4;
-const BEAT_WIDTH = 70;
+export const MAX_TIME_BEATS = 4;
+export const BEAT_WIDTH = 70;
+export const NEEDLE_START_POS = 131;
 
 export class Track {
     channel: AudioSource;
@@ -104,18 +105,6 @@ export default class TracksView extends LitElement {
                 padding: 0 5px;
             }
 
-            .time-cell {
-                display: flex;
-                justify-content: flex;
-                align-items: center;
-                font-size: 0.7em;
-                border-bottom: 1px solid var(--color-accent);
-                min-width: ${BEAT_WIDTH}px;
-                max-width: ${BEAT_WIDTH}px;
-                height: 50px;
-                padding: 0 5px;
-            }
-
             .sub-track {
                 position: sticky;
                 left: 0;
@@ -177,25 +166,14 @@ export default class TracksView extends LitElement {
     ];
 
     firstUpdated(): void {
-        this.master.addEventListener("audio-channel/sub-channel-added", (e) => {
-            console.log("Sub-channel added:", e);
-        });
+        this.master.addEventListener(
+            "audio-channel/sub-channel-added",
+            (e) => {},
+        );
     }
 
     private get tracks(): Track[] {
         return this.sources.map((source) => new Track(source));
-    }
-
-    renderQuantisisedLines() {
-        const lines = [];
-        const quantisizedBeats = this.currentQuantisize;
-        const totalBeats = Math.ceil(MAX_TIME_BEATS * BEAT_WIDTH);
-
-        for (let i = 0; i < totalBeats; i += quantisizedBeats) {
-            lines.push(html`<div class="typography-300 time-cell">${i}</div>`);
-        }
-
-        return lines;
     }
 
     private generateCells(id: string): TemplateResult[] {
@@ -220,7 +198,6 @@ export default class TracksView extends LitElement {
         tracks: Track[] = this.tracks,
         isSub: boolean = false,
     ): TemplateResult[] {
-        console.log("Rendering tracks", tracks);
         return tracks.map((track: Track) => {
             const classes = classMap({
                 "track-name": true,
@@ -253,9 +230,8 @@ export default class TracksView extends LitElement {
         return html`
             <div class="tracks-container">
                 <div class="track-pool">
-                    <playhead-node></playhead-node>
                     <div class="times-container">
-                        ${this.renderQuantisisedLines()}
+                        <time-tracker .currentQuantisize=${4}></time-tracker>
                     </div>
                     <div class="tracks-slots">
                         ${this.renderQuantisisedTrackCells()}

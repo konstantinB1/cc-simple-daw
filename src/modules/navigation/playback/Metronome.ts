@@ -36,6 +36,7 @@ export default class Metronome {
         }
     }
 
+    // TODO: Use tick and scheduling to play countdown instead of setInterval
     public fixedCountdown(bpm: number, timeSignature: number = 4) {
         return new Promise<void>((resolve) => {
             let ticks = 3;

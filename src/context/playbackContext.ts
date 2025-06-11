@@ -16,6 +16,11 @@ export enum TimeEventChange {
     Natural,
 }
 
+export type TimeChangeEvent = {
+    type?: TimeEventChange;
+    value: number;
+};
+
 export class PlaybackContextStore {
     // This sources are only exposed to the root of the context
     // so the UI parts can subscribe to changes
@@ -130,52 +135,21 @@ export function attachPlaybackContextEvents(
     host.addEventListener(
         "playback-context/set-current-time",
         (event: Event) => {
+            const { type = TimeEventChange.Natural, value } = (
+                event as CustomEvent<TimeChangeEvent>
+            ).detail;
+
+            if (type === TimeEventChange.SeekStart) {
+                return;
+            }
+
             ctx.setValue({
                 ...ctx.value,
-                currentTime: (event as CustomEvent<number>).detail,
-                lastTimeEventChange: TimeEventChange.Natural,
+                currentTime: value,
+                lastTimeEventChange: type,
             });
         },
     );
-
-    host.addEventListener("playback-context/rewind", (event: Event) => {
-        const value = (event as CustomEvent<number>)?.detail ?? 0;
-
-        ctx.setValue({
-            ...ctx.value,
-            currentTime: value,
-            lastTimeEventChange: TimeEventChange.Rewinded,
-        });
-    });
-
-    host.addEventListener("playback-context/forward", (event: Event) => {
-        const value = (event as CustomEvent<number>)?.detail ?? 0;
-
-        ctx.setValue({
-            ...ctx.value,
-            currentTime: value,
-            lastTimeEventChange: TimeEventChange.Forwarded,
-        });
-    });
-
-    host.addEventListener("playback-context/seek-start", (event: Event) => {
-        const value = (event as CustomEvent<number>)?.detail ?? 0;
-
-        ctx.setValue({
-            ...ctx.value,
-            currentTime: value,
-            lastTimeEventChange: TimeEventChange.SeekStart,
-        });
-    });
-
-    host.addEventListener("playback-context/seek-end", (event: Event) => {
-        const value = (event as CustomEvent<number>)?.detail ?? 0;
-        ctx.setValue({
-            ...ctx.value,
-            currentTime: value,
-            lastTimeEventChange: TimeEventChange.SeekEnd,
-        });
-    });
 
     host.addEventListener("playback-context/add-channel", (event: Event) => {
         const source = (event as CustomEvent<AudioSource[]>).detail;

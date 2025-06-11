@@ -214,12 +214,11 @@ export class LayeredKeyboardManager
 
     private currentKeys: string[] = [];
 
-    private ignoreFn: ((event: KeyboardEvent) => boolean) | null = null;
+    ignoreFn: ((event: KeyboardEvent) => boolean) | null = null;
 
-    constructor(ignoreFn?: (event: KeyboardEvent) => boolean) {
+    constructor() {
         super();
 
-        this.ignoreFn = ignoreFn || null;
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 

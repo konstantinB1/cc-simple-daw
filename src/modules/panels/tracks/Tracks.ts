@@ -3,18 +3,8 @@ import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import WithScreenManager from "@/mixins/WithScreenManager";
 import "./TracksView";
-import { msToSeconds } from "@/utils/TimeUtils";
 
 export const tracksPanelElement = "tracks-panel";
-
-export const getPlayheadPosition = (
-    bpm: number,
-    currentTime: number,
-): number => {
-    const secondsPerBeat = 60 / bpm;
-    const pxPerSecond = 81 / secondsPerBeat;
-    return msToSeconds(currentTime) * pxPerSecond;
-};
 
 @customElement(tracksPanelElement)
 export default class TracksPanel extends WithScreenManager(LitElement) {

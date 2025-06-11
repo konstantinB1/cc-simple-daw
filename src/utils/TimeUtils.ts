@@ -6,14 +6,13 @@ export class StopWatch {
     private running: boolean = false;
     private requestId: number | null = null;
 
-    constructor(startTime: number = 0, elapsedTime: number = 0) {
-        this.startTime = startTime;
-        this.elapsedTime = elapsedTime;
-    }
-
-    start(onTick?: StopWatchTickCallback): (() => void) | undefined {
+    start(
+        onTick?: StopWatchTickCallback,
+        startTime: number = 0,
+    ): (() => void) | undefined {
         if (!this.running) {
             this.startTime = performance.now();
+            this.elapsedTime = startTime;
             this.running = true;
 
             if (onTick) {
@@ -42,9 +41,9 @@ export class StopWatch {
 
     getElapsedTime(): number {
         if (this.running) {
+            // If startTime is in the past (custom), calculate from that point
             return this.elapsedTime + (performance.now() - this.startTime);
         }
-
         return this.elapsedTime;
     }
 

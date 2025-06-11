@@ -1,6 +1,7 @@
 import {
     playbackContext,
     PlaybackContextStore,
+    type TimeChangeEvent,
 } from "@/context/playbackContext";
 import type AudioSource from "@/lib/AudioSource";
 import type { Constructor } from "@/utils/types";
@@ -72,33 +73,16 @@ export class PlaybackContextConsumerBase {
         );
     }
 
-    $setCurrentTime(currentTime: number) {
+    $setCurrentTime(ev: TimeChangeEvent) {
         this.host.dispatchEvent(
-            new CustomEvent<number>("playback-context/set-current-time", {
-                detail: currentTime,
-                bubbles: true,
-                composed: true,
-            }),
-        );
-    }
-
-    $setRewindTime(rewindTime: number) {
-        this.host.dispatchEvent(
-            new CustomEvent<number>("playback-context/rewind", {
-                detail: rewindTime,
-                bubbles: true,
-                composed: true,
-            }),
-        );
-    }
-
-    $setForwardTime(forwardTime: number) {
-        this.host.dispatchEvent(
-            new CustomEvent<number>("playback-context/forward", {
-                detail: forwardTime,
-                bubbles: true,
-                composed: true,
-            }),
+            new CustomEvent<TimeChangeEvent>(
+                "playback-context/set-current-time",
+                {
+                    detail: ev,
+                    bubbles: true,
+                    composed: true,
+                },
+            ),
         );
     }
 

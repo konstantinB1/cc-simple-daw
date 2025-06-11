@@ -1,22 +1,12 @@
-import { playbackContext } from "@/context/playbackContext";
-import { consumeProp } from "@/decorators/sync";
-
 import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { getPlayheadPosition } from "./Tracks";
-
-export const NEEDLE_START_POS = 131;
+import { NEEDLE_START_POS } from "./TracksView";
 
 @customElement("playhead-node")
 export default class PlayheadNode extends LitElement {
-    @consumeProp({ context: playbackContext, subscribe: true })
-    bpm!: number;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    currentTime!: number;
-
-    private isDragging: boolean = false;
+    @property({ type: Number })
+    xPosition!: number;
 
     static styles = [
         css`
@@ -28,7 +18,7 @@ export default class PlayheadNode extends LitElement {
                 background-color: var(--color-tint-primary);
                 height: 100%;
                 z-index: 10;
-                left: ${NEEDLE_START_POS}px;
+                left: 0;
                 cursor: grabbing;
 
                 &:before {
@@ -46,15 +36,19 @@ export default class PlayheadNode extends LitElement {
         `,
     ];
 
-    private getPlayheadPosition(): number {
-        return getPlayheadPosition(this.bpm, this.currentTime);
+    firstUpdated(): void {
+        const playhead = this.shadowRoot?.querySelector(
+            ".current-time-indicator",
+        )! as HTMLElement;
+
+        playhead.style.left = `${NEEDLE_START_POS}px`;
     }
 
     protected override render() {
         return html`<div
             class="current-time-indicator"
             style=${styleMap({
-                transform: `translateX(${this.getPlayheadPosition()}px)`,
+                transform: `translateX(${this.xPosition}px)`,
             })}
         ></div>`;
     }

@@ -1,11 +1,9 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
+import IconConsumerMixin from "./IconConsumerMixin";
 
 @customElement("stop-icon")
-export default class StopIcon extends LitElement {
-    @property({ type: Number })
-    private size: number = 24;
-
+export default class StopIcon extends IconConsumerMixin(LitElement) {
     static styles = css`
         svg {
             width: 100%;

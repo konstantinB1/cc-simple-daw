@@ -1,5 +1,5 @@
 import PanelScreenManager from "@/lib/PanelScreenManager";
-import { css, html, LitElement, type PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import "./PanelCard";
 import "../panels/tracks/Tracks";
@@ -27,7 +27,18 @@ export default class AppView extends LitElement {
         },
     });
 
-    keyboardManager: LayeredKeyboardManager = new LayeredKeyboardManager();
+    keyboardManager: LayeredKeyboardManager;
+
+    constructor() {
+        super();
+
+        this.keyboardManager = new LayeredKeyboardManager();
+
+        this.screenManager.onPanelFocused((panel) => {
+            if (panel?.name === "tracks-view") {
+            }
+        });
+    }
 
     static styles = css`
         .container {

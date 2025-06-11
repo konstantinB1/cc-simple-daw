@@ -12,11 +12,12 @@ import "./TimeIndicator";
 import Metronome from "./Metronome";
 
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
-import { StopWatch } from "@/utils/TimeUtils";
+import { msToSeconds, StopWatch } from "@/utils/TimeUtils";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
+import { TimeEventChange } from "@/context/playbackContext";
 
-@customElement("recorder-component")
-export default class Recorder extends WithPlaybackContext(LitElement) {
+@customElement("playback-element")
+export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     @property({ type: Object })
     keyboardManager!: LayeredKeyboardManager;
 
@@ -97,30 +98,40 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
 
     private async handlePlay(): Promise<void> {
         this.consumer.$toggleIsPlaying();
+
         const isPlaying = !this.playbackContext.isPlaying;
+        const currentTime = this.playbackContext.currentTime;
 
         if (isPlaying) {
             this.metronome.cancelCountdown();
             this.stopWatch.stop();
             this.playbackContext.scheduler.stop();
         } else {
-            this.playbackContext.scheduler.start();
             if (this.countdown) {
                 await this.metronome.fixedCountdown(this.playbackContext.bpm);
 
                 this.stopWatch.start(() => {
-                    this.consumer.$setCurrentTime(
-                        this.stopWatch.getElapsedTime(),
-                    );
-                })!;
+                    const elapsedTime = this.stopWatch.getElapsedTime();
+                    this.consumer.$setCurrentTime({
+                        value: elapsedTime,
+                        type: TimeEventChange.Natural,
+                    });
+                }, currentTime)!;
 
                 this.playbackContext.master.stop();
             } else {
                 this.stopWatch.start(() => {
-                    this.consumer.$setCurrentTime(
-                        this.stopWatch.getElapsedTime(),
+                    const elapsedTime = this.stopWatch.getElapsedTime();
+
+                    this.consumer.$setCurrentTime({
+                        value: elapsedTime,
+                        type: TimeEventChange.Natural,
+                    });
+
+                    this.playbackContext.scheduler.startWithSyncedClock(
+                        msToSeconds(elapsedTime),
                     );
-                })!;
+                }, currentTime)!;
             }
         }
     }
@@ -157,15 +168,19 @@ export default class Recorder extends WithPlaybackContext(LitElement) {
     }
 
     private handleRewind(): void {
-        this.consumer.$setRewindTime(0);
+        this.consumer.$setCurrentTime({
+            value: 0,
+            type: TimeEventChange.Rewinded,
+        });
+
         this.stopWatch.reset();
 
-        if (this.playbackContext.isPlaying) {
-            this.playbackContext.scheduler.reschedule();
+        const currentTime = this.playbackContext.currentTime;
 
-            this.stopWatch.start(() => {
-                this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
-            })!;
+        if (this.playbackContext.isPlaying) {
+            this.playbackContext.scheduler.reschedule(currentTime);
+
+            this.stopWatch.start();
 
             if (this.isMetronomeOn) {
                 this.metronome.rewind();

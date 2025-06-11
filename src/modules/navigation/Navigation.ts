@@ -1,7 +1,7 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "./recoder/Recorder";
+import "./playback/Playback";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 @customElement("top-nav")
@@ -54,9 +54,9 @@ export default class Navigation extends LitElement {
                 <div class="container">
                     <div class="controls-and-time">
                         <div class="recorder-wrapper">
-                            <recorder-component
+                            <playback-element
                                 .keyboardManager=${this.keyboardManager}
-                            ></recorder-component>
+                            ></playback-element>
                         </div>
                         <div class="time-indicator-wrapper">
                             <time-indicator></time-indicator>
