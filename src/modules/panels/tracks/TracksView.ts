@@ -153,15 +153,6 @@ export default class TracksView extends LitElement {
                 border-bottom-left-radius: 100px;
                 border-top-left-radius: 100px;
             }
-
-            .selected-row {
-                border: 1px solid var(--color-tint-primary);
-                border-left: 0;
-            }
-
-            .selected {
-                border: 1px solid var(--color-tint-primary);
-            }
         `,
     ];
 
