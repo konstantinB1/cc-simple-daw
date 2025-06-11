@@ -135,6 +135,7 @@ export default class TrackEvents extends LitElement {
             this.scheduler.addToQueue(this.track.channel, {
                 startTime,
                 endTime,
+                id: ev.id,
             });
         });
     }

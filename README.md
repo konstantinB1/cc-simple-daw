@@ -15,4 +15,4 @@ Almost nothing, but the basic structure is there.
 - [ ] Playhead dragging to move current time position
 - [ ] Notes dragging to move them around
 - [ ] More efficient context state management by utilizing `reselect` with `lit-context`
-- [ ] More efficient scheduling of audio playback events based on the current time pos + lookahead
+- [x] More efficient scheduling of audio playback events based on the current time pos + lookahead
