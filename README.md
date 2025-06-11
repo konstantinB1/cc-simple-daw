@@ -7,7 +7,7 @@ Almost nothing, but the basic structure is there.
 ## Thins to do for next CC
 
 - [ ] Add a way to add tracks
-- [x] Fix playback in the sequencer (currently the focus)
+- [x] ~~Fix playback in the sequencer~~
 - [x] ~~Fix drag and drop panels~~
 - [ ] Basic quantization (snap to grid)
 - [ ] Make more robust and intuitive keyboard interface
