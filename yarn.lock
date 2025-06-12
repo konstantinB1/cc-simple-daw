@@ -590,6 +590,7 @@ __metadata:
     "@types/ms": ^2.1.0
     "@types/node": ^22.15.18
     lit: ^3.3.0
+    lit-modal-portal: ^0.8.0
     ms: ^2.1.3
     prettier: ^3.5.3
     typescript: ~5.8.3
@@ -971,6 +972,15 @@ __metadata:
   dependencies:
     "@types/trusted-types": ^2.0.2
   checksum: c7e310385d624fabaf4c3090e1787ce14ce99cb8b076dcce78b32a6dde8a91daa7afc089da3bcd3e451cd2ddeafb92c86df574939d54f0d3b7029acfb3f038f0
+  languageName: node
+  linkType: hard
+
+"lit-modal-portal@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "lit-modal-portal@npm:0.8.0"
+  peerDependencies:
+    lit: ">=2"
+  checksum: 9a95876a0bffaf74ae3401654f05bce2764544927a90eb1fe2989d1aff7ce268baa5de1045e295fcfc230c7a7374c0b4498c329cd737a6a24131e29ea5088241
   languageName: node
   linkType: hard
 

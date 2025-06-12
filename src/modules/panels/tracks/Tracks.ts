@@ -3,6 +3,8 @@ import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import WithScreenManager from "@/mixins/WithScreenManager";
 import "./TracksView";
+import "./view-canvas/TracksViewCanvas";
+import { SEQUENCER_CANVAS } from "@/features";
 
 export const tracksPanelElement = "tracks-panel";
 
@@ -32,7 +34,9 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
                 .isDraggable=${true}
                 .screenManagerInstance=${this.screenManager as any}
             >
-                <tracks-view></tracks-view>
+                ${SEQUENCER_CANVAS
+                    ? html`<tracks-view-canvas></tracks-view-canvas>`
+                    : html`<tracks-view></tracks-view>`}
             </panel-card>
         `;
     }

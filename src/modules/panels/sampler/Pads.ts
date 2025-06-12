@@ -143,6 +143,15 @@ export default class Pads extends WithPlaybackContext(
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
+
+            .program-container {
+                flex: 3;
+            }
+
+            .pad-bank-selector {
+                flex: 2;
+            }
         }
 
         .pads {
@@ -316,13 +325,17 @@ export default class Pads extends WithPlaybackContext(
     render() {
         return html`
             <div class="top-bar">
-                <program-container
-                    @program-loaded=${this.setProgramFromEvent}
-                ></program-container>
-                <pads-bank
-                    @pad-bank-changed=${this.setPadBankFromEvent}
-                    .current=${this.currentBank}
-                ></pads-bank>
+                <div class="program-container">
+                    <program-container
+                        @program-loaded=${this.setProgramFromEvent}
+                    ></program-container>
+                </div>
+                <div class="pad-bank-selector">
+                    <pads-bank
+                        @pad-bank-changed=${this.setPadBankFromEvent}
+                        .current=${this.currentBank}
+                    ></pads-bank>
+                </div>
             </div>
             <div class="pads">
                 ${this.currentView.map(

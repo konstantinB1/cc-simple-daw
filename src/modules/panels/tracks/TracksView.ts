@@ -156,13 +156,6 @@ export default class TracksView extends LitElement {
         `,
     ];
 
-    firstUpdated(): void {
-        this.master.addEventListener(
-            "audio-channel/sub-channel-added",
-            (e) => {},
-        );
-    }
-
     private get tracks(): Track[] {
         return this.sources.map((source) => new Track(source));
     }
