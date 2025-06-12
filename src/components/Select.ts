@@ -169,7 +169,7 @@ export default class Select extends LitElement {
         return selectedOption ? selectedOption.label : this.placeholder;
     }
 
-    private backdropClick(e: Event) {
+    private backdropClick(_: Event) {
         const backdrop = this.backdropElement!;
 
         if (this.isClosing) {
@@ -214,10 +214,6 @@ export default class Select extends LitElement {
     }
 
     private handleKeyDown(event: KeyboardEvent) {
-        const selectedOption = this.options.findIndex(
-            (_, i) => i === this.selectedIndex,
-        );
-        const index = selectedOption === -1 ? 0 : selectedOption;
         const key = event.key;
 
         if (key === "ArrowUp") {
@@ -248,43 +244,6 @@ export default class Select extends LitElement {
                 }),
             );
         }
-
-        // const selectedOption = this.options.find(
-        //     (option) => option.value === this.value,
-        // );
-        // console.log("Key pressed:", event.key);
-        // if (event.key === "Enter" || event.key === " ") {
-        //     if (this.isOpen) {
-        //         this.backdropClick(event);
-        //     } else {
-        //         this.openDropdown();
-        //     }
-        // } else if (event.key === "Escape") {
-        //     if (this.isOpen) {
-        //         this.backdropClick(event);
-        //     }
-        // } else if (this.isOpen) {
-        //     const currentIndex = this.options.findIndex(
-        //         (_, i) => i === this.selectedIndex,
-        //     );
-        //     let newIndex = currentIndex === -1 ? 0 : currentIndex;
-        //     if (event.key === "ArrowDown") {
-        //         newIndex = (currentIndex + 1) % this.options.length;
-        //     } else if (event.key === "ArrowUp") {
-        //         newIndex =
-        //             (currentIndex - 1 + this.options.length) %
-        //             this.options.length;
-        //     }
-        //     console.log("New index:", newIndex);
-        //     this.selectedIndex = newIndex;
-        //     this.dispatchEvent(
-        //         new CustomEvent<SelectData>("select-changed", {
-        //             detail: { value: this.value },
-        //             bubbles: true,
-        //             composed: true,
-        //         }),
-        //     );
-        // }
     }
 
     private openDropdown() {
@@ -389,7 +348,7 @@ export default class Select extends LitElement {
                                         "selected-item":
                                             this.selectedIndex === i,
                                     })}"
-                                    @click="${(e) =>
+                                    @click="${(e: MouseEvent) =>
                                         this.clickOption(
                                             option,
                                             i,
