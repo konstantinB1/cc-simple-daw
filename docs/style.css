@@ -1,0 +1,50 @@
+:root {
+    --color-primary: #1d1d1d;
+    --color-secondary: #171717;
+    --color-accent: hwb(0 13% 87%);
+    --color-text: #ffffff;
+    --color-background: #202020;
+    --container-width: 1200px;
+    --container-height: 60vh;
+    --card-color: #414141;
+    --color-tint-primary: #d95656;
+    --color-tint-primary-active: #461a1a;
+    --border-radius: 2px;
+    --nav-bg-color: #000000;
+    --color-success: #5ace5e;
+    --color-error: #f44336;
+    --color-warning: #ff9800;
+    --color-info: #2196f3;
+    --color-border: #333333;
+    --color-border-light: #444444;
+}
+
+html {
+    background-color: var(--color-background);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    color: var(--color-text);
+    user-select: none;
+}

@@ -41,7 +41,7 @@ var _a;
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t$3 = globalThis, e$7 = t$3.ShadowRoot && (void 0 === t$3.ShadyCSS || t$3.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, s$6 = Symbol(), o$7 = /* @__PURE__ */ new WeakMap();
+const t$3 = globalThis, e$9 = t$3.ShadowRoot && (void 0 === t$3.ShadyCSS || t$3.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, s$6 = Symbol(), o$7 = /* @__PURE__ */ new WeakMap();
 let n$7 = class n {
   constructor(t2, e3, o2) {
     if (this._$cssResult$ = true, o2 !== s$6) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
@@ -50,7 +50,7 @@ let n$7 = class n {
   get styleSheet() {
     let t2 = this.o;
     const s4 = this.t;
-    if (e$7 && void 0 === t2) {
+    if (e$9 && void 0 === t2) {
       const e3 = void 0 !== s4 && 1 === s4.length;
       e3 && (t2 = o$7.get(s4)), void 0 === t2 && ((this.o = t2 = new CSSStyleSheet()).replaceSync(this.cssText), e3 && o$7.set(s4, t2));
     }
@@ -68,12 +68,12 @@ const r$5 = (t2) => new n$7("string" == typeof t2 ? t2 : t2 + "", void 0, s$6), 
   })(s4) + t2[o3 + 1], t2[0]);
   return new n$7(o2, t2, s$6);
 }, S$1 = (s4, o2) => {
-  if (e$7) s4.adoptedStyleSheets = o2.map((t2) => t2 instanceof CSSStyleSheet ? t2 : t2.styleSheet);
+  if (e$9) s4.adoptedStyleSheets = o2.map((t2) => t2 instanceof CSSStyleSheet ? t2 : t2.styleSheet);
   else for (const e3 of o2) {
     const o3 = document.createElement("style"), n3 = t$3.litNonce;
     void 0 !== n3 && o3.setAttribute("nonce", n3), o3.textContent = e3.cssText, s4.appendChild(o3);
   }
-}, c$4 = e$7 ? (t2) => t2 : (t2) => t2 instanceof CSSStyleSheet ? ((t3) => {
+}, c$4 = e$9 ? (t2) => t2 : (t2) => t2 instanceof CSSStyleSheet ? ((t3) => {
   let e3 = "";
   for (const s4 of t3.cssRules) e3 += s4.cssText;
   return r$5(e3);
@@ -83,7 +83,7 @@ const r$5 = (t2) => new n$7("string" == typeof t2 ? t2 : t2 + "", void 0, s$6), 
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: i$5, defineProperty: e$6, getOwnPropertyDescriptor: h$3, getOwnPropertyNames: r$4, getOwnPropertySymbols: o$6, getPrototypeOf: n$6 } = Object, a$1 = globalThis, c$3 = a$1.trustedTypes, l$1 = c$3 ? c$3.emptyScript : "", p$1 = a$1.reactiveElementPolyfillSupport, d$1 = (t2, s4) => t2, u$1 = { toAttribute(t2, s4) {
+const { is: i$5, defineProperty: e$8, getOwnPropertyDescriptor: h$3, getOwnPropertyNames: r$4, getOwnPropertySymbols: o$6, getPrototypeOf: n$6 } = Object, a$1 = globalThis, c$3 = a$1.trustedTypes, l$1 = c$3 ? c$3.emptyScript : "", p$1 = a$1.reactiveElementPolyfillSupport, d$1 = (t2, s4) => t2, u$1 = { toAttribute(t2, s4) {
   switch (s4) {
     case Boolean:
       t2 = t2 ? l$1 : null;
@@ -123,7 +123,7 @@ let y$1 = class y extends HTMLElement {
   static createProperty(t2, s4 = b) {
     if (s4.state && (s4.attribute = false), this._$Ei(), this.prototype.hasOwnProperty(t2) && ((s4 = Object.create(s4)).wrapped = true), this.elementProperties.set(t2, s4), !s4.noAccessor) {
       const i4 = Symbol(), h2 = this.getPropertyDescriptor(t2, i4, s4);
-      void 0 !== h2 && e$6(this.prototype, t2, h2);
+      void 0 !== h2 && e$8(this.prototype, t2, h2);
     }
   }
   static getPropertyDescriptor(t2, s4, i4) {
@@ -320,7 +320,7 @@ y$1.elementStyles = [], y$1.shadowRootOptions = { mode: "open" }, y$1[d$1("eleme
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t$2 = globalThis, i$4 = t$2.trustedTypes, s$5 = i$4 ? i$4.createPolicy("lit-html", { createHTML: (t2) => t2 }) : void 0, e$5 = "$lit$", h$2 = `lit$${Math.random().toFixed(9).slice(2)}$`, o$5 = "?" + h$2, n$5 = `<${o$5}>`, r$3 = document, l = () => r$3.createComment(""), c$2 = (t2) => null === t2 || "object" != typeof t2 && "function" != typeof t2, a = Array.isArray, u = (t2) => a(t2) || "function" == typeof (t2 == null ? void 0 : t2[Symbol.iterator]), d = "[ 	\n\f\r]", f$2 = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, v = /-->/g, _ = />/g, m = RegExp(`>|${d}(?:([^\\s"'>=/]+)(${d}*=${d}*(?:[^ 	
+const t$2 = globalThis, i$4 = t$2.trustedTypes, s$5 = i$4 ? i$4.createPolicy("lit-html", { createHTML: (t2) => t2 }) : void 0, e$7 = "$lit$", h$2 = `lit$${Math.random().toFixed(9).slice(2)}$`, o$5 = "?" + h$2, n$5 = `<${o$5}>`, r$3 = document, l = () => r$3.createComment(""), c$2 = (t2) => null === t2 || "object" != typeof t2 && "function" != typeof t2, a = Array.isArray, u = (t2) => a(t2) || "function" == typeof (t2 == null ? void 0 : t2[Symbol.iterator]), d = "[ 	\n\f\r]", f$2 = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, v = /-->/g, _ = />/g, m = RegExp(`>|${d}(?:([^\\s"'>=/]+)(${d}*=${d}*(?:[^ 	
 \f\r"'\`<>=]|("|')|))|$)`, "g"), p = /'/g, g = /"/g, $ = /^(?:script|style|textarea|title)$/i, y2 = (t2) => (i4, ...s4) => ({ _$litType$: t2, strings: i4, values: s4 }), x = y2(1), T = Symbol.for("lit-noChange"), E = Symbol.for("lit-nothing"), A = /* @__PURE__ */ new WeakMap(), C = r$3.createTreeWalker(r$3, 129);
 function P(t2, i4) {
   if (!a(t2) || !t2.hasOwnProperty("raw")) throw Error("invalid template strings array");
@@ -334,7 +334,7 @@ const V = (t2, i4) => {
     let a2, u2, d2 = -1, y3 = 0;
     for (; y3 < s5.length && (c2.lastIndex = y3, u2 = c2.exec(s5), null !== u2); ) y3 = c2.lastIndex, c2 === f$2 ? "!--" === u2[1] ? c2 = v : void 0 !== u2[1] ? c2 = _ : void 0 !== u2[2] ? ($.test(u2[2]) && (r2 = RegExp("</" + u2[2], "g")), c2 = m) : void 0 !== u2[3] && (c2 = m) : c2 === m ? ">" === u2[0] ? (c2 = r2 ?? f$2, d2 = -1) : void 0 === u2[1] ? d2 = -2 : (d2 = c2.lastIndex - u2[2].length, a2 = u2[1], c2 = void 0 === u2[3] ? m : '"' === u2[3] ? g : p) : c2 === g || c2 === p ? c2 = m : c2 === v || c2 === _ ? c2 = f$2 : (c2 = m, r2 = void 0);
     const x2 = c2 === m && t2[i5 + 1].startsWith("/>") ? " " : "";
-    l2 += c2 === f$2 ? s5 + n$5 : d2 >= 0 ? (o2.push(a2), s5.slice(0, d2) + e$5 + s5.slice(d2) + h$2 + x2) : s5 + h$2 + (-2 === d2 ? i5 : x2);
+    l2 += c2 === f$2 ? s5 + n$5 : d2 >= 0 ? (o2.push(a2), s5.slice(0, d2) + e$7 + s5.slice(d2) + h$2 + x2) : s5 + h$2 + (-2 === d2 ? i5 : x2);
   }
   return [P(t2, l2 + (t2[s4] || "<?>") + (2 === i4 ? "</svg>" : 3 === i4 ? "</math>" : "")), o2];
 };
@@ -350,7 +350,7 @@ class N {
     }
     for (; null !== (r2 = C.nextNode()) && d2.length < u2; ) {
       if (1 === r2.nodeType) {
-        if (r2.hasAttributes()) for (const t3 of r2.getAttributeNames()) if (t3.endsWith(e$5)) {
+        if (r2.hasAttributes()) for (const t3 of r2.getAttributeNames()) if (t3.endsWith(e$7)) {
           const i4 = v2[a2++], s5 = r2.getAttribute(t3).split(h$2), e3 = /([.?@])?(.*)/.exec(i4);
           d2.push({ type: 1, index: c2, name: e3[2], strings: s5, ctor: "." === e3[1] ? H : "?" === e3[1] ? I : "@" === e3[1] ? L : k }), r2.removeAttribute(t3);
         } else t3.startsWith(h$2) && (d2.push({ type: 6, index: c2 }), r2.removeAttribute(t3));
@@ -635,14 +635,36 @@ function n$4(t2) {
 function r$1(r2) {
   return n$4({ ...r2, state: true, attribute: false });
 }
-var __defProp$s = Object.defineProperty;
-var __getOwnPropDesc$w = Object.getOwnPropertyDescriptor;
-var __decorateClass$z = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$w(target, key) : target;
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const e$6 = (e3, t2, c2) => (c2.configurable = true, c2.enumerable = true, Reflect.decorate && "object" != typeof t2 && Object.defineProperty(e3, t2, c2), c2);
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+function e$5(e3, r2) {
+  return (n3, s4, i4) => {
+    const o2 = (t2) => {
+      var _a2;
+      return ((_a2 = t2.renderRoot) == null ? void 0 : _a2.querySelector(e3)) ?? null;
+    };
+    return e$6(n3, s4, { get() {
+      return o2(this);
+    } });
+  };
+}
+var __defProp$k = Object.defineProperty;
+var __getOwnPropDesc$y = Object.getOwnPropertyDescriptor;
+var __decorateClass$B = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$y(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$s(target, key, result);
+  if (kind && result) __defProp$k(target, key, result);
   return result;
 };
 let Slider = class extends i$3 {
@@ -677,10 +699,10 @@ Slider.styles = [
             }
         `
 ];
-__decorateClass$z([
+__decorateClass$B([
   n$4({ type: Number })
 ], Slider.prototype, "height", 2);
-Slider = __decorateClass$z([
+Slider = __decorateClass$B([
   t$1("daw-slider")
 ], Slider);
 const typography = i$6`
@@ -770,14 +792,14 @@ const e$3 = e$4(class extends i$2 {
     return T;
   }
 });
-var __defProp$r = Object.defineProperty;
-var __getOwnPropDesc$v = Object.getOwnPropertyDescriptor;
-var __decorateClass$y = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$v(target, key) : target;
+var __defProp$j = Object.defineProperty;
+var __getOwnPropDesc$x = Object.getOwnPropertyDescriptor;
+var __decorateClass$A = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$x(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$r(target, key, result);
+  if (kind && result) __defProp$j(target, key, result);
   return result;
 };
 let MpcButton = class extends i$3 {
@@ -785,6 +807,19 @@ let MpcButton = class extends i$3 {
     super(...arguments);
     this.active = void 0;
     this.label = void 0;
+    this.size = "medium";
+  }
+  get sizeClass() {
+    switch (this.size) {
+      case "small":
+        return "btn-small";
+      case "medium":
+        return "btn-medium";
+      case "large":
+        return "btn-large";
+      default:
+        return "";
+    }
   }
   get renderLabel() {
     if (this.label) {
@@ -799,6 +834,7 @@ let MpcButton = class extends i$3 {
             <button
                 class=${e$3({
       btn: true,
+      [this.sizeClass]: true,
       "active-indicator": this.active !== void 0 && this.active
     })}
             >
@@ -813,25 +849,39 @@ MpcButton.styles = [
             .btn {
                 border-radius: 5px;
                 border: 0;
-                min-width: 60px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 gap: 10px;
+                height: 40px;
                 background-color: var(--color-primary);
                 border: 1px solid transparent;
-                height: 40px;
                 cursor: pointer;
-                transition: all 0.15s ease-in-out;
+                transition: all 0.2s ease-in-out;
 
                 &:hover {
-                    transform: scale(0.96);
+                    transform: scale(0.98);
                     border-color: var(--color-tint-primary);
                 }
 
                 &:active {
-                    transform: scale(0.91);
+                    transform: scale(0.95);
                 }
+            }
+
+            .btn-small {
+                padding: 5px 10px;
+                font-size: 0.8em;
+            }
+
+            .btn-medium {
+                padding: 10px 15px;
+                font-size: 1em;
+            }
+
+            .btn-large {
+                padding: 15px 20px;
+                font-size: 1.2em;
             }
 
             .active-indicator {
@@ -848,166 +898,18 @@ MpcButton.styles = [
             }
         `
 ];
-__decorateClass$y([
+__decorateClass$A([
   n$4({ type: Boolean, attribute: "active" })
 ], MpcButton.prototype, "active", 2);
-__decorateClass$y([
+__decorateClass$A([
   n$4({ type: String })
 ], MpcButton.prototype, "label", 2);
-MpcButton = __decorateClass$y([
+__decorateClass$A([
+  n$4({ type: String })
+], MpcButton.prototype, "size", 2);
+MpcButton = __decorateClass$A([
   t$1("mpc-button")
 ], MpcButton);
-const HOLD_TIMEOUT_MS = 100;
-var DragEvent = /* @__PURE__ */ ((DragEvent2) => {
-  DragEvent2[DragEvent2["Start"] = 0] = "Start";
-  DragEvent2[DragEvent2["End"] = 1] = "End";
-  DragEvent2[DragEvent2["Dragging"] = 2] = "Dragging";
-  return DragEvent2;
-})(DragEvent || {});
-class DragController extends EventTarget {
-  constructor() {
-    super(...arguments);
-    this.holdTimeout = null;
-    this.dragOffset = [0, 0];
-    this.pos = [0, 0];
-    this.isDragging = false;
-    this.handleWindowMouseMove = (event) => {
-      if (!this.isDragging) {
-        return;
-      }
-      const [offsetX, offsetY] = this.dragOffset;
-      const newX = event.clientX - offsetX;
-      const newY = event.clientY - offsetY;
-      this.pos = [this.getX(newX), this.getY(newY)];
-      this.triggerDragEvent({
-        event: 2,
-        coords: this.pos
-      });
-    };
-    this.handleWindowMouseUp = (_2) => {
-      if (this.holdTimeout) {
-        clearTimeout(this.holdTimeout);
-        this.holdTimeout = null;
-      }
-      this.triggerDragEvent({
-        event: 1,
-        coords: this.pos
-      });
-      window.removeEventListener("mousemove", this.handleWindowMouseMove);
-      window.removeEventListener("mouseup", this.handleWindowMouseUp);
-    };
-  }
-  setElement(element2) {
-    this.element = element2;
-  }
-  setStartPos(pos) {
-    this.pos = pos;
-    this.dragOffset = pos;
-  }
-  handleMouseDown(event) {
-    const [x2, y3] = this.pos;
-    this.dragOffset = [event.clientX - x2, event.clientY - y3];
-    this.holdTimeout = setTimeout(() => {
-      this.isDragging = true;
-      this.triggerDragEvent({
-        event: 0,
-        coords: this.pos
-      });
-      window.addEventListener("mousemove", this.handleWindowMouseMove);
-    }, HOLD_TIMEOUT_MS);
-    window.addEventListener("mouseup", this.handleWindowMouseUp);
-  }
-  getY(pos) {
-    const viewportHeight = document.documentElement.clientHeight;
-    if (pos < 80) {
-      return 80;
-    }
-    if (pos + 400 > viewportHeight) {
-      return viewportHeight - 400;
-    }
-    return pos;
-  }
-  getX(pos) {
-    var _a2;
-    const width = (_a2 = this.element) == null ? void 0 : _a2.getBoundingClientRect().width;
-    const viewportWidth = document.documentElement.clientWidth;
-    if (pos + width > viewportWidth) {
-      return viewportWidth - width - 10;
-    }
-    if (pos < 0) {
-      return 0;
-    }
-    return pos;
-  }
-  triggerDragEvent(event) {
-    const customEvent = new CustomEvent("drag-change", {
-      detail: event,
-      bubbles: true,
-      composed: true
-    });
-    this.dispatchEvent(customEvent);
-  }
-  onDragChange(cb) {
-    this.addEventListener("drag-change", (event) => {
-      cb(event.detail);
-    });
-  }
-}
-class Observer {
-  constructor() {
-    this.observers = {};
-  }
-  subscribe(event, callback) {
-    if (!this.observers[event]) {
-      this.observers[event] = [];
-    }
-    this.observers[event].push(callback);
-  }
-  unsubscribe(event, callback) {
-    if (!this.observers[event]) return;
-    this.observers[event] = this.observers[event].filter(
-      (observer) => observer !== callback
-    );
-  }
-  notify(event, data) {
-    if (!this.observers[event]) return;
-    this.observers[event].forEach((callback) => callback(data));
-  }
-  clear(event) {
-    if (this.observers[event]) {
-      this.observers[event] = [];
-    }
-  }
-  clearAll() {
-    this.observers = {};
-  }
-}
-class PanelManager {
-  constructor() {
-    this.panels = [];
-    this.obs = new Observer();
-  }
-  static getInstance() {
-    if (!PanelManager.instance) {
-      PanelManager.instance = new PanelManager();
-    }
-    return PanelManager.instance;
-  }
-  add(name) {
-    this.panels.push(name);
-    return this;
-  }
-  notify(name) {
-    for (const key of this.panels) {
-      this.obs.notify(key, {
-        isCurrent: key === name
-      });
-    }
-  }
-  listen(name, fn) {
-    this.obs.subscribe(name, fn);
-  }
-}
 /**
  * @license
  * Copyright 2020 Google LLC
@@ -1074,47 +976,630 @@ class f extends i$2 {
   reconnected() {
   }
 }
-/**
- * @license
- * Copyright 2020 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const e$2 = () => new h();
-class h {
+function getTarget(targetOrSelector) {
+  let target = targetOrSelector;
+  if (typeof target === "string") {
+    target = document.querySelector(target);
+    if (target === null) {
+      throw Error(`Could not locate portal target with selector "${targetOrSelector}".`);
+    }
+  }
+  return target;
 }
-const o$1 = /* @__PURE__ */ new WeakMap(), n$2 = e$4(class extends f {
-  render(i4) {
+class PortalDirective extends f {
+  constructor() {
+    super(...arguments);
+    this.containerId = `portal-${self.crypto.randomUUID()}`;
+  }
+  /**
+   * Main render function for the directive.
+   *
+   * For clarity's sake, here is the outline of the function body::
+   *
+   * - Resolve `targetOrSelector` to an element.
+   *
+   * - If the directive's `container` property is `undefined`,
+   *   - then create the container element and store it in the property.
+   *
+   * - If `modifyContainer` is provided in the `options`,
+   *   - then call `modifyContainer(container)`.
+   *
+   * - If the target has changed from one element to another,
+   *   - then migrate `container` to the new target and reassign the directive's `target` property.
+   *
+   * - If the directive's `target` property is `undefined`,
+   *   - then store the target element in the property.
+   *
+   *   - If a `placeholder` is provided in the `options`,
+   *     - then append `container` to `target` (if necessary) and render `placeholder` in `container`.
+   *
+   * - Resolve `content` (awaited).
+   *
+   * - Append `container` to `target` (if necessary) and render `content` in `container`.
+   *
+   * The steps are organized this way to balance the initalization and refreshing of crucial properties
+   * like `container` and `target` while ensuring that `container` isn't added to the DOM until
+   * the directive is about to render something (either `placeholder` or `content`).
+   *
+   * @param content - The content of the portal.
+   * This parameter is passed as the `value` parameter in [Lit's `render` function](https://lit.dev/docs/api/templates/#render).
+   *
+   * The `content` parameter can be a promise, which will be rendered in the portal once it resolves.
+   *
+   * @param targetOrSelector - The "target" for the portal.
+   * If the value is a string, then it is treated as a query selector and passed to `document.querySelector()` in order to locate the portal target.
+   * If no element is found with the selector, then an error is thrown.
+   *
+   * @param options - See {@link PortalOptions}.
+   *
+   * @returns This function always returns Lit's [`nothing`](https://lit.dev/docs/api/templates/#nothing) value,
+   * because nothing ever renders where the portal is used.
+   */
+  render(content, targetOrSelector, options) {
+    Promise.resolve(targetOrSelector).then(async (targetOrSelector2) => {
+      var _a2;
+      if (!targetOrSelector2) {
+        throw Error(
+          "Target was falsy. Are you using a Lit ref before its value is defined? If so, try using Lit's @queryAsync decorator instead (https://lit.dev/docs/api/decorators/#queryAsync)."
+        );
+      }
+      const newTarget = getTarget(targetOrSelector2);
+      if (!this.container) {
+        const newContainer = document.createElement("div");
+        newContainer.id = this.containerId;
+        if (options == null ? void 0 : options.modifyContainer) {
+          options.modifyContainer(newContainer);
+        }
+        this.container = newContainer;
+      }
+      if (this.target && this.target !== newTarget) {
+        (_a2 = this.target) == null ? void 0 : _a2.removeChild(this.container);
+        newTarget.appendChild(this.container);
+        this.target = newTarget;
+      }
+      if (!this.target) {
+        this.target = newTarget;
+        if (options == null ? void 0 : options.placeholder) {
+          if (!this.target.contains(this.container)) {
+            this.target.appendChild(this.container);
+          }
+          B(options.placeholder, this.container);
+        }
+      }
+      const resolvedContent = await Promise.resolve(content);
+      if (!this.target.contains(this.container)) {
+        this.target.appendChild(this.container);
+      }
+      B(resolvedContent, this.container);
+    });
     return E;
   }
-  update(i4, [s4]) {
-    var _a2;
-    const e3 = s4 !== this.G;
-    return e3 && void 0 !== this.G && this.rt(void 0), (e3 || this.lt !== this.ct) && (this.G = s4, this.ht = (_a2 = i4.options) == null ? void 0 : _a2.host, this.rt(this.ct = i4.element)), E;
-  }
-  rt(t2) {
-    if (this.isConnected || (t2 = void 0), "function" == typeof this.G) {
-      const i4 = this.ht ?? globalThis;
-      let s4 = o$1.get(i4);
-      void 0 === s4 && (s4 = /* @__PURE__ */ new WeakMap(), o$1.set(i4, s4)), void 0 !== s4.get(this.G) && this.G.call(this.ht, void 0), s4.set(this.G, t2), void 0 !== t2 && this.G.call(this.ht, t2);
-    } else this.G.value = t2;
-  }
-  get lt() {
-    var _a2, _b;
-    return "function" == typeof this.G ? (_a2 = o$1.get(this.ht ?? globalThis)) == null ? void 0 : _a2.get(this.G) : (_b = this.G) == null ? void 0 : _b.value;
-  }
+  /** Remove container from target when the directive is disconnected. */
   disconnected() {
-    this.lt === this.ct && this.rt(void 0);
+    var _a2, _b;
+    if ((_a2 = this.target) == null ? void 0 : _a2.contains(this.container)) {
+      (_b = this.target) == null ? void 0 : _b.removeChild(this.container);
+    } else {
+      console.warn(
+        "portal directive was disconnected after the portal container was removed from the target."
+      );
+    }
   }
+  /** Append container to target when the directive is reconnected. */
   reconnected() {
-    this.rt(this.ct);
+    var _a2;
+    (_a2 = this.target) == null ? void 0 : _a2.appendChild(this.container);
   }
-});
+}
+const portal = e$4(PortalDirective);
+function fade(element2, duration = 300, delay = 0, onFinish) {
+  const fadeImpl = (fadeIn) => {
+    const keyframes = fadeIn ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
+    element2.animate(keyframes, {
+      duration,
+      easing: "ease-in-out",
+      fill: "forwards",
+      delay
+    }).onfinish = () => {
+      if (!fadeIn) {
+        element2.style.display = "none";
+      }
+    };
+    if (fadeIn) {
+      element2.style.display = "block";
+    } else {
+      element2.style.display = "none";
+    }
+  };
+  return {
+    in: () => fadeImpl(true),
+    out: () => fadeImpl(false)
+  };
+}
+function slide(element2, duration = 300, y3 = 50, delay = 0, onFinish) {
+  const slideImpl = (direction) => {
+    const behaviour = {
+      [
+        "inFromTop"
+        /* InFromTop */
+      ]: {
+        instructions: [
+          {
+            transform: `translateY(-${y3}px)`,
+            opacity: 0
+          },
+          {
+            transform: "translateY(0)",
+            opacity: 1
+          }
+        ],
+        applyStyles: () => {
+          element2.style.transform = "translateY(0)";
+          element2.style.opacity = "1";
+          element2.style.display = "block";
+        }
+      },
+      [
+        "outToTop"
+        /* OutToTop */
+      ]: {
+        instructions: [
+          {
+            transform: "translateY(0)",
+            opacity: 1
+          },
+          {
+            transform: `translateY(-${y3}px)`,
+            opacity: 0
+          }
+        ],
+        applyStyles: () => {
+          element2.style.transform = `translateY(-${y3}px)`;
+          element2.style.opacity = "0";
+          element2.style.display = "none";
+        }
+      },
+      [
+        "inFromBottom"
+        /* InFromBottom */
+      ]: {
+        instructions: [
+          {
+            transform: `translateY(${y3}px)`,
+            opacity: 0
+          },
+          {
+            transform: "translateY(0)",
+            opacity: 1
+          }
+        ],
+        applyStyles: () => {
+          element2.style.transform = "translateY(0)";
+          element2.style.opacity = "1";
+          element2.style.display = "block";
+        }
+      },
+      [
+        "outToBottom"
+        /* OutToBottom */
+      ]: {
+        instructions: [
+          {
+            transform: "translateY(0)",
+            opacity: 1
+          },
+          {
+            transform: `translateY(${y3}px)`,
+            opacity: 0
+          }
+        ],
+        applyStyles: () => {
+          element2.style.transform = `translateY(${y3}px)`;
+          element2.style.opacity = "0";
+          element2.style.display = "none";
+        }
+      },
+      [
+        "inFromLeft"
+        /* InFromLeft */
+      ]: {
+        instructions: [
+          {
+            transform: `translateX(-${y3}px)`,
+            opacity: 0
+          },
+          {
+            transform: "translateX(0)",
+            opacity: 1
+          }
+        ],
+        applyStyles: () => {
+          element2.style.transform = "translateX(0)";
+          element2.style.opacity = "1";
+          element2.style.display = "block";
+        }
+      },
+      [
+        "outToLeft"
+        /* OutToLeft */
+      ]: {
+        instructions: [
+          {
+            transform: "translateX(0)",
+            opacity: 1
+          },
+          {
+            transform: `translateX(-${y3}px)`,
+            opacity: 0
+          }
+        ],
+        applyStyles: () => {
+          element2.style.transform = `translateX(-${y3}px)`;
+          element2.style.opacity = "0";
+          element2.style.display = "none";
+        }
+      }
+    };
+    if (!behaviour[direction]) {
+      throw new Error(`Unknown slide direction: ${direction}`);
+    }
+    const { instructions, applyStyles } = behaviour[direction];
+    element2.animate(instructions, {
+      duration,
+      easing: "ease-in-out",
+      fill: "forwards",
+      delay
+    }).onfinish = () => {
+      applyStyles();
+    };
+  };
+  return {
+    [
+      "inFromTop"
+      /* InFromTop */
+    ]: () => slideImpl(
+      "inFromTop"
+      /* InFromTop */
+    ),
+    [
+      "outToTop"
+      /* OutToTop */
+    ]: () => slideImpl(
+      "outToTop"
+      /* OutToTop */
+    ),
+    [
+      "inFromBottom"
+      /* InFromBottom */
+    ]: () => slideImpl(
+      "inFromBottom"
+      /* InFromBottom */
+    ),
+    [
+      "outToBottom"
+      /* OutToBottom */
+    ]: () => slideImpl(
+      "outToBottom"
+      /* OutToBottom */
+    ),
+    [
+      "inFromLeft"
+      /* InFromLeft */
+    ]: () => slideImpl(
+      "inFromLeft"
+      /* InFromLeft */
+    ),
+    [
+      "outToLeft"
+      /* OutToLeft */
+    ]: () => slideImpl(
+      "outToLeft"
+      /* OutToLeft */
+    ),
+    [
+      "inFromRight"
+      /* InFromRight */
+    ]: () => slideImpl(
+      "inFromRight"
+      /* InFromRight */
+    ),
+    [
+      "outToRight"
+      /* OutToRight */
+    ]: () => slideImpl(
+      "outToRight"
+      /* OutToRight */
+    )
+  };
+}
+var __defProp$i = Object.defineProperty;
+var __getOwnPropDesc$w = Object.getOwnPropertyDescriptor;
+var __decorateClass$z = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$w(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$i(target, key, result);
+  return result;
+};
+let Select = class extends i$3 {
+  constructor() {
+    super();
+    this.options = [];
+    this.placeholder = "";
+    this.value = "";
+    this.isOpen = false;
+    this.backdropElement = null;
+    this.selectMenu = null;
+    this.selectedIndex = 0;
+    this.backdropClick = this.backdropClick.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+  firstUpdated(_changedProperties) {
+    setTimeout(() => {
+      this.slide = slide(this.selectMenu, 155, 10);
+      this.fade = fade(this.backdropElement, 155);
+    });
+  }
+  loadStyles() {
+    const styles = [
+      typography,
+      i$6`
+                .select-backdrop {
+                    background-color: rgba(0, 0, 0, 0.3);
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 1000;
+                    display: none;
+                    cursor: pointer;
+                }
+
+                .select-menu {
+                    width: 100%;
+                    background-color: var(--color-secondary);
+                    border: 1px solid var(--color-border);
+                    border-radius: 10px;
+                    height: 100%;
+                    max-height: 350px;
+                    overflow-y: auto;
+                }
+
+                .select-option {
+                    padding: 10px;
+                    cursor: pointer;
+                    background-color: var(--color-secondary);
+                    border-bottom: 1px solid var(--color-accent);
+                    transition: background-color 0.2s ease;
+                    color: var(--color-text);
+                    font-size: 0.9em;
+                    box-sizing: border-box;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    &:hover {
+                        background-color: var(--color-accent);
+                    }
+
+                    > span {
+                        font-size: 0.95em;
+                    }
+                }
+
+                .select-option + .selected-item {
+                    color: var(--color-text);
+                    font-weight: bold;
+
+                    &:hover {
+                        background-color: var(--color-tint-primary);
+                    }
+                }
+
+                .open {
+                    display: block;
+                }
+            `
+    ];
+    const sheet = styles;
+    const style = document.createElement("style");
+    for (const s4 of sheet) {
+      style.innerHTML += s4.cssText || s4.toString();
+    }
+    document.head.appendChild(style);
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    this.loadStyles();
+  }
+  renderText() {
+    if (this.value === "") {
+      return this.placeholder || "Select an option";
+    }
+    const selectedOption = this.options.find(
+      (option) => option.value === this.value
+    );
+    return selectedOption ? selectedOption.label : this.placeholder;
+  }
+  backdropClick(_2) {
+    console.log("Backdrop clicked");
+    this.slide.outToTop();
+    this.fade.out();
+    window.removeEventListener("keydown", this.handleKeyDown);
+  }
+  handleKeyDown(event) {
+    const key = event.key;
+    if (key === "ArrowUp") {
+      this.selectedIndex = this.selectedIndex === 0 ? this.options.length - 1 : this.selectedIndex - 1;
+    } else if (key === "ArrowDown") {
+      this.selectedIndex = this.selectedIndex === this.options.length - 1 ? 0 : this.selectedIndex + 1;
+    } else if (key === "Escape") {
+      if (this.isOpen) {
+        this.backdropClick(event);
+      }
+    } else if (key === "Enter" && this.selectedIndex !== -1) {
+      const option = this.options[this.selectedIndex];
+      this.value = option.value;
+      this.isOpen = false;
+      this.backdropClick(event);
+      this.dispatchEvent(
+        new CustomEvent("select-changed", {
+          detail: { value: option.value },
+          bubbles: true,
+          composed: true
+        })
+      );
+    }
+  }
+  openDropdown() {
+    this.isOpen = !this.isOpen;
+    const backdrop = this.backdropElement;
+    backdrop.classList.toggle("open", this.isOpen);
+    const selectMenu = this.selectMenu;
+    selectMenu.style.display = "block";
+    this.fade.in();
+    this.slide.inFromTop();
+    window.addEventListener("keydown", this.handleKeyDown);
+  }
+  get isDropdownOpen() {
+    return this.isOpen;
+  }
+  backdropAndDropdownElement(container) {
+    this.backdropElement = container;
+    container.classList.add("select-backdrop");
+    container.addEventListener("click", this.backdropClick);
+  }
+  dropdownElement(container) {
+    this.selectMenu = container;
+    const bounds = this.selectContainer.getBoundingClientRect();
+    setTimeout(() => {
+      container.style.position = "absolute";
+      container.style.zIndex = "1001";
+      container.style.top = `${bounds.bottom + 10}px`;
+      container.style.left = `${bounds.left}px`;
+      container.style.width = `${bounds.width}px`;
+      container.style.display = "none";
+    }, 0);
+  }
+  clickOption(option, index) {
+    this.selectedIndex = index;
+    this.value = option.value;
+    this.isOpen = false;
+    this.dispatchEvent(
+      new CustomEvent("select-changed", {
+        detail: { value: option.value },
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
+  render() {
+    return x`
+            <div
+                @focus=${this.openDropdown}
+                @blur=${this.backdropClick}
+                class="select-container"
+                @click=${this.openDropdown}
+                tabindex="0"
+            >
+                <p class="typography-300">${this.renderText()}</p>
+                <arrow-down-icon color="var(--color-text)" .size=${18}>
+                </arrow-down-icon>
+                ${portal(x``, document.body, {
+      modifyContainer: this.backdropAndDropdownElement.bind(this)
+    })}
+                ${portal(
+      x`<div class="select-menu">
+                        ${this.options.map(
+        (option, i4) => x`
+                                <div
+                                    class="${e$3({
+          "select-option": true,
+          "selected-item": this.selectedIndex === i4
+        })}"
+                                    @click="${() => this.clickOption(option, i4)}"
+                                >
+                                    <span class="typography-300"
+                                        >${option.label}</span
+                                    >
+                                </div>
+                            `
+      )}
+                    </div> `,
+      document.body,
+      {
+        modifyContainer: this.dropdownElement.bind(this)
+      }
+    )}
+            </div>
+        `;
+  }
+};
+Select.styles = [
+  typography,
+  i$6`
+            .select-container {
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 0.9em;
+                width: 100%;
+                border: 1px solid var(--color-accent);
+                border-radius: var(--border-radius);
+                padding: 12px 10px;
+                background-color: var(--color-secondary);
+                cursor: pointer;
+
+                > p {
+                    margin: 0;
+                }
+            }
+
+            .select {
+                width: 100%;
+                padding: 10px;
+                border-radius: 3px;
+                border: 1px solid var(--color-accent);
+                background-color: var(--color-secondary);
+                color: var(--color-text);
+            }
+
+            .open {
+                display: block; /* Show when open */
+            }
+        `
+];
+__decorateClass$z([
+  n$4({ type: Array })
+], Select.prototype, "options", 2);
+__decorateClass$z([
+  n$4({ type: String })
+], Select.prototype, "placeholder", 2);
+__decorateClass$z([
+  n$4({ type: String })
+], Select.prototype, "value", 2);
+__decorateClass$z([
+  e$5(".select-container")
+], Select.prototype, "selectContainer", 2);
+__decorateClass$z([
+  r$1()
+], Select.prototype, "isOpen", 2);
+__decorateClass$z([
+  r$1()
+], Select.prototype, "selectedIndex", 2);
+Select = __decorateClass$z([
+  t$1("daw-select")
+], Select);
 /**
  * @license
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const n$1 = "important", i$1 = " !" + n$1, o = e$4(class extends i$2 {
+const n$2 = "important", i$1 = " !" + n$2, o$1 = e$4(class extends i$2 {
   constructor(t$12) {
     var _a2;
     if (super(t$12), t$12.type !== t.ATTRIBUTE || "style" !== t$12.name || ((_a2 = t$12.strings) == null ? void 0 : _a2.length) > 2) throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.");
@@ -1134,211 +1619,23 @@ const n$1 = "important", i$1 = " !" + n$1, o = e$4(class extends i$2 {
       if (null != e4) {
         this.ft.add(t2);
         const r3 = "string" == typeof e4 && e4.endsWith(i$1);
-        t2.includes("-") || r3 ? s4.setProperty(t2, r3 ? e4.slice(0, -11) : e4, r3 ? n$1 : "") : s4[t2] = e4;
+        t2.includes("-") || r3 ? s4.setProperty(t2, r3 ? e4.slice(0, -11) : e4, r3 ? n$2 : "") : s4[t2] = e4;
       }
     }
     return T;
   }
 });
-var __defProp$q = Object.defineProperty;
-var __getOwnPropDesc$u = Object.getOwnPropertyDescriptor;
-var __decorateClass$x = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$u(target, key) : target;
+var __defProp$h = Object.defineProperty;
+var __getOwnPropDesc$v = Object.getOwnPropertyDescriptor;
+var __decorateClass$y = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$v(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$q(target, key, result);
+  if (kind && result) __defProp$h(target, key, result);
   return result;
 };
-const ELEVATED_Z_INDEX$1 = 100;
-const DEFAULT_Z_INDEX$1 = 50;
-let Card = class extends i$3 {
-  constructor() {
-    super();
-    this.pos = [0, 0];
-    this.isDragging = false;
-    this.cardWidth = "auto";
-    this.cardHeight = "auto";
-    this.dragController = new DragController();
-    this.panelManager = PanelManager.getInstance();
-    this.cardRef = e$2();
-    this.elementZIndex = 0;
-    const cardId = this.getAttribute("card-id");
-    if (cardId == null) {
-      throw new Error(
-        "Card ID is not set, panel manager for this card will not work"
-      );
-    }
-    this.cardId = cardId;
-  }
-  firstUpdated(_changedProperties) {
-    const cardId = this.cardId;
-    this.dragController.setElement(this.cardRef.value);
-    this.panelManager.add(cardId).listen(cardId, ({ isCurrent }) => {
-      this.elementZIndex = isCurrent ? ELEVATED_Z_INDEX$1 : DEFAULT_Z_INDEX$1;
-    });
-    this.dragController.onDragChange.call(
-      this.dragController,
-      ({ event, coords: [x2, y3] }) => {
-        switch (event) {
-          case DragEvent.Start:
-            this.panelManager.notify(cardId);
-            this.isDragging = true;
-            break;
-          case DragEvent.Dragging:
-            this.pos = [x2, y3];
-            break;
-          case DragEvent.End:
-            this.isDragging = false;
-            break;
-        }
-      }
-    );
-  }
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.startPos) {
-      this.pos = this.startPos;
-    }
-  }
-  render() {
-    const [x$1, y3] = this.pos;
-    const handleMouseDown = this.dragController.handleMouseDown.bind(
-      this.dragController
-    );
-    const classes = e$3({
-      card: true,
-      "is-dragging": this.isDragging
-    });
-    const styles = o({
-      transform: `translate(${x$1}px, ${y3}px)`,
-      width: this.cardWidth,
-      height: this.cardHeight,
-      zIndex: this.elementZIndex
-    });
-    return x`<div
-            ${n$2(this.cardRef)}
-            id=${this.cardId}
-            class=${classes}
-            style=${styles}
-            @mousedown="${handleMouseDown}"
-        >
-            <slot></slot>
-        </div> `;
-  }
-};
-Card.styles = i$6`
-        :root {
-            --color-drag: #3f3f3f;
-        }
-
-        .card {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            background-color: var(--card-color);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--color-accent);
-            position: absolute;
-        }
-
-        .card.is-dragging {
-            cursor: grabbing;
-            border: 1px solid var(--color-tint-primary);
-        }
-    `;
-__decorateClass$x([
-  r$1()
-], Card.prototype, "pos", 2);
-__decorateClass$x([
-  n$4({ type: Array })
-], Card.prototype, "startPos", 2);
-__decorateClass$x([
-  r$1()
-], Card.prototype, "isDragging", 2);
-__decorateClass$x([
-  n$4({ type: String, attribute: "card-width" })
-], Card.prototype, "cardWidth", 2);
-__decorateClass$x([
-  n$4({ type: String, attribute: "card-height" })
-], Card.prototype, "cardHeight", 2);
-__decorateClass$x([
-  r$1()
-], Card.prototype, "elementZIndex", 2);
-Card = __decorateClass$x([
-  t$1("card-component")
-], Card);
-var __defProp$p = Object.defineProperty;
-var __getOwnPropDesc$t = Object.getOwnPropertyDescriptor;
-var __decorateClass$w = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$t(target, key) : target;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$p(target, key, result);
-  return result;
-};
-let Select = class extends i$3 {
-  constructor() {
-    super();
-    this.options = [];
-  }
-  handleChange(event) {
-    this.dispatchEvent(
-      new CustomEvent("select-data", {
-        detail: {
-          value: event.target.value
-        },
-        bubbles: true,
-        composed: true
-      })
-    );
-  }
-  render() {
-    return x`
-            <select class="select typography-100" @change=${this.handleChange}>
-                ${this.options.map(
-      (option) => x`<option
-                            value="${option.value}"
-                            class="typography-100"
-                        >
-                            ${option.label}
-                        </option>`
-    )}
-            </select>
-        `;
-  }
-};
-Select.styles = [
-  typography,
-  i$6`
-            .select {
-                width: 100%;
-                padding: 10px;
-                border-radius: 3px;
-                border: 1px solid var(--color-accent);
-                background-color: var(--color-secondary);
-                color: var(--color-text);
-            }
-        `
-];
-__decorateClass$w([
-  n$4({ type: Array })
-], Select.prototype, "options", 2);
-Select = __decorateClass$w([
-  t$1("daw-select")
-], Select);
-var __defProp$o = Object.defineProperty;
-var __getOwnPropDesc$s = Object.getOwnPropertyDescriptor;
-var __decorateClass$v = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$s(target, key) : target;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$o(target, key, result);
-  return result;
-};
-let DragIcon$7 = class DragIcon extends i$3 {
+let DragIcon = class extends i$3 {
   constructor() {
     super(...arguments);
     this.color = "#000000";
@@ -1424,153 +1721,160 @@ let DragIcon$7 = class DragIcon extends i$3 {
         `;
   }
 };
-DragIcon$7.styles = i$6`
+DragIcon.styles = i$6`
         svg {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
     `;
-__decorateClass$v([
+__decorateClass$y([
   n$4({ type: String })
-], DragIcon$7.prototype, "color", 2);
-__decorateClass$v([
+], DragIcon.prototype, "color", 2);
+__decorateClass$y([
   n$4({ type: Number })
-], DragIcon$7.prototype, "size", 2);
-DragIcon$7 = __decorateClass$v([
+], DragIcon.prototype, "size", 2);
+DragIcon = __decorateClass$y([
   t$1("drag-icon")
-], DragIcon$7);
-var __defProp$n = Object.defineProperty;
-var __getOwnPropDesc$r = Object.getOwnPropertyDescriptor;
-var __decorateClass$u = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$r(target, key) : target;
+], DragIcon);
+var __defProp$g = Object.defineProperty;
+var __decorateClass$x = (decorators, target, key, kind) => {
+  var result = void 0;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$n(target, key, result);
+      result = decorator(target, key, result) || result;
+  if (result) __defProp$g(target, key, result);
   return result;
 };
-let DragIcon$6 = class DragIcon2 extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
+const IconConsumerMixin = (superClass) => {
+  class IconConsumer extends superClass {
+    constructor() {
+      super(...arguments);
+      this.size = 24;
+      this.color = "var(--color-tint-primary)";
+    }
+    renderIcon() {
+      return x`icon not implemented`;
+    }
+    render() {
+      return x`
+                <icon-component .size=${this.size} .color=${this.color}>
+                    ${this.renderIcon()}
+                </icon-component>
+            `;
+    }
   }
-  render() {
+  __decorateClass$x([
+    n$4({ type: Number })
+  ], IconConsumer.prototype, "size");
+  __decorateClass$x([
+    n$4({ type: String })
+  ], IconConsumer.prototype, "color");
+  return IconConsumer;
+};
+var __getOwnPropDesc$u = Object.getOwnPropertyDescriptor;
+var __decorateClass$w = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$u(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = decorator(result) || result;
+  return result;
+};
+let RecordIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
     return x`
-            <icon-component size=${this.size}>
-                <svg
-                    width=${0}
-                    height=${0}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <circle opacity="0" cx="12" cy="12" r="7" fill="#ffffff" />
-                    <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19Z"
-                        fill="var(--color-tint-primary)"
-                    />
-                </svg>
-            </icon-component>
+            <svg
+                width=${0}
+                height=${0}
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <circle opacity="0" cx="12" cy="12" r="7" fill="#ffffff" />
+                <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19Z"
+                    fill="var(--color-tint-primary)"
+                />
+            </svg>
         `;
   }
 };
-DragIcon$6.styles = i$6`
+RecordIcon.styles = i$6`
         svg {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
     `;
-__decorateClass$u([
-  n$4({ type: Number })
-], DragIcon$6.prototype, "size", 2);
-DragIcon$6 = __decorateClass$u([
+RecordIcon = __decorateClass$w([
   t$1("record-icon")
-], DragIcon$6);
-var __defProp$m = Object.defineProperty;
-var __getOwnPropDesc$q = Object.getOwnPropertyDescriptor;
-var __decorateClass$t = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$q(target, key) : target;
+], RecordIcon);
+var __getOwnPropDesc$t = Object.getOwnPropertyDescriptor;
+var __decorateClass$v = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$t(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$m(target, key, result);
+      result = decorator(result) || result;
   return result;
 };
-let DragIcon$5 = class DragIcon3 extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
-  render() {
+let PlayIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
     return x`
-            <icon-component size=${this.size}>
-                <svg
-                    width=${0}
-                    height=${0}
-                    viewBox="-3 0 28 28"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+            <svg
+                width=${0}
+                height=${0}
+                viewBox="-3 0 28 28"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+            >
+                <g
+                    id="Page-1"
+                    stroke="none"
+                    stroke-width="1"
+                    fill="none"
+                    fill-rule="evenodd"
+                    sketch:type="MSPage"
                 >
                     <g
-                        id="Page-1"
-                        stroke="none"
-                        stroke-width="1"
-                        fill="none"
-                        fill-rule="evenodd"
-                        sketch:type="MSPage"
+                        id="Icon-Set-Filled"
+                        sketch:type="MSLayerGroup"
+                        transform="translate(-419.000000, -571.000000)"
+                        fill="var(--color-text)"
                     >
-                        <g
-                            id="Icon-Set-Filled"
-                            sketch:type="MSLayerGroup"
-                            transform="translate(-419.000000, -571.000000)"
-                            fill="var(--color-text)"
-                        >
-                            <path
-                                d="M440.415,583.554 L421.418,571.311 C420.291,570.704 419,570.767 419,572.946 L419,597.054 C419,599.046 420.385,599.36 421.418,598.689 L440.415,586.446 C441.197,585.647 441.197,584.353 440.415,583.554"
-                                id="play"
-                                sketch:type="MSShapeGroup"
-                            ></path>
-                        </g>
+                        <path
+                            d="M440.415,583.554 L421.418,571.311 C420.291,570.704 419,570.767 419,572.946 L419,597.054 C419,599.046 420.385,599.36 421.418,598.689 L440.415,586.446 C441.197,585.647 441.197,584.353 440.415,583.554"
+                            id="play"
+                            sketch:type="MSShapeGroup"
+                        ></path>
                     </g>
-                </svg>
-            </icon-component>
+                </g>
+            </svg>
         `;
   }
 };
-DragIcon$5.styles = i$6`
+PlayIcon.styles = i$6`
         svg {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
     `;
-__decorateClass$t([
-  n$4({ type: Number })
-], DragIcon$5.prototype, "size", 2);
-DragIcon$5 = __decorateClass$t([
+PlayIcon = __decorateClass$v([
   t$1("play-icon")
-], DragIcon$5);
-var __defProp$l = Object.defineProperty;
-var __getOwnPropDesc$p = Object.getOwnPropertyDescriptor;
-var __decorateClass$s = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$p(target, key) : target;
+], PlayIcon);
+var __getOwnPropDesc$s = Object.getOwnPropertyDescriptor;
+var __decorateClass$u = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$s(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$l(target, key, result);
+      result = decorator(result) || result;
   return result;
 };
-let DragIcon$4 = class DragIcon4 extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
+let StopIcon = class extends IconConsumerMixin(i$3) {
   render() {
     return x`
             <icon-component size=${this.size}>
@@ -1593,214 +1897,167 @@ let DragIcon$4 = class DragIcon4 extends i$3 {
         `;
   }
 };
-DragIcon$4.styles = i$6`
+StopIcon.styles = i$6`
         svg {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
     `;
-__decorateClass$s([
-  n$4({ type: Number })
-], DragIcon$4.prototype, "size", 2);
-DragIcon$4 = __decorateClass$s([
+StopIcon = __decorateClass$u([
   t$1("stop-icon")
-], DragIcon$4);
-var __defProp$k = Object.defineProperty;
-var __getOwnPropDesc$o = Object.getOwnPropertyDescriptor;
+], StopIcon);
+var __getOwnPropDesc$r = Object.getOwnPropertyDescriptor;
+var __decorateClass$t = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$r(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = decorator(result) || result;
+  return result;
+};
+let UpAndDownIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
+    return x`
+            <svg
+                viewBox="0 0 24 24"
+                id="up-down-scroll-bar-2"
+                data-name="Flat Line"
+                class="icon flat-line"
+            >
+                <polyline
+                    id="primary"
+                    points="10 5 12 3 14 5"
+                    style="fill: none; stroke: var(--color-tint-primary); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
+                ></polyline>
+                <polyline
+                    id="primary-2"
+                    data-name="primary"
+                    points="14 19 12 21 10 19"
+                    style="fill: none; stroke: var(--color-tint-primary); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
+                ></polyline>
+                <path
+                    id="primary-3"
+                    data-name="primary"
+                    d="M18,12H6m6-4V3m0,18V16"
+                    style="fill: none; stroke: var(--color-tint-primary); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
+                ></path>
+            </svg>
+        `;
+  }
+};
+UpAndDownIcon.styles = i$6`
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    `;
+UpAndDownIcon = __decorateClass$t([
+  t$1("up-down-icon")
+], UpAndDownIcon);
+var __getOwnPropDesc$q = Object.getOwnPropertyDescriptor;
+var __decorateClass$s = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$q(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = decorator(result) || result;
+  return result;
+};
+let MetronomeIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
+    return x`
+            <svg
+                fill=${this.color}
+                width="800px"
+                height="800px"
+                viewBox="0 0 256 256"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <g fill-rule="evenodd">
+                    <path
+                        d="M64.458 228.867c-.428 2.167 1.007 3.91 3.226 3.893l121.557-.938c2.21-.017 3.68-1.794 3.284-3.97l-11.838-64.913c-.397-2.175-1.626-2.393-2.747-.487l-9.156 15.582c-1.12 1.907-1.71 5.207-1.313 7.388l4.915 27.03c.395 2.175-1.072 3.937-3.288 3.937H88.611c-2.211 0-3.659-1.755-3.233-3.92L114.85 62.533l28.44-.49 11.786 44.43c.567 2.139 2.01 2.386 3.236.535l8.392-12.67c1.22-1.843 1.73-5.058 1.139-7.185l-9.596-34.5c-1.184-4.257-5.735-7.677-10.138-7.638l-39.391.349c-4.415.039-8.688 3.584-9.544 7.912L64.458 228.867z"
+                    />
+                    <path
+                        d="M118.116 198.935c-1.182 1.865-.347 3.377 1.867 3.377h12.392c2.214 0 4.968-1.524 6.143-3.39l64.55-102.463c1.18-1.871 3.906-3.697 6.076-4.074l9.581-1.667c2.177-.379 4.492-2.38 5.178-4.496l4.772-14.69c.683-2.104-.063-5.034-1.677-6.555L215.53 54.173c-1.609-1.517-4.482-1.862-6.4-.78l-11.799 6.655c-1.925 1.086-3.626 3.754-3.799 5.954l-.938 11.967c-.173 2.202-1.27 5.498-2.453 7.363l-72.026 113.603z"
+                    />
+                </g>
+            </svg>
+        `;
+  }
+};
+MetronomeIcon.styles = i$6`
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    `;
+MetronomeIcon = __decorateClass$s([
+  t$1("metronome-icon")
+], MetronomeIcon);
+var __getOwnPropDesc$p = Object.getOwnPropertyDescriptor;
 var __decorateClass$r = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$p(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = decorator(result) || result;
+  return result;
+};
+let EQIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
+    return x`
+            <svg
+                version="1.1"
+                id="Layer_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                fill="var(--color-text)"
+                viewBox="0 0 122.879 122.102"
+                enable-background="new 0 0 122.879 122.102"
+                xml:space="preserve"
+            >
+                <g>
+                    <path
+                        d="M9.96,0h102.96c2.744,0,5.232,1.117,7.035,2.919c1.801,1.803,2.924,4.288,2.924,7.032v102.201 c0,2.74-1.123,5.229-2.924,7.031c-1.803,1.805-4.291,2.918-7.035,2.918H9.96c-2.745,0-5.233-1.113-7.035-2.918 C1.123,117.381,0,114.893,0,112.152V9.951c0-2.745,1.123-5.229,2.925-7.032C4.727,1.117,7.215,0,9.96,0L9.96,0z M80.629,41.732 h7.365V17.8c0-1.031,0.416-1.96,1.088-2.634c0.678-0.674,1.605-1.088,2.633-1.088c1.029,0,1.961,0.414,2.631,1.088 c0.674,0.674,1.092,1.603,1.092,2.634v23.932h7.359c2.205,0,4.01,1.804,4.01,4.009l0,0c0,2.206-1.805,4.009-4.01,4.009h-7.359 v36.488c0,1.027-0.418,1.959-1.092,2.629c-0.67,0.672-1.602,1.092-2.631,1.092c-1.027,0-1.955-0.42-2.633-1.092 c-0.672-0.67-1.088-1.602-1.088-2.629V49.75h-7.365c-2.205,0-4.008-1.804-4.008-4.009l0,0 C76.621,43.536,78.424,41.732,80.629,41.732L80.629,41.732z M50.165,58.956h7.362V17.8c0-1.031,0.417-1.96,1.091-2.634 c0.671-0.674,1.603-1.088,2.633-1.088c1.022,0,1.956,0.414,2.628,1.088c0.674,0.674,1.088,1.603,1.088,2.634v41.155h7.365 c2.205,0,4.01,1.804,4.01,4.009l0,0c0,2.205-1.805,4.01-4.01,4.01h-7.365v19.264c0,1.027-0.414,1.959-1.088,2.629 c-0.672,0.672-1.605,1.092-2.628,1.092c-1.031,0-1.962-0.42-2.633-1.092c-0.674-0.67-1.091-1.602-1.091-2.629V66.975h-7.362 c-2.205,0-4.009-1.805-4.009-4.01l0,0C46.155,60.759,47.959,58.956,50.165,58.956L50.165,58.956z M19.971,41.35h7.194V17.8 c0-1.031,0.419-1.96,1.094-2.634c0.671-0.674,1.603-1.088,2.63-1.088c1.026,0,1.957,0.414,2.631,1.088 c0.674,0.674,1.088,1.603,1.088,2.634V41.35h7.53c2.205,0,4.009,1.804,4.009,4.009l0,0c0,2.205-1.804,4.009-4.009,4.009h-7.53 v36.871c0,1.027-0.415,1.959-1.088,2.629c-0.674,0.672-1.605,1.092-2.631,1.092c-1.028,0-1.959-0.42-2.63-1.092 c-0.674-0.67-1.094-1.602-1.094-2.629V49.368h-7.194c-2.205,0-4.009-1.804-4.009-4.009l0,0 C15.962,43.153,17.766,41.35,19.971,41.35L19.971,41.35z M91.715,95.18c2.205,0,4.203,0.895,5.658,2.346l0.006-0.004 c1.449,1.451,2.346,3.453,2.346,5.668c0,2.199-0.896,4.201-2.346,5.652l-0.012,0.018c-1.455,1.445-3.457,2.338-5.652,2.338 c-2.209,0-4.213-0.896-5.662-2.344l-0.123-0.139c-1.377-1.439-2.227-3.387-2.227-5.525c0-2.215,0.9-4.217,2.35-5.668 C87.502,96.074,89.506,95.18,91.715,95.18L91.715,95.18z M94.449,100.447c-0.691-0.693-1.66-1.123-2.734-1.123 c-1.064,0-2.033,0.432-2.732,1.131c-0.697,0.697-1.135,1.662-1.135,2.734c0,1.025,0.4,1.955,1.043,2.646l0.092,0.084 c0.699,0.699,1.668,1.131,2.732,1.131c1.074,0,2.043-0.426,2.734-1.123l0.008-0.008c0.691-0.695,1.127-1.662,1.127-2.73 c0-1.072-0.436-2.037-1.135-2.734l0.006-0.002L94.449,100.447L94.449,100.447z M61.249,95.18c2.205,0,4.207,0.895,5.658,2.346 l0.004-0.004c1.451,1.451,2.35,3.453,2.35,5.668c0,2.205-0.898,4.203-2.354,5.658l0.004,0.006 c-1.445,1.447-3.451,2.344-5.662,2.344c-2.202,0-4.199-0.896-5.655-2.344l-0.014-0.018c-1.448-1.451-2.339-3.447-2.339-5.646 c0-2.215,0.897-4.217,2.348-5.668l0.132-0.123C57.159,96.025,59.109,95.18,61.249,95.18L61.249,95.18z M63.982,100.447 c-0.697-0.693-1.662-1.123-2.734-1.123c-1.028,0-1.959,0.391-2.648,1.037l-0.083,0.094c-0.7,0.697-1.134,1.662-1.134,2.734 c0,1.068,0.428,2.035,1.125,2.73l0.009,0.008c0.691,0.697,1.659,1.123,2.73,1.123c1.068,0,2.031-0.432,2.734-1.131l0.006,0.002 l0.002-0.002c0.695-0.695,1.123-1.662,1.123-2.73c0-1.072-0.432-2.037-1.131-2.734l0.006-0.002L63.982,100.447L63.982,100.447z M30.89,95.18c2.211,0,4.216,0.895,5.661,2.342c1.451,1.451,2.351,3.453,2.351,5.668c0,2.205-0.9,4.203-2.354,5.658l0.003,0.006 c-1.445,1.447-3.45,2.344-5.661,2.344c-2.202,0-4.201-0.896-5.658-2.344l-0.012-0.018c-1.448-1.451-2.342-3.447-2.342-5.646 c0-2.215,0.896-4.217,2.348-5.668l0.131-0.123C26.797,96.025,28.748,95.18,30.89,95.18L30.89,95.18z M33.621,100.455 c-0.697-0.699-1.665-1.131-2.731-1.131c-1.028,0-1.959,0.391-2.647,1.037l-0.085,0.094c-0.7,0.697-1.131,1.662-1.131,2.734 c0,1.068,0.429,2.035,1.123,2.73l0.009,0.008c0.691,0.697,1.662,1.123,2.733,1.123c1.066,0,2.034-0.432,2.731-1.131l0.006,0.002 l0.003-0.002c0.696-0.695,1.125-1.662,1.125-2.73C34.754,102.117,34.323,101.152,33.621,100.455L33.621,100.455z M112.92,4.981 H9.96c-1.369,0-2.611,0.56-3.51,1.463c-0.903,0.9-1.463,2.145-1.463,3.507v102.201c0,1.361,0.56,2.607,1.463,3.506 c0.899,0.906,2.142,1.461,3.51,1.461h102.96c1.369,0,2.611-0.555,3.51-1.461c0.902-0.898,1.463-2.145,1.463-3.506V9.951 c0-1.363-0.561-2.607-1.463-3.507C115.531,5.541,114.289,4.981,112.92,4.981L112.92,4.981z"
+                    />
+                </g>
+            </svg>
+        `;
+  }
+};
+EQIcon.styles = i$6`
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    `;
+EQIcon = __decorateClass$r([
+  t$1("eq-icon")
+], EQIcon);
+var __getOwnPropDesc$o = Object.getOwnPropertyDescriptor;
+var __decorateClass$q = (decorators, target, key, kind) => {
   var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$o(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$k(target, key, result);
+      result = decorator(result) || result;
   return result;
 };
-let DragIcon$3 = class DragIcon5 extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
-  render() {
+let ForwardIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
     return x`
-            <icon-component size=${this.size}>
-                <svg
-                    fill="orange"
-                    width="800px"
-                    height="800px"
-                    viewBox="0 0 24 24"
-                    id="up-down-scroll-bar-2"
-                    data-name="Flat Line"
-                    class="icon flat-line"
-                >
-                    <polyline
-                        id="primary"
-                        points="10 5 12 3 14 5"
-                        style="fill: none; stroke: var(--color-tint-primary); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
-                    ></polyline>
-                    <polyline
-                        id="primary-2"
-                        data-name="primary"
-                        points="14 19 12 21 10 19"
-                        style="fill: none; stroke: var(--color-tint-primary); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
-                    ></polyline>
-                    <path
-                        id="primary-3"
-                        data-name="primary"
-                        d="M18,12H6m6-4V3m0,18V16"
-                        style="fill: none; stroke: var(--color-tint-primary); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"
-                    ></path>
-                </svg>
-            </icon-component>
-        `;
-  }
-};
-DragIcon$3.styles = i$6`
-        svg {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-    `;
-__decorateClass$r([
-  n$4({ type: Number })
-], DragIcon$3.prototype, "size", 2);
-DragIcon$3 = __decorateClass$r([
-  t$1("up-down-icon")
-], DragIcon$3);
-var __defProp$j = Object.defineProperty;
-var __getOwnPropDesc$n = Object.getOwnPropertyDescriptor;
-var __decorateClass$q = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$n(target, key) : target;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$j(target, key, result);
-  return result;
-};
-let DragIcon$2 = class DragIcon6 extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
-  render() {
-    return x`
-            <icon-component size=${this.size}>
-                <svg
-                    fill="var(--color-tint-primary)"
-                    width="800px"
-                    height="800px"
-                    viewBox="0 0 256 256"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <g fill-rule="evenodd">
-                        <path
-                            d="M64.458 228.867c-.428 2.167 1.007 3.91 3.226 3.893l121.557-.938c2.21-.017 3.68-1.794 3.284-3.97l-11.838-64.913c-.397-2.175-1.626-2.393-2.747-.487l-9.156 15.582c-1.12 1.907-1.71 5.207-1.313 7.388l4.915 27.03c.395 2.175-1.072 3.937-3.288 3.937H88.611c-2.211 0-3.659-1.755-3.233-3.92L114.85 62.533l28.44-.49 11.786 44.43c.567 2.139 2.01 2.386 3.236.535l8.392-12.67c1.22-1.843 1.73-5.058 1.139-7.185l-9.596-34.5c-1.184-4.257-5.735-7.677-10.138-7.638l-39.391.349c-4.415.039-8.688 3.584-9.544 7.912L64.458 228.867z"
-                        />
-                        <path
-                            d="M118.116 198.935c-1.182 1.865-.347 3.377 1.867 3.377h12.392c2.214 0 4.968-1.524 6.143-3.39l64.55-102.463c1.18-1.871 3.906-3.697 6.076-4.074l9.581-1.667c2.177-.379 4.492-2.38 5.178-4.496l4.772-14.69c.683-2.104-.063-5.034-1.677-6.555L215.53 54.173c-1.609-1.517-4.482-1.862-6.4-.78l-11.799 6.655c-1.925 1.086-3.626 3.754-3.799 5.954l-.938 11.967c-.173 2.202-1.27 5.498-2.453 7.363l-72.026 113.603z"
-                        />
-                    </g>
-                </svg>
-            </icon-component>
-        `;
-  }
-};
-DragIcon$2.styles = i$6`
-        svg {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-    `;
-__decorateClass$q([
-  n$4({ type: Number })
-], DragIcon$2.prototype, "size", 2);
-DragIcon$2 = __decorateClass$q([
-  t$1("metronome-icon")
-], DragIcon$2);
-var __defProp$i = Object.defineProperty;
-var __getOwnPropDesc$m = Object.getOwnPropertyDescriptor;
-var __decorateClass$p = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$m(target, key) : target;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$i(target, key, result);
-  return result;
-};
-let DragIcon$1 = class DragIcon7 extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
-  render() {
-    return x`
-            <icon-component size=${this.size}>
-                <svg
-                    version="1.1"
-                    id="Layer_1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
+            <svg
+                width="800px"
+                height="800px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M2 17.5737L2 6.42632C2 4.57895 3.60064 3.41122 4.90312 4.30838L10.9998 8.76844L10.9998 7.12303C10.9998 5.50658 12.467 4.48482 13.661 5.26983L21.0784 10.1468C22.3069 10.9545 22.3069 13.0455 21.0784 13.8532L13.661 18.7302C12.467 19.5152 10.9998 18.4934 10.9998 16.877V15.2316L4.90313 19.6916C3.60065 20.5888 2 19.4211 2 17.5737Z"
                     fill="var(--color-text)"
-                    viewBox="0 0 122.879 122.102"
-                    enable-background="new 0 0 122.879 122.102"
-                    xml:space="preserve"
-                >
-                    <g>
-                        <path
-                            d="M9.96,0h102.96c2.744,0,5.232,1.117,7.035,2.919c1.801,1.803,2.924,4.288,2.924,7.032v102.201 c0,2.74-1.123,5.229-2.924,7.031c-1.803,1.805-4.291,2.918-7.035,2.918H9.96c-2.745,0-5.233-1.113-7.035-2.918 C1.123,117.381,0,114.893,0,112.152V9.951c0-2.745,1.123-5.229,2.925-7.032C4.727,1.117,7.215,0,9.96,0L9.96,0z M80.629,41.732 h7.365V17.8c0-1.031,0.416-1.96,1.088-2.634c0.678-0.674,1.605-1.088,2.633-1.088c1.029,0,1.961,0.414,2.631,1.088 c0.674,0.674,1.092,1.603,1.092,2.634v23.932h7.359c2.205,0,4.01,1.804,4.01,4.009l0,0c0,2.206-1.805,4.009-4.01,4.009h-7.359 v36.488c0,1.027-0.418,1.959-1.092,2.629c-0.67,0.672-1.602,1.092-2.631,1.092c-1.027,0-1.955-0.42-2.633-1.092 c-0.672-0.67-1.088-1.602-1.088-2.629V49.75h-7.365c-2.205,0-4.008-1.804-4.008-4.009l0,0 C76.621,43.536,78.424,41.732,80.629,41.732L80.629,41.732z M50.165,58.956h7.362V17.8c0-1.031,0.417-1.96,1.091-2.634 c0.671-0.674,1.603-1.088,2.633-1.088c1.022,0,1.956,0.414,2.628,1.088c0.674,0.674,1.088,1.603,1.088,2.634v41.155h7.365 c2.205,0,4.01,1.804,4.01,4.009l0,0c0,2.205-1.805,4.01-4.01,4.01h-7.365v19.264c0,1.027-0.414,1.959-1.088,2.629 c-0.672,0.672-1.605,1.092-2.628,1.092c-1.031,0-1.962-0.42-2.633-1.092c-0.674-0.67-1.091-1.602-1.091-2.629V66.975h-7.362 c-2.205,0-4.009-1.805-4.009-4.01l0,0C46.155,60.759,47.959,58.956,50.165,58.956L50.165,58.956z M19.971,41.35h7.194V17.8 c0-1.031,0.419-1.96,1.094-2.634c0.671-0.674,1.603-1.088,2.63-1.088c1.026,0,1.957,0.414,2.631,1.088 c0.674,0.674,1.088,1.603,1.088,2.634V41.35h7.53c2.205,0,4.009,1.804,4.009,4.009l0,0c0,2.205-1.804,4.009-4.009,4.009h-7.53 v36.871c0,1.027-0.415,1.959-1.088,2.629c-0.674,0.672-1.605,1.092-2.631,1.092c-1.028,0-1.959-0.42-2.63-1.092 c-0.674-0.67-1.094-1.602-1.094-2.629V49.368h-7.194c-2.205,0-4.009-1.804-4.009-4.009l0,0 C15.962,43.153,17.766,41.35,19.971,41.35L19.971,41.35z M91.715,95.18c2.205,0,4.203,0.895,5.658,2.346l0.006-0.004 c1.449,1.451,2.346,3.453,2.346,5.668c0,2.199-0.896,4.201-2.346,5.652l-0.012,0.018c-1.455,1.445-3.457,2.338-5.652,2.338 c-2.209,0-4.213-0.896-5.662-2.344l-0.123-0.139c-1.377-1.439-2.227-3.387-2.227-5.525c0-2.215,0.9-4.217,2.35-5.668 C87.502,96.074,89.506,95.18,91.715,95.18L91.715,95.18z M94.449,100.447c-0.691-0.693-1.66-1.123-2.734-1.123 c-1.064,0-2.033,0.432-2.732,1.131c-0.697,0.697-1.135,1.662-1.135,2.734c0,1.025,0.4,1.955,1.043,2.646l0.092,0.084 c0.699,0.699,1.668,1.131,2.732,1.131c1.074,0,2.043-0.426,2.734-1.123l0.008-0.008c0.691-0.695,1.127-1.662,1.127-2.73 c0-1.072-0.436-2.037-1.135-2.734l0.006-0.002L94.449,100.447L94.449,100.447z M61.249,95.18c2.205,0,4.207,0.895,5.658,2.346 l0.004-0.004c1.451,1.451,2.35,3.453,2.35,5.668c0,2.205-0.898,4.203-2.354,5.658l0.004,0.006 c-1.445,1.447-3.451,2.344-5.662,2.344c-2.202,0-4.199-0.896-5.655-2.344l-0.014-0.018c-1.448-1.451-2.339-3.447-2.339-5.646 c0-2.215,0.897-4.217,2.348-5.668l0.132-0.123C57.159,96.025,59.109,95.18,61.249,95.18L61.249,95.18z M63.982,100.447 c-0.697-0.693-1.662-1.123-2.734-1.123c-1.028,0-1.959,0.391-2.648,1.037l-0.083,0.094c-0.7,0.697-1.134,1.662-1.134,2.734 c0,1.068,0.428,2.035,1.125,2.73l0.009,0.008c0.691,0.697,1.659,1.123,2.73,1.123c1.068,0,2.031-0.432,2.734-1.131l0.006,0.002 l0.002-0.002c0.695-0.695,1.123-1.662,1.123-2.73c0-1.072-0.432-2.037-1.131-2.734l0.006-0.002L63.982,100.447L63.982,100.447z M30.89,95.18c2.211,0,4.216,0.895,5.661,2.342c1.451,1.451,2.351,3.453,2.351,5.668c0,2.205-0.9,4.203-2.354,5.658l0.003,0.006 c-1.445,1.447-3.45,2.344-5.661,2.344c-2.202,0-4.201-0.896-5.658-2.344l-0.012-0.018c-1.448-1.451-2.342-3.447-2.342-5.646 c0-2.215,0.896-4.217,2.348-5.668l0.131-0.123C26.797,96.025,28.748,95.18,30.89,95.18L30.89,95.18z M33.621,100.455 c-0.697-0.699-1.665-1.131-2.731-1.131c-1.028,0-1.959,0.391-2.647,1.037l-0.085,0.094c-0.7,0.697-1.131,1.662-1.131,2.734 c0,1.068,0.429,2.035,1.123,2.73l0.009,0.008c0.691,0.697,1.662,1.123,2.733,1.123c1.066,0,2.034-0.432,2.731-1.131l0.006,0.002 l0.003-0.002c0.696-0.695,1.125-1.662,1.125-2.73C34.754,102.117,34.323,101.152,33.621,100.455L33.621,100.455z M112.92,4.981 H9.96c-1.369,0-2.611,0.56-3.51,1.463c-0.903,0.9-1.463,2.145-1.463,3.507v102.201c0,1.361,0.56,2.607,1.463,3.506 c0.899,0.906,2.142,1.461,3.51,1.461h102.96c1.369,0,2.611-0.555,3.51-1.461c0.902-0.898,1.463-2.145,1.463-3.506V9.951 c0-1.363-0.561-2.607-1.463-3.507C115.531,5.541,114.289,4.981,112.92,4.981L112.92,4.981z"
-                        />
-                    </g>
-                </svg>
-            </icon-component>
-        `;
-  }
-};
-DragIcon$1.styles = i$6`
-        svg {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-    `;
-__decorateClass$p([
-  n$4({ type: Number })
-], DragIcon$1.prototype, "size", 2);
-DragIcon$1 = __decorateClass$p([
-  t$1("eq-icon")
-], DragIcon$1);
-var __defProp$h = Object.defineProperty;
-var __getOwnPropDesc$l = Object.getOwnPropertyDescriptor;
-var __decorateClass$o = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$l(target, key) : target;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$h(target, key, result);
-  return result;
-};
-let ForwardIcon = class extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
-  render() {
-    return x`
-            <icon-component size=${this.size}>
-                <svg
-                    width="800px"
-                    height="800px"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M2 17.5737L2 6.42632C2 4.57895 3.60064 3.41122 4.90312 4.30838L10.9998 8.76844L10.9998 7.12303C10.9998 5.50658 12.467 4.48482 13.661 5.26983L21.0784 10.1468C22.3069 10.9545 22.3069 13.0455 21.0784 13.8532L13.661 18.7302C12.467 19.5152 10.9998 18.4934 10.9998 16.877V15.2316L4.90313 19.6916C3.60065 20.5888 2 19.4211 2 17.5737Z"
-                        fill="var(--color-text)"
-                    />
-                </svg>
-            </icon-component>
+                />
+            </svg>
         `;
   }
 };
@@ -1811,43 +2068,30 @@ ForwardIcon.styles = i$6`
             object-fit: contain;
         }
     `;
-__decorateClass$o([
-  n$4({ type: Number })
-], ForwardIcon.prototype, "size", 2);
-ForwardIcon = __decorateClass$o([
+ForwardIcon = __decorateClass$q([
   t$1("forward-icon")
 ], ForwardIcon);
-var __defProp$g = Object.defineProperty;
-var __getOwnPropDesc$k = Object.getOwnPropertyDescriptor;
-var __decorateClass$n = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$k(target, key) : target;
+var __getOwnPropDesc$n = Object.getOwnPropertyDescriptor;
+var __decorateClass$p = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$n(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$g(target, key, result);
+      result = decorator(result) || result;
   return result;
 };
-let RewindIcon = class extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.size = 24;
-  }
-  render() {
+let RewindIcon = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
     return x`
-            <icon-component size=${this.size}>
-                <svg
-                    width="800px"
-                    height="800px"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M6 14H8L8 9L13 14H15L15 2H13L8 7L8 2H6L0 8L6 14Z"
-                        fill="var(--color-text)"
-                    />
-                </svg>
-            </icon-component>
+            <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M6 14H8L8 9L13 14H15L15 2H13L8 7L8 2H6L0 8L6 14Z"
+                    fill="var(--color-text)"
+                />
+            </svg>
         `;
   }
 };
@@ -1858,147 +2102,163 @@ RewindIcon.styles = i$6`
             object-fit: contain;
         }
     `;
-__decorateClass$n([
-  n$4({ type: Number })
-], RewindIcon.prototype, "size", 2);
-RewindIcon = __decorateClass$n([
+RewindIcon = __decorateClass$p([
   t$1("rewind-icon")
 ], RewindIcon);
-var __defProp$f = Object.defineProperty;
-var __getOwnPropDesc$j = Object.getOwnPropertyDescriptor;
-var __decorateClass$m = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$j(target, key) : target;
+var __getOwnPropDesc$m = Object.getOwnPropertyDescriptor;
+var __decorateClass$o = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$m(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$f(target, key, result);
+      result = decorator(result) || result;
   return result;
 };
-let DragIcon8 = class extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.color = "var(--color-primary)";
-    this.size = 24;
-  }
-  render() {
+let ClockIcon$1 = class ClockIcon extends IconConsumerMixin(i$3) {
+  renderIcon() {
     return x`
-            <icon-component size=${this.size}>
-                <svg
-                    height="800px"
-                    width="800px"
-                    version="1.1"
-                    id="_x32_"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                    viewBox="0 0 512 512"
-                    xml:space="preserve"
-                >
-                    <style type="text/css">
-                        .st0 {
-                            fill: ${this.color};
-                        }
-                    </style>
-                    <g>
-                        <path
-                            class="st0"
-                            d="M181.158,225.346l64.826,50.011l0.902,0.517l0.404,0.226c5.606,3.122,13.027,1.467,17.975-3.979l0.432-0.414
+            <svg
+                version="1.1"
+                id="_x32_"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 512 512"
+                xml:space="preserve"
+            >
+                <style type="text/css">
+                    .st0 {
+                        fill: ${this.color};
+                    }
+                </style>
+                <g>
+                    <path
+                        class="st0"
+                        d="M181.158,225.346l64.826,50.011l0.902,0.517l0.404,0.226c5.606,3.122,13.027,1.467,17.975-3.979l0.432-0.414
 		l79.452-94.002c4.524-5.07,4.599-12.369,0.198-16.282c-4.411-3.922-11.644-2.981-16.15,2.088l-74.268,79.339l-57.338-39.928
 		c-5.362-3.95-13.403-2.116-17.947,4.082C175.11,213.184,175.777,221.405,181.158,225.346z"
-                        />
-                        <path
-                            class="st0"
-                            d="M100.445,255.99c0-3.434,0.075-6.866,0.438-10.234H60.188c-0.249,3.367-0.315,6.8-0.315,10.234
+                    />
+                    <path
+                        class="st0"
+                        d="M100.445,255.99c0-3.434,0.075-6.866,0.438-10.234H60.188c-0.249,3.367-0.315,6.8-0.315,10.234
 		c0,3.499,0.066,6.876,0.315,10.252h40.695C100.52,262.866,100.445,259.442,100.445,255.99z"
-                        />
-                        <path
-                            class="st0"
-                            d="M172.42,124.797c3.847-2.436,7.774-4.731,11.762-6.772l1.552-0.753l-20.28-35.215
+                    />
+                    <path
+                        class="st0"
+                        d="M172.42,124.797c3.847-2.436,7.774-4.731,11.762-6.772l1.552-0.753l-20.28-35.215
 		c-5.074,2.558-10.017,5.398-14.814,8.512l20.289,35.234L172.42,124.797z"
-                        />
-                        <path
-                            class="st0"
-                            d="M82.071,165.44l35.23,20.279l8.527-14.795l-35.244-20.289C87.47,155.432,84.634,160.361,82.071,165.44z"
-                        />
-                        <path
-                            class="st0"
-                            d="M393.985,327.814c-2.116,3.998-4.341,7.91-6.844,11.701l-1.015,1.486l35.24,20.288
+                    />
+                    <path
+                        class="st0"
+                        d="M82.071,165.44l35.23,20.279l8.527-14.795l-35.244-20.289C87.47,155.432,84.634,160.361,82.071,165.44z"
+                    />
+                    <path
+                        class="st0"
+                        d="M393.985,327.814c-2.116,3.998-4.341,7.91-6.844,11.701l-1.015,1.486l35.24,20.288
 		c3.118-4.797,5.958-9.66,8.582-14.73l-35.15-20.355L393.985,327.814z"
-                        />
-                        <path
-                            class="st0"
-                            d="M118.044,327.748l-0.814-1.543l-35.159,20.28c2.502,5.07,5.398,10.008,8.512,14.805l35.244-20.288
+                    />
+                    <path
+                        class="st0"
+                        d="M118.044,327.748l-0.814-1.543l-35.159,20.28c2.502,5.07,5.398,10.008,8.512,14.805l35.244-20.288
 		l-1.026-1.486C122.371,335.724,120.076,331.812,118.044,327.748z"
-                        />
-                        <path
-                            class="st0"
-                            d="M172.42,387.127l-1.491-1.015l-20.289,35.243c4.798,3.114,9.74,6.02,14.814,8.588l20.28-35.234l-1.552-0.752
+                    />
+                    <path
+                        class="st0"
+                        d="M172.42,387.127l-1.491-1.015l-20.289,35.243c4.798,3.114,9.74,6.02,14.814,8.588l20.28-35.234l-1.552-0.752
 		C180.193,391.924,176.266,389.629,172.42,387.127z"
-                        />
-                        <path
-                            class="st0"
-                            d="M326.214,117.216l14.81,8.588l20.284-35.234c-4.793-3.114-9.674-5.954-14.73-8.512L326.214,117.216z"
-                        />
-                        <path
-                            class="st0"
-                            d="M245.771,411.121v40.644c3.377,0.3,6.8,0.366,10.229,0.366c3.442,0,6.871-0.066,10.238-0.366v-40.644v-0.423
+                    />
+                    <path
+                        class="st0"
+                        d="M326.214,117.216l14.81,8.588l20.284-35.234c-4.793-3.114-9.674-5.954-14.73-8.512L326.214,117.216z"
+                    />
+                    <path
+                        class="st0"
+                        d="M245.771,411.121v40.644c3.377,0.3,6.8,0.366,10.229,0.366c3.442,0,6.871-0.066,10.238-0.366v-40.644v-0.423
 		h-20.467V411.121z"
-                        />
-                        <path
-                            class="st0"
-                            d="M266.238,100.878V60.235c-3.367-0.302-6.796-0.367-10.238-0.367c-3.429,0-6.852,0.065-10.229,0.367v40.643
+                    />
+                    <path
+                        class="st0"
+                        d="M266.238,100.878V60.235c-3.367-0.302-6.796-0.367-10.238-0.367c-3.429,0-6.852,0.065-10.229,0.367v40.643
 		v0.423h20.467V100.878z"
-                        />
-                        <path
-                            class="st0"
-                            d="M326.214,394.774l20.364,35.168c5.056-2.643,9.937-5.474,14.73-8.588l-20.284-35.243L326.214,394.774z"
-                        />
-                        <path
-                            class="st0"
-                            d="M429.948,165.44c-2.572-5.079-5.465-10.007-8.582-14.805l-35.24,20.289l8.601,14.795L429.948,165.44z"
-                        />
-                        <path
-                            class="st0"
-                            d="M451.826,245.757h-40.69h-0.423v20.486h0.423h40.69c0.254-3.376,0.311-6.8,0.311-10.252
+                    />
+                    <path
+                        class="st0"
+                        d="M326.214,394.774l20.364,35.168c5.056-2.643,9.937-5.474,14.73-8.588l-20.284-35.243L326.214,394.774z"
+                    />
+                    <path
+                        class="st0"
+                        d="M429.948,165.44c-2.572-5.079-5.465-10.007-8.582-14.805l-35.24,20.289l8.601,14.795L429.948,165.44z"
+                    />
+                    <path
+                        class="st0"
+                        d="M451.826,245.757h-40.69h-0.423v20.486h0.423h40.69c0.254-3.376,0.311-6.8,0.311-10.252
 		C452.136,252.557,452.08,249.124,451.826,245.757z"
-                        />
-                        <path
-                            class="st0"
-                            d="M256,0C114.606,0.009,0.014,114.61,0.005,256C0.014,397.39,114.606,511.99,256,512
+                    />
+                    <path
+                        class="st0"
+                        d="M256,0C114.606,0.009,0.014,114.61,0.005,256C0.014,397.39,114.606,511.99,256,512
 		c141.394-0.01,255.986-114.61,255.995-256C511.986,114.61,397.394,0.009,256,0z M256,478.966
 		c-61.627-0.01-117.268-24.926-157.661-65.305C57.964,373.254,33.043,317.617,33.038,256c0.005-61.618,24.926-117.263,65.3-157.652
 		C138.732,57.958,194.373,33.042,256,33.033c61.618,0.01,117.258,24.926,157.661,65.315c40.375,40.389,65.296,96.024,65.3,157.652
 		c-0.005,61.617-24.926,117.254-65.3,157.661C373.258,454.041,317.618,478.957,256,478.966z"
-                        />
-                    </g>
-                </svg>
-            </icon-component>
+                    />
+                </g>
+            </svg>
         `;
   }
 };
-DragIcon8.styles = i$6`
+ClockIcon$1.styles = i$6`
         svg {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
     `;
-__decorateClass$m([
-  n$4({ type: String })
-], DragIcon8.prototype, "color", 2);
-__decorateClass$m([
-  n$4({ type: Number })
-], DragIcon8.prototype, "size", 2);
-DragIcon8 = __decorateClass$m([
+ClockIcon$1 = __decorateClass$o([
   t$1("clock-icon")
-], DragIcon8);
-var __defProp$e = Object.defineProperty;
-var __getOwnPropDesc$i = Object.getOwnPropertyDescriptor;
-var __decorateClass$l = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$i(target, key) : target;
+], ClockIcon$1);
+var __getOwnPropDesc$l = Object.getOwnPropertyDescriptor;
+var __decorateClass$n = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$l(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = decorator(result) || result;
+  return result;
+};
+let ClockIcon2 = class extends IconConsumerMixin(i$3) {
+  renderIcon() {
+    return x`
+            <svg
+                width="800px"
+                height="800px"
+                viewBox="0 0 24 24"
+                fill=${this.color}
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z"
+                    fill=${this.color}
+                />
+            </svg>
+        `;
+  }
+};
+ClockIcon2.styles = i$6`
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    `;
+ClockIcon2 = __decorateClass$n([
+  t$1("arrow-down-icon")
+], ClockIcon2);
+var __defProp$f = Object.defineProperty;
+var __getOwnPropDesc$k = Object.getOwnPropertyDescriptor;
+var __decorateClass$m = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$k(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$e(target, key, result);
+  if (kind && result) __defProp$f(target, key, result);
   return result;
 };
 let Icon = class extends i$3 {
@@ -2010,7 +2270,7 @@ let Icon = class extends i$3 {
     return x`
             <div
                 class="icon"
-                style=${o({
+                style=${o$1({
       width: this.size + "px",
       height: this.size + "px"
     })}
@@ -2028,20 +2288,20 @@ Icon.styles = [
             }
         `
 ];
-__decorateClass$l([
+__decorateClass$m([
   n$4({ type: Number })
 ], Icon.prototype, "size", 2);
-Icon = __decorateClass$l([
+Icon = __decorateClass$m([
   t$1("icon-component")
 ], Icon);
-var __defProp$d = Object.defineProperty;
-var __getOwnPropDesc$h = Object.getOwnPropertyDescriptor;
-var __decorateClass$k = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$h(target, key) : target;
+var __defProp$e = Object.defineProperty;
+var __getOwnPropDesc$j = Object.getOwnPropertyDescriptor;
+var __decorateClass$l = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$j(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$d(target, key, result);
+  if (kind && result) __defProp$e(target, key, result);
   return result;
 };
 let IconButton = class extends i$3 {
@@ -2089,7 +2349,7 @@ let IconButton = class extends i$3 {
       active: this.isActive && this.isActive !== void 0
     })}
                     @click=${this.delegateClick}
-                    style=${o({
+                    style=${o$1({
       width: this.size + "px",
       height: this.size + "px"
     })}
@@ -2149,16 +2409,16 @@ IconButton.styles = [
             }
         `
 ];
-__decorateClass$k([
+__decorateClass$l([
   n$4({ type: Number })
 ], IconButton.prototype, "size", 2);
-__decorateClass$k([
+__decorateClass$l([
   n$4({ type: Boolean })
 ], IconButton.prototype, "isActive", 2);
-__decorateClass$k([
+__decorateClass$l([
   n$4({ type: String, attribute: "label-text" })
 ], IconButton.prototype, "labelText", 2);
-IconButton = __decorateClass$k([
+IconButton = __decorateClass$l([
   t$1("icon-button")
 ], IconButton);
 function generateUUID() {
@@ -2197,16 +2457,49 @@ class AudioSample {
     }
   }
 }
-class AudioChannel extends EventTarget {
-  constructor(id, ctx, name, master) {
+class Logger {
+  constructor() {
+  }
+  static getInstance() {
+    if (!Logger.instance) {
+      Logger.instance = new Logger();
+    }
+    return Logger.instance;
+  }
+  log(message, ...optionalParams) {
+    console.log(
+      `[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`,
+      ...optionalParams
+    );
+  }
+  error(message, ...optionalParams) {
+    console.error(
+      `[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`,
+      ...optionalParams
+    );
+  }
+  warn(message, ...optionalParams) {
+    console.warn(
+      `[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`,
+      ...optionalParams
+    );
+  }
+}
+class AudioSource extends EventTarget {
+  constructor(id, ctx, name, master, isMixerChannel = false) {
     super();
+    this.logger = Logger.getInstance();
     this.effects = [];
     this.muted = false;
-    this.subChannels = [];
+    this.subChannels = /* @__PURE__ */ new Map();
+    this.bufferSources = /* @__PURE__ */ new Set();
+    this.isPlaying = false;
+    this.isMixerChannel = false;
     this.ctx = ctx;
     this.id = id;
     this.name = name;
     this.master = master;
+    this.isMixerChannel = isMixerChannel;
     this.source = new AudioSample(ctx);
     if (this.master) {
       this.getGainNode.connect(this.master.getGainNode);
@@ -2242,6 +2535,9 @@ class AudioChannel extends EventTarget {
     );
   }
   async load(sample) {
+    if (this.isMixerChannel) {
+      throw new Error("Cannot load sample into a mixer channel");
+    }
     const audioBuffer = await this.source.load(sample);
     if (!audioBuffer) {
       throw new Error("Failed to load audio sample");
@@ -2253,7 +2549,7 @@ class AudioChannel extends EventTarget {
       })
     );
   }
-  async play(when = this.ctx.currentTime, offset = 0, duration, loopStart, loopEnd) {
+  async play(when = this.ctx.currentTime, offset = 0, duration, emitEvents = true, loopStart, loopEnd, onStart, onEnd) {
     if (!this.buffer) {
       throw new Error("No sample loaded to play");
     }
@@ -2262,8 +2558,20 @@ class AudioChannel extends EventTarget {
     }
     const source = this.ctx.createBufferSource();
     source.buffer = this.buffer;
-    source.connect(this.getGainNode);
-    source.start(when, offset, duration);
+    const uuid = generateUUID();
+    source.onended = () => {
+      this.bufferSources.delete(source);
+      if (emitEvents) {
+        const event = new CustomEvent(
+          "audio-channel/ended",
+          {
+            detail: { id: uuid, isPlaying: false }
+          }
+        );
+        this.dispatchEvent(event);
+      }
+      onEnd == null ? void 0 : onEnd();
+    };
     if (loopStart !== void 0 && loopEnd !== void 0) {
       source.loop = true;
       source.loopStart = loopStart;
@@ -2272,29 +2580,35 @@ class AudioChannel extends EventTarget {
       source.loop = false;
     }
     source.connect(this.ctx.destination);
-    const id = generateUUID();
-    const event = new CustomEvent("audio-channel/play", {
-      detail: {
-        id,
-        when,
-        offset,
-        duration: duration ?? this.buffer.duration
-      }
-    });
-    this.dispatchEvent(new CustomEvent("audio-channel/play", event));
+    source.start(when, offset, duration);
+    if (emitEvents) {
+      const event = new CustomEvent("audio-channel/play", {
+        detail: {
+          id: uuid,
+          when,
+          offset,
+          duration: duration ?? this.buffer.duration,
+          isPlaying: true
+        }
+      });
+      this.dispatchEvent(new CustomEvent("audio-channel/play", event));
+    }
+    this.bufferSources.add(source);
+    onStart == null ? void 0 : onStart();
     return new Promise((resolve) => {
       source.onended = () => {
-        const event2 = new CustomEvent(
+        const event = new CustomEvent(
           "audio-channel/ended",
           {
             detail: {
-              id
+              id: uuid,
+              isPlaying: false
             }
           }
         );
-        this.dispatchEvent(
-          new CustomEvent("audio-channel/ended", event2)
-        );
+        this.dispatchEvent(event);
+        this.bufferSources.delete(source);
+        onEnd == null ? void 0 : onEnd();
         resolve();
       };
     });
@@ -2311,12 +2625,21 @@ class AudioChannel extends EventTarget {
       callback(stopEvent);
     });
   }
-  stop() {
-    this.getGainNode.disconnect();
-    this.dispatchEvent(new CustomEvent("stop"));
+  stop(when = 0, emitEvents = true) {
+    this.bufferSources.forEach((source) => {
+      source.stop(this.ctx.currentTime + when);
+      source.disconnect();
+    });
+    this.bufferSources.clear();
+    if (emitEvents) {
+      this.dispatchEvent(new CustomEvent("stop"));
+    }
   }
   addSubChannel(channel) {
-    this.subChannels.push(channel);
+    if (this.subChannels.has(channel.id)) {
+      throw new Error(`SubChannel with id ${channel.id} already exists`);
+    }
+    this.subChannels.set(channel.id, channel);
     channel.setVolume(this.getGainNode.gain.value);
     channel.setMuted(this.muted);
     channel.getGainNode.connect(this.getGainNode);
@@ -2325,6 +2648,89 @@ class AudioChannel extends EventTarget {
       subChannel.setMuted(this.muted);
       subChannel.getGainNode.connect(this.ctx.destination);
     });
+    this.dispatchEvent(
+      new CustomEvent("audio-channel/sub-channel-added", {
+        detail: { channel }
+      })
+    );
+    return channel;
+  }
+}
+class Scheduler {
+  constructor(store, lookahead = 0.1) {
+    this.playbackQueue = [];
+    this.stopQueue = [];
+    this.prevTimeWindow = 0;
+    this.store = store;
+    this.lookahead = lookahead;
+  }
+  // Every play event will have a unique ID, so there is no need to
+  // check for duplicates in the queue, but just skip it since its
+  // guaranteed to be the same event
+  hasId(id) {
+    return this.playbackQueue.some((item) => item.params.id === id);
+  }
+  addToQueue(audioSource, params) {
+    if (this.hasId(params.id)) {
+      return;
+    }
+    this.playbackQueue.push({
+      params,
+      audioSource
+    });
+  }
+  // Sync with external clock (Stopwatch) so we don't need
+  // to use pooling to check for changes, but rather rely
+  // on real time updates for the queue scheduling
+  // This method needs to be called on each "tick" of the clock
+  // (ie window.requestAnimationFrame + performance.now())
+  startWithSyncedClock(currentTime) {
+    if (this.prevTimeWindow === 0) {
+      this.prevTimeWindow = currentTime;
+    }
+    this.playbackQueue.forEach((cur) => {
+      if (!cur.params.scheduled && cur.params.startTime < currentTime + this.lookahead && cur.params.startTime >= this.prevTimeWindow) {
+        this.tick(currentTime, cur);
+        cur.params.scheduled = true;
+      }
+    });
+    this.prevTimeWindow = currentTime + this.lookahead;
+  }
+  tick(currentTime, next = ((_b) => (_b = this.playbackQueue) == null ? void 0 : _b[0])()) {
+    const { audioSource, params } = next;
+    const ctxTime = this.store.audioContext.currentTime;
+    const when = ctxTime + (params.startTime - currentTime);
+    const endTime = params.endTime ? when + (params.endTime - params.startTime) : void 0;
+    audioSource.play(when, 0, endTime, false);
+    if ((params == null ? void 0 : params.endTime) && currentTime > params.endTime) {
+      audioSource.stop(0);
+    } else {
+      this.stopQueue.push({
+        audioSource,
+        params
+      });
+    }
+  }
+  reschedule() {
+    this.stopAndReschedule();
+  }
+  stopAndReschedule() {
+    this.prevTimeWindow = 0;
+    this.playbackQueue = this.playbackQueue.map((item) => {
+      if (item.params.scheduled) {
+        item.audioSource.stop(0);
+      }
+      return {
+        ...item,
+        params: {
+          ...item.params,
+          scheduled: false
+        }
+      };
+    });
+  }
+  stop() {
+    this.stopAndReschedule();
   }
 }
 class VSTRegistry {
@@ -2356,7 +2762,7 @@ let s$2 = class s extends Event {
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function n2(n3) {
+function n$1(n3) {
   return n3;
 }
 /**
@@ -2422,7 +2828,7 @@ class s3 {
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-let e$1 = class e extends Event {
+let e$2 = class e extends Event {
   constructor(t2, s4) {
     super("context-provider", { bubbles: true, composed: true }), this.context = t2, this.contextTarget = s4;
   }
@@ -2446,7 +2852,7 @@ class i3 extends s3 {
     this.host.addEventListener("context-request", this.onContextRequest), this.host.addEventListener("context-provider", this.onProviderRequest);
   }
   hostConnected() {
-    this.host.dispatchEvent(new e$1(this.context, this.host));
+    this.host.dispatchEvent(new e$2(this.context, this.host));
   }
 }
 /**
@@ -2454,7 +2860,7 @@ class i3 extends s3 {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function e2({ context: e3 }) {
+function e$1({ context: e3 }) {
   return (n3, i$12) => {
     const r2 = /* @__PURE__ */ new WeakMap();
     if ("object" == typeof i$12) return { get() {
@@ -2505,32 +2911,51 @@ function c({ context: c2, subscribe: e3 }) {
     });
   };
 }
-const playbackContext = n2(
+const playbackContext = n$1(
   Symbol("playbackContext")
 );
-const audioContext = new AudioContext();
+var TimeEventChange = /* @__PURE__ */ ((TimeEventChange2) => {
+  TimeEventChange2[TimeEventChange2["Rewinded"] = 0] = "Rewinded";
+  TimeEventChange2[TimeEventChange2["Forwarded"] = 1] = "Forwarded";
+  TimeEventChange2[TimeEventChange2["SeekStart"] = 2] = "SeekStart";
+  TimeEventChange2[TimeEventChange2["SeekEnd"] = 3] = "SeekEnd";
+  TimeEventChange2[TimeEventChange2["Natural"] = 4] = "Natural";
+  return TimeEventChange2;
+})(TimeEventChange || {});
 class PlaybackContextStore {
   constructor() {
-    this.audioContext = audioContext;
+    this.sources = [];
     this.isPlaying = false;
     this.isRecording = false;
     this.isLooping = false;
     this.bpm = 120;
-    this.master = new AudioChannel("master", audioContext, "Master");
-    this.preview = new AudioChannel(
-      "preview",
-      audioContext,
-      "Preview"
-    );
     this.timeSignature = [4, 4];
     this.currentTime = 0;
     this.vstRegistry = new VSTRegistry();
+    this.lastTimeEventChange = void 0;
+    this.audioContext = new AudioContext();
+    this.master = new AudioSource(
+      "master",
+      this.audioContext,
+      "Master",
+      void 0,
+      true
+    );
+    this.preview = new AudioSource(
+      "preview",
+      this.audioContext,
+      "Preview",
+      this.master,
+      true
+    );
+    this.scheduler = new Scheduler(this);
   }
 }
 function attachPlaybackContextEvents(host, ctx) {
   host.addEventListener("playback-context/bpm", (event) => {
     ctx.setValue({
       ...ctx.value,
+      lastTimeEventChange: 4,
       bpm: event.detail
     });
   });
@@ -2583,20 +3008,37 @@ function attachPlaybackContextEvents(host, ctx) {
   host.addEventListener(
     "playback-context/set-current-time",
     (event) => {
+      const { type = 4, value } = event.detail;
+      if (type === 2) {
+        return;
+      }
       ctx.setValue({
         ...ctx.value,
-        currentTime: event.detail
+        currentTime: value,
+        lastTimeEventChange: type
       });
     }
   );
+  host.addEventListener("playback-context/add-channel", (event) => {
+    const source = event.detail;
+    if (ctx.value.sources.some((s4) => s4.id === source[0].id)) {
+      console.warn(
+        `AudioSource with id ${source[0].id} already exists in playback context.`
+      );
+    }
+    ctx.setValue({
+      ...ctx.value,
+      sources: [...ctx.value.sources, ...source]
+    });
+  });
 }
-var __defProp$c = Object.defineProperty;
-var __decorateClass$j = (decorators, target, key, kind) => {
+var __defProp$d = Object.defineProperty;
+var __decorateClass$k = (decorators, target, key, kind) => {
   var result = void 0;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(target, key, result) || result;
-  if (result) __defProp$c(target, key, result);
+  if (result) __defProp$d(target, key, result);
   return result;
 };
 class PlaybackContextConsumerBase {
@@ -2615,6 +3057,15 @@ class PlaybackContextConsumerBase {
   $play() {
     this.host.dispatchEvent(
       new CustomEvent("playback-context/play", {
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
+  $addChannel(...channel) {
+    this.host.dispatchEvent(
+      new CustomEvent("playback-context/add-channel", {
+        detail: channel,
         bubbles: true,
         composed: true
       })
@@ -2644,13 +3095,16 @@ class PlaybackContextConsumerBase {
       })
     );
   }
-  $setCurrentTime(currentTime) {
+  $setCurrentTime(ev) {
     this.host.dispatchEvent(
-      new CustomEvent("playback-context/set-current-time", {
-        detail: currentTime,
-        bubbles: true,
-        composed: true
-      })
+      new CustomEvent(
+        "playback-context/set-current-time",
+        {
+          detail: ev,
+          bubbles: true,
+          composed: true
+        }
+      )
     );
   }
   $onBpmChange(callback) {
@@ -2674,15 +3128,15 @@ const WithPlaybackContext = (superClass) => {
       this.consumer = new PlaybackContextConsumerBase(this);
     }
   }
-  __decorateClass$j([
+  __decorateClass$k([
     c({ context: playbackContext, subscribe: true }),
     r$1()
   ], PlaybackContextConsumer.prototype, "playbackContext");
   return PlaybackContextConsumer;
 };
-var __getOwnPropDesc$g = Object.getOwnPropertyDescriptor;
-var __decorateClass$i = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$g(target, key) : target;
+var __getOwnPropDesc$i = Object.getOwnPropertyDescriptor;
+var __decorateClass$j = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$i(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(result) || result;
@@ -2810,12 +3264,12 @@ BpmPicker.styles = [
             }
         `
 ];
-BpmPicker = __decorateClass$i([
+BpmPicker = __decorateClass$j([
   t$1("bpm-picker")
 ], BpmPicker);
-var __getOwnPropDesc$f = Object.getOwnPropertyDescriptor;
-var __decorateClass$h = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$f(target, key) : target;
+var __getOwnPropDesc$h = Object.getOwnPropertyDescriptor;
+var __decorateClass$i = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$h(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(result) || result;
@@ -2831,7 +3285,7 @@ let TimeIndicator = class extends WithPlaybackContext(i$3) {
   }
   render() {
     return x`
-            <div class="time-indicator typography-200">
+            <div class="time-indicator typography-400">
                 <p>${this.formatedDisplayTime()}</p>
             </div>
         `;
@@ -2860,7 +3314,7 @@ TimeIndicator.styles = [
             }
         `
 ];
-TimeIndicator = __decorateClass$h([
+TimeIndicator = __decorateClass$i([
   t$1("time-indicator")
 ], TimeIndicator);
 const getAudioAsset = async (filePath) => {
@@ -2875,9 +3329,23 @@ const getAudioAsset = async (filePath) => {
   return await file.arrayBuffer();
 };
 class Metronome {
-  constructor(channel) {
+  constructor(channel, context) {
     this.lastTick = -1;
-    this.channel = channel;
+    this.countdownInterval = null;
+    const sub = channel.addSubChannel(
+      new AudioSource(
+        "metronome-tick",
+        context,
+        "Metronome tick sound",
+        channel
+      )
+    );
+    this.channel = sub;
+  }
+  getNextBeatTime(currentTime, bpm) {
+    const interval = this.metronomeInterval(bpm);
+    const nextBeat = Math.floor(currentTime / interval) + 1;
+    return nextBeat * interval;
   }
   tick(currentTime, bpm) {
     const nextBeatTime = this.getNextBeatTime(currentTime, bpm);
@@ -2886,12 +3354,27 @@ class Metronome {
       this.channel.play();
     }
   }
-  getNextBeatTime(currentTime, bpm) {
-    const interval = this.metronomeInterval(bpm);
-    const nextBeat = Math.floor(currentTime / interval) + 1;
-    return nextBeat * interval;
+  // TODO: Use tick and scheduling to play countdown instead of setInterval
+  fixedCountdown(bpm, timeSignature = 4) {
+    return new Promise((resolve) => {
+      let ticks = 3;
+      this.countdownInterval = setInterval(() => {
+        if (ticks === 0) {
+          clearInterval(this.countdownInterval);
+          this.lastTick = -1;
+          resolve();
+        } else {
+          this.channel.play();
+        }
+        ticks--;
+      }, this.metronomeInterval(bpm));
+    });
   }
-  start() {
+  cancelCountdown() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
   }
   stop() {
     this.lastTick = -1;
@@ -2921,12 +3404,13 @@ class StopWatch {
     this.running = false;
     this.requestId = null;
   }
-  start(onTick, interval = 20) {
+  start(onTick, startTime = 0) {
     if (!this.running) {
       this.startTime = performance.now();
+      this.elapsedTime = startTime;
       this.running = true;
-      if (onTick && interval) {
-        return this.onTick(onTick);
+      if (onTick) {
+        return this.onTick(onTick.bind(this, this.getElapsedTime()));
       }
     }
   }
@@ -2951,12 +3435,11 @@ class StopWatch {
     }
     return this.elapsedTime;
   }
-  tick(cb = () => {
-  }) {
+  tick(cb) {
     if (!this.running) {
       return;
     }
-    cb();
+    cb(this.getElapsedTime());
     this.requestId = window.requestAnimationFrame(this.tick.bind(this, cb));
   }
   onTick(callback) {
@@ -2965,7 +3448,7 @@ class StopWatch {
       };
     }
     this.requestId = window.requestAnimationFrame(
-      this.tick.bind(this, callback)
+      this.tick.bind(this, callback.bind(this, this.getElapsedTime()))
     );
     return () => {
       if (this.requestId !== null) {
@@ -2976,26 +3459,30 @@ class StopWatch {
   }
 }
 const msToSeconds = (ms, fixed = 4) => Number((ms / 1e3).toFixed(fixed));
-var __defProp$b = Object.defineProperty;
-var __getOwnPropDesc$e = Object.getOwnPropertyDescriptor;
-var __decorateClass$g = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$e(target, key) : target;
+var __defProp$c = Object.defineProperty;
+var __getOwnPropDesc$g = Object.getOwnPropertyDescriptor;
+var __decorateClass$h = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$g(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$b(target, key, result);
+  if (kind && result) __defProp$c(target, key, result);
   return result;
 };
-let Recorder = class extends WithPlaybackContext(i$3) {
+let PlaybackElement = class extends WithPlaybackContext(i$3) {
   constructor() {
     super(...arguments);
     this.isMetronomeOn = false;
+    this.countdown = false;
     this.stopWatch = new StopWatch();
     this.metronomeRafId = void 0;
   }
   connectedCallback() {
     super.connectedCallback();
-    this.metronome = new Metronome(this.playbackContext.preview);
+    this.metronome = new Metronome(
+      this.playbackContext.preview,
+      this.playbackContext.audioContext
+    );
     this.metronome.preloadTickSound();
     this.keyboardManager.addKeys([
       {
@@ -3021,22 +3508,49 @@ let Recorder = class extends WithPlaybackContext(i$3) {
         keys: ["Shift", "ArrowLeft"],
         description: "Rewind to Start",
         handler: () => this.handleRewind()
+      },
+      {
+        active: true,
+        keys: ["Shift", "c"],
+        description: "Toggle Countdown",
+        handler: () => this.toggleCountdown()
       }
     ]);
   }
   toggleMetronome() {
     this.isMetronomeOn = !this.isMetronomeOn;
   }
-  handlePlay() {
+  async handlePlay() {
     this.consumer.$toggleIsPlaying();
     const isPlaying = !this.playbackContext.isPlaying;
+    const currentTime = this.playbackContext.currentTime;
     if (isPlaying) {
+      this.metronome.cancelCountdown();
       this.stopWatch.stop();
-    }
-    if (!isPlaying) {
-      this.stopWatch.start(() => {
-        this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
-      });
+      this.playbackContext.scheduler.stop();
+    } else {
+      if (this.countdown) {
+        await this.metronome.fixedCountdown(this.playbackContext.bpm);
+        this.stopWatch.start(() => {
+          const elapsedTime = this.stopWatch.getElapsedTime();
+          this.consumer.$setCurrentTime({
+            value: elapsedTime,
+            type: TimeEventChange.Natural
+          });
+        }, currentTime);
+        this.playbackContext.master.stop();
+      } else {
+        this.stopWatch.start(() => {
+          const elapsedTime = this.stopWatch.getElapsedTime();
+          this.consumer.$setCurrentTime({
+            value: elapsedTime,
+            type: TimeEventChange.Natural
+          });
+          this.playbackContext.scheduler.startWithSyncedClock(
+            msToSeconds(elapsedTime)
+          );
+        }, currentTime);
+      }
     }
   }
   metronomeLoop() {
@@ -3053,6 +3567,9 @@ let Recorder = class extends WithPlaybackContext(i$3) {
   updated(_changedProperties) {
     var _a2;
     (_a2 = super.updated) == null ? void 0 : _a2.call(this, _changedProperties);
+    if (_changedProperties.has("lastTimeEventChange")) {
+      this.playbackContext.scheduler.stop();
+    }
     if (this.playbackContext.isPlaying && this.isMetronomeOn) {
       if (!this.metronomeRafId) {
         this.metronomeLoop();
@@ -3064,12 +3581,15 @@ let Recorder = class extends WithPlaybackContext(i$3) {
     }
   }
   handleRewind() {
-    this.consumer.$setCurrentTime(0);
+    this.consumer.$setCurrentTime({
+      value: 0,
+      type: TimeEventChange.Rewinded
+    });
     this.stopWatch.reset();
+    this.playbackContext.currentTime;
     if (this.playbackContext.isPlaying) {
-      this.stopWatch.start(() => {
-        this.consumer.$setCurrentTime(this.stopWatch.getElapsedTime());
-      });
+      this.playbackContext.scheduler.reschedule();
+      this.stopWatch.start();
       if (this.isMetronomeOn) {
         this.metronome.rewind();
       }
@@ -3083,6 +3603,9 @@ let Recorder = class extends WithPlaybackContext(i$3) {
       return x`<play-icon size=${15}></play-icon>`;
     }
     return x`<stop-icon size=${15}></stop-icon>`;
+  }
+  toggleCountdown() {
+    this.countdown = !this.countdown;
   }
   render() {
     return x`
@@ -3112,12 +3635,19 @@ let Recorder = class extends WithPlaybackContext(i$3) {
                     >
                         <metronome-icon></metronome-icon>
                     </icon-button>
+                    <icon-button
+                        .isActive=${this.countdown}
+                        size=${40}
+                        @handle-click=${this.toggleCountdown}
+                    >
+                        <clock-icon .size=${20}></clock-icon>
+                    </icon-button>
                 </div>
             </div>
         `;
   }
 };
-Recorder.styles = [
+PlaybackElement.styles = [
   i$6`
             .button-wrapper {
                 display: flex;
@@ -3132,23 +3662,26 @@ Recorder.styles = [
             }
         `
 ];
-__decorateClass$g([
+__decorateClass$h([
   n$4({ type: Object })
-], Recorder.prototype, "keyboardManager", 2);
-__decorateClass$g([
+], PlaybackElement.prototype, "keyboardManager", 2);
+__decorateClass$h([
   r$1()
-], Recorder.prototype, "isMetronomeOn", 2);
-Recorder = __decorateClass$g([
-  t$1("recorder-component")
-], Recorder);
-var __defProp$a = Object.defineProperty;
-var __getOwnPropDesc$d = Object.getOwnPropertyDescriptor;
-var __decorateClass$f = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$d(target, key) : target;
+], PlaybackElement.prototype, "isMetronomeOn", 2);
+__decorateClass$h([
+  r$1()
+], PlaybackElement.prototype, "countdown", 2);
+PlaybackElement = __decorateClass$h([
+  t$1("playback-element")
+], PlaybackElement);
+var __defProp$b = Object.defineProperty;
+var __getOwnPropDesc$f = Object.getOwnPropertyDescriptor;
+var __decorateClass$g = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$f(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$a(target, key, result);
+  if (kind && result) __defProp$b(target, key, result);
   return result;
 };
 let Navigation = class extends i$3 {
@@ -3158,9 +3691,9 @@ let Navigation = class extends i$3 {
                 <div class="container">
                     <div class="controls-and-time">
                         <div class="recorder-wrapper">
-                            <recorder-component
+                            <playback-element
                                 .keyboardManager=${this.keyboardManager}
-                            ></recorder-component>
+                            ></playback-element>
                         </div>
                         <div class="time-indicator-wrapper">
                             <time-indicator></time-indicator>
@@ -3214,18 +3747,12 @@ Navigation.styles = [
             }
         `
 ];
-__decorateClass$f([
+__decorateClass$g([
   n$4({ type: Object })
 ], Navigation.prototype, "keyboardManager", 2);
-Navigation = __decorateClass$f([
+Navigation = __decorateClass$g([
   t$1("top-nav")
 ], Navigation);
-var PanelType = /* @__PURE__ */ ((PanelType2) => {
-  PanelType2[PanelType2["VSTI"] = 0] = "VSTI";
-  PanelType2[PanelType2["Custom"] = 1] = "Custom";
-  PanelType2[PanelType2["Effect"] = 2] = "Effect";
-  return PanelType2;
-})(PanelType || {});
 class Panel extends EventTarget {
   constructor(...[
     screenManagerInstance,
@@ -3250,14 +3777,28 @@ class Panel extends EventTarget {
   }
 }
 class VSTIPanel extends Panel {
-  constructor(vstData, ...args) {
-    super(...args);
+  constructor(screenManagerInstance, name, element2, isVisible = false, isDraggable = true, vstData) {
+    super(
+      screenManagerInstance,
+      name,
+      element2,
+      0,
+      isVisible,
+      isDraggable
+    );
     this.vstData = vstData;
   }
 }
 class CustomPanel extends Panel {
-  constructor(...args) {
-    super(...args);
+  constructor(screenManagerInstance, name, element2, isVisible = false, isDraggable = true) {
+    super(
+      screenManagerInstance,
+      name,
+      element2,
+      1,
+      isVisible,
+      isDraggable
+    );
   }
 }
 const _PanelScreenManager = class _PanelScreenManager extends EventTarget {
@@ -3292,6 +3833,47 @@ const _PanelScreenManager = class _PanelScreenManager extends EventTarget {
     for (const panel of this.panels) {
       panel.setCurrent(false);
     }
+  }
+  getCurrentPanel() {
+    return this.panels.find((panel) => panel.isCurrent);
+  }
+  focusNext() {
+    const currentPanel = this.getCurrentPanel();
+    if (!currentPanel) {
+      const first = this.panels[0];
+      if (!first) {
+        console.warn("No panels available to focus.");
+        return void 0;
+      }
+      return this.focus(first.name);
+    }
+    const currentIndex = this.panels.indexOf(currentPanel);
+    const nextIndex = (currentIndex + 1) % this.panels.length;
+    const nextPanel = this.panels[nextIndex];
+    if (nextPanel) {
+      return this.focus(nextPanel.name);
+    }
+    console.warn("No next panel to focus.");
+    return void 0;
+  }
+  focusPrevious() {
+    const currentPanel = this.getCurrentPanel();
+    if (!currentPanel) {
+      const last = this.panels[this.panels.length - 1];
+      if (!last) {
+        console.warn("No panels available to focus.");
+        return void 0;
+      }
+      return this.focus(last.name);
+    }
+    const currentIndex = this.panels.indexOf(currentPanel);
+    const previousIndex = (currentIndex - 1 + this.panels.length) % this.panels.length;
+    const previousPanel = this.panels[previousIndex];
+    if (previousPanel) {
+      return this.focus(previousPanel.name);
+    }
+    console.warn("No previous panel to focus.");
+    return void 0;
   }
   // Focuses on a panel by its name.
   // If the panel is already focused, it returns the panel.
@@ -3328,14 +3910,14 @@ const _PanelScreenManager = class _PanelScreenManager extends EventTarget {
 };
 _PanelScreenManager.instance = null;
 let PanelScreenManager = _PanelScreenManager;
-var __defProp$9 = Object.defineProperty;
-var __getOwnPropDesc$c = Object.getOwnPropertyDescriptor;
-var __decorateClass$e = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$c(target, key) : target;
+var __defProp$a = Object.defineProperty;
+var __getOwnPropDesc$e = Object.getOwnPropertyDescriptor;
+var __decorateClass$f = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$e(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$9(target, key, result);
+  if (kind && result) __defProp$a(target, key, result);
   return result;
 };
 let PadBank = class extends i$3 {
@@ -3400,10 +3982,10 @@ PadBank.styles = [
             }
         `
 ];
-__decorateClass$e([
+__decorateClass$f([
   n$4({ type: Number })
 ], PadBank.prototype, "current", 2);
-PadBank = __decorateClass$e([
+PadBank = __decorateClass$f([
   t$1("pads-bank")
 ], PadBank);
 const programs = [{ "name": "TR-808", "description": "This is the first program.", "path": "assets/kits/TR-808", "data": [{ "name": "808", "file": "808.wav" }, { "name": "Clap", "file": "Clap.wav" }, { "name": "Claves", "file": "Claves.wav" }, { "name": "Conga High", "file": "Conga High.wav" }, { "name": "Conga Mid", "file": "Conga Mid.wav" }, { "name": "Conga Low", "file": "Conga Low.wav" }, { "name": "Cowbell", "file": "Cowbell.wav" }, { "name": "Cymbal", "file": "Cymbal.wav" }, { "name": "HiHat", "file": "Hihat.wav" }, { "name": "Kick Basic", "file": "Kick Basic.wav" }, { "name": "Kick Long", "file": "Kick Long.wav" }, { "name": "Kick Mid", "file": "Kick Mid.wav" }, { "name": "Kick Short", "file": "Kick Short.wav" }, { "name": "Maracas", "file": "Maracas.wav" }, { "name": "Open Hat Long", "file": "Open Hat Long.wav" }, { "name": "Open Hat Short", "file": "Open Hat Short.wav" }, { "name": "Rimshot", "file": "Rimshot.wav" }, { "name": "Snare Bright", "file": "Snare Bright.wav" }, { "name": "Snare High", "file": "Snare High.wav" }, { "name": "Snare Low", "file": "Snare Low.wav" }, { "name": "Snare Mid", "file": "Snare Mid.wav" }, { "name": "Tom High", "file": "Tom High.wav" }, { "name": "Tom Low", "file": "Tom Low.wav" }, { "name": "Tom Mid", "file": "Tom Mid.wav" }] }, { "name": "Program 2", "description": "This is the second program.", "version": "2.0.0", "author": "Author B" }];
@@ -3455,9 +4037,9 @@ class ProgramManager {
     }
   }
 }
-var __getOwnPropDesc$b = Object.getOwnPropertyDescriptor;
-var __decorateClass$d = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$b(target, key) : target;
+var __getOwnPropDesc$d = Object.getOwnPropertyDescriptor;
+var __decorateClass$e = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$d(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(result) || result;
@@ -3510,6 +4092,7 @@ let Program = class extends i$3 {
     return x`
             <section class="container">
                 <daw-select
+                    placeholder="Select Program"
                     .options=${this.programNames}
                     @select-data=${this.handleSelectProgram}
                 >
@@ -3526,17 +4109,17 @@ Program.styles = [
             }
         `
 ];
-Program = __decorateClass$d([
+Program = __decorateClass$e([
   t$1("program-container")
 ], Program);
-var __defProp$8 = Object.defineProperty;
-var __getOwnPropDesc$a = Object.getOwnPropertyDescriptor;
-var __decorateClass$c = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$a(target, key) : target;
+var __defProp$9 = Object.defineProperty;
+var __getOwnPropDesc$c = Object.getOwnPropertyDescriptor;
+var __decorateClass$d = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$c(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$8(target, key, result);
+  if (kind && result) __defProp$9(target, key, result);
   return result;
 };
 let Pad = class extends i$3 {
@@ -3619,16 +4202,16 @@ Pad.styles = [
             }
         `
 ];
-__decorateClass$c([
+__decorateClass$d([
   n$4({ type: Object })
 ], Pad.prototype, "mappedPad", 2);
-__decorateClass$c([
+__decorateClass$d([
   n$4({ type: Number })
 ], Pad.prototype, "volume", 2);
-__decorateClass$c([
+__decorateClass$d([
   n$4({ type: Boolean })
 ], Pad.prototype, "isActive", 2);
-Pad = __decorateClass$c([
+Pad = __decorateClass$d([
   t$1("daw-pad")
 ], Pad);
 class KeyMapping {
@@ -3643,16 +4226,17 @@ class KeyMapping {
   }
 }
 class KeyMappingWithPressed extends KeyMapping {
-  constructor(keys, index, handler, active = true, description, name, pressed = false) {
+  constructor(keys, index, handler, active = true, description, name, pressed = false, oneShot = true) {
     super(keys, index, handler, active, description, name);
     this.pressed = pressed;
+    this.oneShot = oneShot;
   }
 }
 class SimpleKeyboardKanager extends EventTarget {
   constructor() {
     super();
     this.keys = /* @__PURE__ */ new Map();
-    this.pressedKeys = /* @__PURE__ */ new Set();
+    this.pressedKeysMetadata = /* @__PURE__ */ new Map();
     this.attached = false;
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -3715,7 +4299,9 @@ class SimpleKeyboardKanager extends EventTarget {
       const padKey = this.keys.get(key);
       if (padKey && !padKey.pressed) {
         padKey.pressed = true;
-        this.pressedKeys.add(key);
+        this.pressedKeysMetadata.set(key, {
+          startTime: performance.now()
+        });
         this.dispatchEvent(this.pressedEvent(padKey, true));
       }
     }
@@ -3723,10 +4309,16 @@ class SimpleKeyboardKanager extends EventTarget {
   handleKeyUp(event) {
     const key = event.key.toLowerCase();
     if (this.keys.has(key)) {
+      const metadata = this.pressedKeysMetadata.get(key);
+      if (!metadata) {
+        throw new Error(`No metadata found for key: ${key}`);
+      }
       const padKey = this.keys.get(key);
       if (padKey && padKey.pressed) {
         padKey.pressed = false;
-        this.pressedKeys.delete(key);
+        padKey.startTime = metadata.startTime;
+        padKey.endTime = performance.now();
+        padKey.duration = padKey.endTime - padKey.startTime;
         this.dispatchEvent(this.pressedEvent(padKey, false));
       }
     }
@@ -3740,6 +4332,7 @@ class LayeredKeyboardManager extends EventTarget {
     this.interval = null;
     this.attached = false;
     this.currentKeys = [];
+    this.ignoreFn = null;
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
   add(keys, mapping) {
@@ -3761,10 +4354,13 @@ class LayeredKeyboardManager extends EventTarget {
     });
   }
   handleKeyDown(event) {
-    var _a2;
+    var _a2, _b;
     let key = event.key.toLowerCase();
     if ("code" in event && event.code === "Space") {
       key = event.code.toLowerCase();
+    }
+    if ((_a2 = this.ignoreFn) == null ? void 0 : _a2.call(this, event)) {
+      return;
     }
     const prevKey = this.currentCombination[this.currentCombination.length - 1];
     if (prevKey === key) {
@@ -3780,7 +4376,7 @@ class LayeredKeyboardManager extends EventTarget {
       if (!mapping || !mapping.active) {
         return;
       }
-      (_a2 = mapping.handler) == null ? void 0 : _a2.call(mapping);
+      (_b = mapping.handler) == null ? void 0 : _b.call(mapping);
       this.dispatchEvent(
         new CustomEvent("mapping-hit", {
           detail: mapping,
@@ -3820,89 +4416,36 @@ class LayeredKeyboardManager extends EventTarget {
     console.log("KeyboardManager: Event listeners detached.");
   }
 }
-const screenManagerContext = n2(
+const screenManagerContext = n$1(
   Symbol("screenManagerContext")
 );
 new PanelScreenManager();
-var __defProp$7 = Object.defineProperty;
-var __decorateClass$b = (decorators, target, key, kind) => {
+var __defProp$8 = Object.defineProperty;
+var __decorateClass$c = (decorators, target, key, kind) => {
   var result = void 0;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(target, key, result) || result;
-  if (result) __defProp$7(target, key, result);
+  if (result) __defProp$8(target, key, result);
   return result;
 };
 const WithScreenManager = (superClass) => {
   class PlaybackContextConsumer extends superClass {
   }
-  __decorateClass$b([
+  __decorateClass$c([
     c({ context: screenManagerContext, subscribe: true }),
     r$1()
   ], PlaybackContextConsumer.prototype, "screenManager");
   return PlaybackContextConsumer;
 };
-const channelsContext = n2(
-  Symbol("channelsContext")
-);
-function attachChannelContextEvents(host, ctx) {
-  host.addEventListener("channels-context/add-channel", (event) => {
-    const channel = event.detail;
-    const id = channel.id;
-    const existingIndex = ctx.value.channels.findIndex((c2) => c2.id === id);
-    if (existingIndex !== -1) {
-      ctx.setValue({
-        ...ctx.value,
-        channels: ctx.value.channels.map(
-          (c2, index) => index === existingIndex ? channel : c2
-        )
-      });
-    } else {
-      ctx.setValue({
-        ...ctx.value,
-        channels: [...ctx.value.channels, channel]
-      });
-    }
-  });
-}
-var __defProp$6 = Object.defineProperty;
-var __decorateClass$a = (decorators, target, key, kind) => {
-  var result = void 0;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = decorator(target, key, result) || result;
-  if (result) __defProp$6(target, key, result);
-  return result;
-};
-const WithAudioChannelsContext = (superClass) => {
-  class AudioChannelsConsumer extends superClass {
-    hasChannel(channel) {
-      return this.audioChannels.channels.some((c2) => c2.id === channel.id);
-    }
-    $addChannel(channel) {
-      this.dispatchEvent(
-        new CustomEvent("channels-context/add-channel", {
-          detail: channel,
-          bubbles: true,
-          composed: true
-        })
-      );
-    }
-  }
-  __decorateClass$a([
-    c({ context: channelsContext, subscribe: true }),
-    r$1()
-  ], AudioChannelsConsumer.prototype, "audioChannels");
-  return AudioChannelsConsumer;
-};
-var __defProp$5 = Object.defineProperty;
-var __getOwnPropDesc$9 = Object.getOwnPropertyDescriptor;
-var __decorateClass$9 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$9(target, key) : target;
+var __defProp$7 = Object.defineProperty;
+var __getOwnPropDesc$b = Object.getOwnPropertyDescriptor;
+var __decorateClass$b = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$b(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$5(target, key, result);
+  if (kind && result) __defProp$7(target, key, result);
   return result;
 };
 const noop = () => {
@@ -3926,7 +4469,7 @@ const padMappings = [
   "h"
 ];
 class MappedPadKeyWithPressed extends KeyMappingWithPressed {
-  constructor(ctx, mapping, data, bank, index) {
+  constructor(ctx, mapping, data, bank, index, master) {
     super(
       mapping.keys,
       mapping.index,
@@ -3939,10 +4482,11 @@ class MappedPadKeyWithPressed extends KeyMappingWithPressed {
     this.data = data;
     this.bank = bank;
     this.index = index;
-    this.sample = new AudioChannel(
+    this.sample = new AudioSource(
       `pad-${mapping.name}-${bank}-${index}`,
       ctx,
-      mapping.name
+      mapping.name,
+      master
     );
     this.sample.load(data.data).catch((err) => {
       console.error(
@@ -3950,9 +4494,6 @@ class MappedPadKeyWithPressed extends KeyMappingWithPressed {
         err
       );
     });
-  }
-  async play() {
-    await this.sample.play();
   }
 }
 const PADS_PER_BANK = padMappings.length;
@@ -3975,8 +4516,8 @@ const getBank = (index) => {
   return nextBank;
 };
 const element = "sampler-view";
-let Pads = class extends WithAudioChannelsContext(
-  WithScreenManager(WithPlaybackContext(i$3))
+let Pads = class extends WithPlaybackContext(
+  WithScreenManager(i$3)
 ) {
   constructor() {
     super(...arguments);
@@ -3990,51 +4531,46 @@ let Pads = class extends WithAudioChannelsContext(
   connectedCallback() {
     var _a2;
     super.connectedCallback();
-    const self = this;
+    this.samplerMaster = new AudioSource(
+      "sampler-master",
+      this.playbackContext.audioContext,
+      "Sampler Master",
+      this.playbackContext.master,
+      true
+    );
+    this.playbackContext.master.addSubChannel(this.samplerMaster);
     this.screenManager.onPanelFocused((p2) => {
-      if ((p2 == null ? void 0 : p2.name) === self.nodeName.toLowerCase()) {
+      if ((p2 == null ? void 0 : p2.name) === this.nodeName.toLowerCase()) {
         this.samplerKeyMgr.attachEventListeners();
       } else {
         this.samplerKeyMgr.detachEventListeners();
       }
     });
-    (_a2 = this.samplerKeyMgr) == null ? void 0 : _a2.onMappingHit(({ detail: { mapping } }) => {
-      const index = this.currentBankPads.findIndex(
-        (pad) => pad.name === mapping.name
-      );
-      if (index === -1) {
-        console.warn(
-          `No pad found for mapping: ${mapping.name}. Index: ${index}`
-        );
-        return;
-      }
-      this.currentView = this.currentBankPads.map((pad) => {
-        const mapping2 = this.samplerKeyMgr.keys.get(
-          pad.keys.join("-").toLowerCase()
-        );
-        if ((mapping2 == null ? void 0 : mapping2.pressed) !== void 0 && mapping2.pressed) {
-          pad.play();
-          this.dispatchEvent(
-            new CustomEvent("sample-play", {
-              detail: {
-                mapping: pad
-              },
-              bubbles: true,
-              composed: true
-            })
-          );
+    (_a2 = this.samplerKeyMgr) == null ? void 0 : _a2.onMappingHit(({ detail: { mapping, pressed } }) => {
+      this.currentView = this.currentView.map((pad) => {
+        if (pad.name === mapping.name) {
+          if (pressed) {
+            pad.sample.play().catch((err) => {
+              console.error(
+                `Failed to play sample for pad ${pad.name}:`,
+                err
+              );
+            });
+          } else if (!pressed && pad.pressed) {
+            pad.sample.stop();
+          }
+          return {
+            ...pad,
+            pressed
+          };
         }
-        return {
-          ...pad,
-          pressed: (mapping2 == null ? void 0 : mapping2.pressed) ?? false
-        };
+        return pad;
       });
     });
   }
   disconnectedCallback() {
-    var _a2;
     super.disconnectedCallback();
-    (_a2 = this.samplerKeyMgr) == null ? void 0 : _a2.detachEventListeners();
+    this.samplerKeyMgr.detachEventListeners();
   }
   getBankAndRealIndex(index) {
     const bank = getBank(index);
@@ -4062,7 +4598,8 @@ let Pads = class extends WithAudioChannelsContext(
           mapping,
           data,
           bank,
-          index
+          index,
+          this.samplerMaster
         );
       }
     );
@@ -4080,19 +4617,15 @@ let Pads = class extends WithAudioChannelsContext(
     super.update(changedProperties);
     const changed = Array.from(changedProperties.keys());
     if (changed.includes("programData")) {
-      this.createMappings();
-      const mainMaster = this.playbackContext.master;
-      const samplerMaster = new AudioChannel(
-        "sampler-master",
-        this.playbackContext.audioContext,
-        "Sampler Master",
-        mainMaster
-      );
-      this.mappedKeyPads.forEach(
-        ({ sample }) => samplerMaster.addSubChannel(sample)
-      );
-      this.$addChannel(samplerMaster);
+      this.createMappedKeysFromProgram();
     }
+  }
+  createMappedKeysFromProgram() {
+    this.createMappings();
+    this.mappedKeyPads.forEach(({ sample }) => {
+      this.samplerMaster.addSubChannel(sample);
+      this.consumer.$addChannel(sample);
+    });
   }
   setPadBankFromEvent(e3) {
     const bank = e3.detail.bank;
@@ -4108,24 +4641,27 @@ let Pads = class extends WithAudioChannelsContext(
   }
   setProgramFromEvent(e3) {
     const program = e3.detail.program;
-    if (program) {
-      this.programData = program;
-    } else {
-      throw new Error("No program found in event");
+    if (!program) {
+      throw new Error("No program data provided");
     }
+    this.programData = program;
   }
   handleClick(_2) {
   }
   render() {
     return x`
             <div class="top-bar">
-                <program-container
-                    @program-loaded=${this.setProgramFromEvent}
-                ></program-container>
-                <pads-bank
-                    @pad-bank-changed=${this.setPadBankFromEvent}
-                    .current=${this.currentBank}
-                ></pads-bank>
+                <div class="program-container">
+                    <program-container
+                        @program-loaded=${this.setProgramFromEvent}
+                    ></program-container>
+                </div>
+                <div class="pad-bank-selector">
+                    <pads-bank
+                        @pad-bank-changed=${this.setPadBankFromEvent}
+                        .current=${this.currentBank}
+                    ></pads-bank>
+                </div>
             </div>
             <div class="pads">
                 ${this.currentView.map(
@@ -4141,13 +4677,19 @@ let Pads = class extends WithAudioChannelsContext(
   }
 };
 Pads.styles = i$6`
-        .root {
-            background-color: red;
-        }
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
+
+            .program-container {
+                flex: 3;
+            }
+
+            .pad-bank-selector {
+                flex: 2;
+            }
         }
 
         .pads {
@@ -4164,22 +4706,22 @@ Pads.styles = i$6`
             min-height: 450px;
         }
     `;
-__decorateClass$9([
+__decorateClass$b([
   r$1()
 ], Pads.prototype, "mappedKeyPads", 2);
-__decorateClass$9([
+__decorateClass$b([
   r$1()
 ], Pads.prototype, "currentView", 2);
-__decorateClass$9([
+__decorateClass$b([
   n$4({ type: Object })
 ], Pads.prototype, "programData", 2);
-__decorateClass$9([
+__decorateClass$b([
   n$4({ type: Number })
 ], Pads.prototype, "currentBank", 2);
-__decorateClass$9([
+__decorateClass$b([
   n$4({ type: Boolean })
 ], Pads.prototype, "isFocused", 2);
-Pads = __decorateClass$9([
+Pads = __decorateClass$b([
   t$1(element)
 ], Pads);
 class SoundChannel {
@@ -4214,9 +4756,9 @@ class VSTInstrument {
     this.soundChannels.push(newChannel);
   }
 }
-var __getOwnPropDesc$8 = Object.getOwnPropertyDescriptor;
-var __decorateClass$8 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$8(target, key) : target;
+var __getOwnPropDesc$a = Object.getOwnPropertyDescriptor;
+var __decorateClass$a = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$a(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(result) || result;
@@ -4236,12 +4778,12 @@ let SamplerPanel = class extends WithScreenManager(
     this.screenManager.add(
       elementName,
       new VSTIPanel(
-        vstInstrument,
         this.screenManager,
         "sampler-view",
         this,
-        PanelType.VSTI,
-        true
+        true,
+        true,
+        vstInstrument
       )
     );
   }
@@ -4249,33 +4791,177 @@ let SamplerPanel = class extends WithScreenManager(
   }
   render() {
     return x`
-            <panel-card
-                card-height="auto"
-                card-width="500px"
-                card-id="sampler-view"
-                .startPos=${[10, 80]}
-                .isDraggable=${true}
-                .keyboardManager=${this.keyboardManager}
-            >
-                <sampler-view
-                    .keyManager=${this.keyboardManager}
-                    @sample-play=${this.onSamplePlay.bind(this)}
-                ></sampler-view>
-            </panel-card>
+            <div class="sampler-root">
+                <panel-card
+                    card-height="auto"
+                    card-width="500px"
+                    card-id="sampler-view"
+                    .startPos=${[10, 80]}
+                    .isDraggable=${true}
+                    padded
+                    .keyboardManager=${this.keyboardManager}
+                >
+                    <sampler-view
+                        .keyManager=${this.keyboardManager}
+                        @sample-play=${this.onSamplePlay.bind(this)}
+                    ></sampler-view>
+                </panel-card>
+            </div>
         `;
   }
 };
-SamplerPanel = __decorateClass$8([
+SamplerPanel = __decorateClass$a([
   t$1(elementName)
 ], SamplerPanel);
-var __defProp$4 = Object.defineProperty;
-var __getOwnPropDesc$7 = Object.getOwnPropertyDescriptor;
-var __decorateClass$7 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$7(target, key) : target;
+const HOLD_TIMEOUT_MS = 100;
+var DragEvent = /* @__PURE__ */ ((DragEvent2) => {
+  DragEvent2[DragEvent2["Start"] = 0] = "Start";
+  DragEvent2[DragEvent2["End"] = 1] = "End";
+  DragEvent2[DragEvent2["Dragging"] = 2] = "Dragging";
+  return DragEvent2;
+})(DragEvent || {});
+const Y_BOTTOM_PADDING = 40;
+class DragController extends EventTarget {
+  constructor(startPos = [0, 0]) {
+    super();
+    this.holdTimeout = null;
+    this.dragOffset = [0, 0];
+    this.pos = [0, 0];
+    this.isDragging = false;
+    this.handleWindowMouseMove = (event) => {
+      if (!this.isDragging) {
+        return;
+      }
+      const [offsetX, offsetY] = this.dragOffset;
+      const newX = event.clientX - offsetX;
+      const newY = event.clientY - offsetY;
+      this.pos = [this.getX(newX), this.getY(newY)];
+      this.triggerDragEvent({
+        event: 2,
+        coords: this.pos
+      });
+    };
+    this.handleWindowMouseUp = (_2) => {
+      if (this.holdTimeout) {
+        clearTimeout(this.holdTimeout);
+        this.holdTimeout = null;
+      }
+      this.triggerDragEvent({
+        event: 1,
+        coords: this.pos
+      });
+      window.removeEventListener("mousemove", this.handleWindowMouseMove);
+      window.removeEventListener("mouseup", this.handleWindowMouseUp);
+    };
+    this.setStartPos(startPos);
+    this.handleWindowMouseMove = this.handleWindowMouseMove.bind(this);
+    this.handleWindowMouseUp = this.handleWindowMouseUp.bind(this);
+  }
+  setElement(element2) {
+    this.element = element2;
+  }
+  setStartPos(pos) {
+    this.pos = pos;
+  }
+  handleMouseDown(event) {
+    if (!event.target.classList.contains("card-draggable")) {
+      return;
+    }
+    const [x2, y3] = this.pos;
+    this.dragOffset = [event.clientX - x2, event.clientY - y3];
+    this.holdTimeout = setTimeout(() => {
+      this.isDragging = true;
+      this.triggerDragEvent({
+        event: 0,
+        coords: this.pos
+      });
+      window.addEventListener("mousemove", this.handleWindowMouseMove);
+    }, HOLD_TIMEOUT_MS);
+    window.addEventListener("mouseup", this.handleWindowMouseUp);
+  }
+  get height() {
+    var _a2;
+    return ((_a2 = this.element) == null ? void 0 : _a2.getBoundingClientRect().height) || 0;
+  }
+  getY(pos) {
+    const viewportHeight = document.documentElement.clientHeight;
+    if (pos < 80) {
+      return 80;
+    }
+    if (pos + this.height > viewportHeight - Y_BOTTOM_PADDING) {
+      return viewportHeight - this.height - Y_BOTTOM_PADDING;
+    }
+    return pos;
+  }
+  getX(pos) {
+    var _a2;
+    const width = (_a2 = this.element) == null ? void 0 : _a2.getBoundingClientRect().width;
+    const viewportWidth = document.documentElement.clientWidth;
+    if (pos + width > viewportWidth) {
+      return viewportWidth - width - 10;
+    }
+    if (pos < 0) {
+      return 0;
+    }
+    return pos;
+  }
+  triggerDragEvent(event) {
+    const customEvent = new CustomEvent("drag-change", {
+      detail: event,
+      bubbles: true,
+      composed: true
+    });
+    this.dispatchEvent(customEvent);
+  }
+  onDragChange(cb) {
+    this.addEventListener("drag-change", (event) => {
+      cb(event.detail);
+    });
+  }
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const e2 = () => new h();
+class h {
+}
+const o = /* @__PURE__ */ new WeakMap(), n2 = e$4(class extends f {
+  render(i4) {
+    return E;
+  }
+  update(i4, [s4]) {
+    var _a2;
+    const e3 = s4 !== this.G;
+    return e3 && void 0 !== this.G && this.rt(void 0), (e3 || this.lt !== this.ct) && (this.G = s4, this.ht = (_a2 = i4.options) == null ? void 0 : _a2.host, this.rt(this.ct = i4.element)), E;
+  }
+  rt(t2) {
+    if (this.isConnected || (t2 = void 0), "function" == typeof this.G) {
+      const i4 = this.ht ?? globalThis;
+      let s4 = o.get(i4);
+      void 0 === s4 && (s4 = /* @__PURE__ */ new WeakMap(), o.set(i4, s4)), void 0 !== s4.get(this.G) && this.G.call(this.ht, void 0), s4.set(this.G, t2), void 0 !== t2 && this.G.call(this.ht, t2);
+    } else this.G.value = t2;
+  }
+  get lt() {
+    var _a2, _b;
+    return "function" == typeof this.G ? (_a2 = o.get(this.ht ?? globalThis)) == null ? void 0 : _a2.get(this.G) : (_b = this.G) == null ? void 0 : _b.value;
+  }
+  disconnected() {
+    this.lt === this.ct && this.rt(void 0);
+  }
+  reconnected() {
+    this.rt(this.ct);
+  }
+});
+var __defProp$6 = Object.defineProperty;
+var __getOwnPropDesc$9 = Object.getOwnPropertyDescriptor;
+var __decorateClass$9 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$9(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$4(target, key, result);
+  if (kind && result) __defProp$6(target, key, result);
   return result;
 };
 const ELEVATED_Z_INDEX = 100;
@@ -4285,14 +4971,15 @@ let PanelCard = class extends WithScreenManager(i$3) {
     super(...arguments);
     this.cardWidth = "auto";
     this.cardHeight = "auto";
+    this.padded = false;
     this.isDragging = false;
     this.pos = [0, 0];
-    this.dragController = new DragController();
-    this.cardRef = e$2();
+    this.cardRef = e2();
     this.elementZIndex = 0;
     this.isFocused = false;
   }
   firstUpdated(_changedProperties) {
+    this.dragController = new DragController(this.startPos);
     this.dragController.setElement(this.cardRef.value);
     if (!this.screenManager) {
       return;
@@ -4337,11 +5024,13 @@ let PanelCard = class extends WithScreenManager(i$3) {
       this.pos = this.startPos;
     }
   }
+  handleDoubleClick() {
+  }
   render() {
     const [x$1, y3] = this.pos;
     let handleMouseDown = (_2) => {
     };
-    if (this.isDraggable) {
+    if (this.isDraggable && this.dragController) {
       handleMouseDown = this.dragController.handleMouseDown.bind(
         this.dragController
       );
@@ -4351,7 +5040,15 @@ let PanelCard = class extends WithScreenManager(i$3) {
       "is-dragging": this.isDragging,
       "is-focused": this.isFocused
     });
-    const styles = o({
+    const headerClasses = e$3({
+      "card-header": true,
+      "card-draggable": !!this.isDraggable
+    });
+    const contentClasses = e$3({
+      "content-wrapper": true,
+      "card-padded": this.padded
+    });
+    const styles = o$1({
       transform: `translate(${x$1}px, ${y3}px)`,
       width: this.cardWidth,
       height: this.cardHeight,
@@ -4360,17 +5057,18 @@ let PanelCard = class extends WithScreenManager(i$3) {
     return x`<div
             tabindex="0"
             @focus=${this.handleFocus}
-            ${n$2(this.cardRef)}
+            ${n2(this.cardRef)}
             id=${this.cardId}
             class=${classes}
             style=${styles}
             @mousedown="${handleMouseDown}"
+            @dblclick="${this.handleDoubleClick.bind(this)}"
             @click="${this.handleFocus.bind(this)}"
         >
-            <div class="card-header">
+            <div class=${headerClasses}>
                 <slot name="header"></slot>
             </div>
-            <div class="content-wrapper">
+            <div class=${contentClasses}>
                 <slot></slot>
             </div>
         </div> `;
@@ -4384,58 +5082,80 @@ PanelCard.styles = i$6`
         .card {
             display: flex;
             flex-direction: column;
-            padding: 20px;
             background-color: var(--card-color);
             border-radius: var(--border-radius);
             border: 1px solid var(--color-accent);
             position: absolute;
+            box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
         }
 
         .card.is-dragging {
             cursor: grabbing;
-            border: 1px solid var(--color-tint-primary);
+            box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
         }
 
         .card.is-focused {
-            border: 1px solid var(--color-tint-primary);
+            border: 1px solid #533f3f;
+        }
+
+        .card-header {
+            width: 100%;
+            height: 50px;
+            background-color: var(--color-secondary);
+            border-top-left-radius: inherit;
+            border-top-right-radius: inherit;
+        }
+
+        .content-wrapper {
+            border-top: none;
+            border-bottom-left-radius: inherit;
+            border-bottom-right-radius: inherit;
+            background-color: var(--card-color);
+        }
+
+        .card-padded {
+            padding: 0 20px 20px 20px;
         }
     `;
-__decorateClass$7([
+__decorateClass$9([
   n$4({ type: Array })
 ], PanelCard.prototype, "startPos", 2);
-__decorateClass$7([
+__decorateClass$9([
   n$4({ type: String, attribute: "card-id" })
 ], PanelCard.prototype, "cardId", 2);
-__decorateClass$7([
+__decorateClass$9([
   n$4({ type: String, attribute: "card-width" })
 ], PanelCard.prototype, "cardWidth", 2);
-__decorateClass$7([
+__decorateClass$9([
   n$4({ type: String, attribute: "card-height" })
 ], PanelCard.prototype, "cardHeight", 2);
-__decorateClass$7([
+__decorateClass$9([
   n$4({ type: Boolean })
 ], PanelCard.prototype, "isDraggable", 2);
-__decorateClass$7([
+__decorateClass$9([
   n$4({ type: Object, attribute: false })
 ], PanelCard.prototype, "keyboardManager", 2);
-__decorateClass$7([
+__decorateClass$9([
+  n$4({ type: Boolean, attribute: true })
+], PanelCard.prototype, "padded", 2);
+__decorateClass$9([
   r$1()
 ], PanelCard.prototype, "isDragging", 2);
-__decorateClass$7([
+__decorateClass$9([
   r$1()
 ], PanelCard.prototype, "pos", 2);
-__decorateClass$7([
+__decorateClass$9([
   r$1()
 ], PanelCard.prototype, "elementZIndex", 2);
-__decorateClass$7([
+__decorateClass$9([
   r$1()
 ], PanelCard.prototype, "isFocused", 2);
-PanelCard = __decorateClass$7([
+PanelCard = __decorateClass$9([
   t$1("panel-card")
 ], PanelCard);
-var __getOwnPropDesc$6 = Object.getOwnPropertyDescriptor;
-var __decorateClass$6 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$6(target, key) : target;
+var __getOwnPropDesc$8 = Object.getOwnPropertyDescriptor;
+var __decorateClass$8 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$8(target, key) : target;
   for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
     if (decorator = decorators[i4])
       result = decorator(result) || result;
@@ -4444,7 +5164,7 @@ var __decorateClass$6 = (decorators, target, key, kind) => {
 let AddTrackDialog = class extends i$3 {
   constructor() {
     super(...arguments);
-    this.dialogRef = e$2();
+    this.dialogRef = e2();
   }
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
@@ -4458,7 +5178,7 @@ let AddTrackDialog = class extends i$3 {
   }
   render() {
     return x`
-            <dialog ${n$2(this.dialogRef)} id="add-track-dialog">
+            <dialog ${n2(this.dialogRef)} id="add-track-dialog">
                 <form method="dialog">
                     <h2>Add Track</h2>
                     <label for="track-name">Track Name:</label>
@@ -4506,10 +5226,70 @@ AddTrackDialog.styles = [
             }
         `
 ];
-AddTrackDialog = __decorateClass$6([
+AddTrackDialog = __decorateClass$8([
   t$1("add-track-dialog")
 ], AddTrackDialog);
-class ContextConsumerCustom {
+var __defProp$5 = Object.defineProperty;
+var __getOwnPropDesc$7 = Object.getOwnPropertyDescriptor;
+var __decorateClass$7 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$7(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$5(target, key, result);
+  return result;
+};
+let PlayheadNode = class extends i$3 {
+  firstUpdated() {
+    var _a2;
+    const playhead = (_a2 = this.shadowRoot) == null ? void 0 : _a2.querySelector(
+      ".current-time-indicator"
+    );
+    playhead.style.left = `${NEEDLE_START_POS}px`;
+  }
+  render() {
+    return x`<div
+            class="current-time-indicator"
+            style=${o$1({
+      transform: `translateX(${this.xPosition}px)`
+    })}
+        ></div>`;
+  }
+};
+PlayheadNode.styles = [
+  i$6`
+            .current-time-indicator {
+                position: absolute;
+                width: 1px;
+                top: 0;
+                bottom: 0;
+                background-color: var(--color-tint-primary);
+                height: 100%;
+                z-index: 10;
+                left: 0;
+                cursor: grabbing;
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: -6px;
+                    width: 0;
+                    height: 0;
+                    border-top: 6px solid var(--color-tint-primary);
+                    border-left: 6px solid transparent;
+                    border-right: 6px solid transparent;
+                }
+            }
+        `
+];
+__decorateClass$7([
+  n$4({ type: Number })
+], PlayheadNode.prototype, "xPosition", 2);
+PlayheadNode = __decorateClass$7([
+  t$1("playhead-node")
+], PlayheadNode);
+class ContextConsumerLite {
   constructor(host, { context, callback, subscribe = false }) {
     this.subscribe = false;
     this.provided = false;
@@ -4567,7 +5347,7 @@ function consumeProp({
     protoOrTarget.constructor.addInitializer(
       (element2) => {
         let prevValue = void 0;
-        new ContextConsumerCustom(element2, {
+        new ContextConsumerLite(element2, {
           context,
           subscribe,
           callback: (value) => {
@@ -4586,6 +5366,143 @@ function consumeProp({
     );
   };
 }
+var __defProp$4 = Object.defineProperty;
+var __getOwnPropDesc$6 = Object.getOwnPropertyDescriptor;
+var __decorateClass$6 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$6(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$4(target, key, result);
+  return result;
+};
+const getPlayheadPosition = (bpm, currentTime) => {
+  const secondsPerBeat = 60 / bpm;
+  const pxPerSecond = 80 / secondsPerBeat;
+  return msToSeconds(currentTime) * pxPerSecond;
+};
+const getCurrentTimeFromPosition = (bpm, position) => {
+  const secondsPerBeat = 60 / bpm;
+  const pxPerSecond = 80 / secondsPerBeat;
+  return position / pxPerSecond * 1e3;
+};
+let TimeTracker = class extends i$3 {
+  constructor() {
+    super();
+    this.xPos = 0;
+    this.playbackCtxConsumer = new PlaybackContextConsumerBase(this);
+    this.seeking = false;
+    this.addEventListener("mouseup", this.mouseUpHandler.bind(this));
+    this.addEventListener("mousemove", this.mouseMoveHandler.bind(this));
+    this.addEventListener("mousedown", this.mouseDownHandler.bind(this));
+  }
+  get xLeft() {
+    return this.container.getBoundingClientRect().left;
+  }
+  updated(_changedProperties) {
+    if (_changedProperties.has("currentTime")) {
+      this.xPos = getPlayheadPosition(this.bpm, this.currentTime);
+    }
+    if (_changedProperties.has("currentQuantisize")) {
+      this.renderTimeCells();
+    }
+  }
+  renderTimeCells() {
+    const lines = [];
+    const quantisizedBeats = this.currentQuantisize;
+    const totalBeats = Math.ceil(MAX_TIME_BEATS * BEAT_WIDTH);
+    const styles = o$1({
+      maxWidth: `${BEAT_WIDTH}px`,
+      minWidth: `${BEAT_WIDTH}px`
+    });
+    for (let i4 = 0, y3 = 1; i4 < totalBeats; i4 += quantisizedBeats, y3++) {
+      lines.push(
+        x`<div
+                    class="typography-300 time-cell"
+                    data-cellid=${y3}
+                    style=${styles}
+                >
+                    ${i4}
+                </div>`
+      );
+    }
+    this.cachedCells = lines;
+  }
+  mouseUpHandler() {
+    this.seeking = false;
+  }
+  mouseMoveHandler(e3) {
+    if (this.seeking) {
+      const x2 = e3.clientX - this.xLeft;
+      const time = x2 <= 0 ? 0 : getCurrentTimeFromPosition(this.bpm, x2);
+      this.playbackCtxConsumer.$setCurrentTime({
+        value: time,
+        type: TimeEventChange.SeekEnd
+      });
+    }
+  }
+  mouseDownHandler() {
+    this.playbackCtxConsumer.$setCurrentTime({
+      value: this.currentTime,
+      type: TimeEventChange.SeekStart
+    });
+    this.seeking = true;
+  }
+  render() {
+    return x`
+            <div
+                class="time-container"
+                @mousedown=${this.mouseDownHandler}
+                @mouseup=${this.mouseUpHandler}
+                @click=${this.mouseUpHandler}
+            >
+                <playhead-node .xPosition=${this.xPos}></playhead-node>
+                ${this.cachedCells}
+            </div>
+        `;
+  }
+};
+TimeTracker.styles = [
+  typography,
+  i$6`
+            .time-container {
+                width: 100%;
+                display: flex;
+                cursor: pointer;
+            }
+
+            .time-cell {
+                display: flex;
+                justify-content: flex;
+                align-items: center;
+                font-size: 0.7em;
+                border-bottom: 1px solid var(--color-accent);
+                height: 50px;
+                padding: 0 5px;
+            }
+        `
+];
+__decorateClass$6([
+  n$4({ type: Number })
+], TimeTracker.prototype, "currentQuantisize", 2);
+__decorateClass$6([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TimeTracker.prototype, "bpm", 2);
+__decorateClass$6([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TimeTracker.prototype, "currentTime", 2);
+__decorateClass$6([
+  r$1()
+], TimeTracker.prototype, "xPos", 2);
+__decorateClass$6([
+  r$1()
+], TimeTracker.prototype, "cachedCells", 2);
+__decorateClass$6([
+  e$5(".time-container")
+], TimeTracker.prototype, "container", 2);
+TimeTracker = __decorateClass$6([
+  t$1("time-tracker")
+], TimeTracker);
 var __defProp$3 = Object.defineProperty;
 var __getOwnPropDesc$5 = Object.getOwnPropertyDescriptor;
 var __decorateClass$5 = (decorators, target, key, kind) => {
@@ -4596,43 +5513,171 @@ var __decorateClass$5 = (decorators, target, key, kind) => {
   if (kind && result) __defProp$3(target, key, result);
   return result;
 };
-const NEEDLE_START_POS = 131;
-let PlayheadNode = class extends i$3 {
-  getPlayheadPosition() {
-    return getPlayheadPosition(this.bpm, this.currentTime);
+let TrackEvents = class extends i$3 {
+  constructor() {
+    super(...arguments);
+    this.events = [];
+    this.zIndex = 1;
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    this.track.channel.onPlay(this.handlePlayEvent.bind(this));
+    this.track.channel.onStop(this.handleStopEvent.bind(this));
+  }
+  updated(_changedProperties) {
+    const children = Array.from(this.eventContainer.children);
+    if (_changedProperties.has("isPlaying")) {
+      this.scheduleEvents();
+    }
+    if (_changedProperties.has("currentTime") && this.isPlaying && this.isRecording) {
+      children.forEach(this.animateWidth.bind(this));
+    }
+    super.updated(_changedProperties);
+  }
+  scheduleEvents() {
+    if (!this.isPlaying) {
+      return;
+    }
+    this.events.forEach((ev) => {
+      const startTime = msToSeconds(ev.startTime);
+      const endTime = msToSeconds(ev.endTime ?? 0);
+      this.scheduler.addToQueue(this.track.channel, {
+        startTime,
+        endTime,
+        id: ev.id
+      });
+    });
+  }
+  handlePlayEvent({
+    detail: { id, duration }
+  }) {
+    if (!this.isRecording) {
+      return;
+    }
+    const zIndex = this.zIndex + 1;
+    this.events = [
+      {
+        id,
+        startTime: this.currentTime,
+        done: false,
+        endTime: duration,
+        xStart: getPlayheadPosition(this.bpm, this.currentTime),
+        zIndex
+      },
+      ...this.events
+    ];
+    this.zIndex = zIndex;
+  }
+  handleStopEvent({ detail: { id } }) {
+    if (!this.isRecording) {
+      return;
+    }
+    this.events = this.events.map((ev) => {
+      if (ev.id === id && !(ev == null ? void 0 : ev.done)) {
+        return {
+          ...ev,
+          done: true,
+          endTime: this.currentTime,
+          xEnd: getPlayheadPosition(this.bpm, this.currentTime)
+        };
+      }
+      return ev;
+    });
+  }
+  animateWidth(el) {
+    const ev = this.events.find((ev2) => ev2.id === el.id);
+    if (!ev) {
+      return;
+    }
+    el.style.width = (ev == null ? void 0 : ev.xEnd) && ev.done ? (ev == null ? void 0 : ev.xEnd) - (ev == null ? void 0 : ev.xStart) + "px" : getPlayheadPosition(
+      this.bpm,
+      this.currentTime - ev.startTime
+    ) + "px";
   }
   render() {
-    return x`<div
-            class="current-time-indicator"
-            style=${o({
-      transform: `translateX(${this.getPlayheadPosition()}px)`
+    return x` <div class="event-container">
+            ${this.events.map(({ done, xStart, zIndex, id }) => {
+      const styles = o$1({
+        transform: `translateX(${xStart}px)`,
+        top: "0px",
+        height: "100%",
+        zIndex
+      });
+      const classes = e$3({
+        event: true,
+        "event-done": !!done,
+        "event-drawing": !done && this.isRecording
+      });
+      return x`<div
+                    id=${id}
+                    class="${classes}"
+                    style=${styles}
+                ></div>`;
     })}
-        ></div>`;
+        </div>`;
   }
 };
-PlayheadNode.styles = [
+TrackEvents.styles = [
   i$6`
-            .current-time-indicator {
+            .event-container {
+                position: relative;
+                width: 100%;
+                height: 40%;
+                display: flex;
+            }
+
+            .event {
                 position: absolute;
-                width: 1px;
-                top: 0;
-                bottom: 0;
-                background-color: var(--color-tint-primary);
-                height: 100%;
-                z-index: 10;
-                left: ${NEEDLE_START_POS}px;
+                background: var(--color-tint-primary);
+                box-shadow: 0 0px 5 px rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+                min-width: 10px;
+            }
+
+            .event-drawing {
+                border-right: none;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            .event-done {
+                border-right: 1px solid var(--color-accent);
             }
         `
 ];
 __decorateClass$5([
-  consumeProp({ context: playbackContext, subscribe: true })
-], PlayheadNode.prototype, "bpm", 2);
+  consumeProp({ context: playbackContext })
+], TrackEvents.prototype, "scheduler", 2);
 __decorateClass$5([
   consumeProp({ context: playbackContext, subscribe: true })
-], PlayheadNode.prototype, "currentTime", 2);
-PlayheadNode = __decorateClass$5([
-  t$1("playhead-node")
-], PlayheadNode);
+], TrackEvents.prototype, "currentTime", 2);
+__decorateClass$5([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TrackEvents.prototype, "isPlaying", 2);
+__decorateClass$5([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TrackEvents.prototype, "isRecording", 2);
+__decorateClass$5([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TrackEvents.prototype, "bpm", 2);
+__decorateClass$5([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TrackEvents.prototype, "lastTimeEventChange", 2);
+__decorateClass$5([
+  n$4({ type: Object })
+], TrackEvents.prototype, "track", 2);
+__decorateClass$5([
+  r$1()
+], TrackEvents.prototype, "events", 2);
+__decorateClass$5([
+  r$1()
+], TrackEvents.prototype, "zIndex", 2);
+__decorateClass$5([
+  e$5(".event-container")
+], TrackEvents.prototype, "eventContainer", 2);
+TrackEvents = __decorateClass$5([
+  t$1("track-event")
+], TrackEvents);
 var __defProp$2 = Object.defineProperty;
 var __getOwnPropDesc$4 = Object.getOwnPropertyDescriptor;
 var __decorateClass$4 = (decorators, target, key, kind) => {
@@ -4643,141 +5688,9 @@ var __decorateClass$4 = (decorators, target, key, kind) => {
   if (kind && result) __defProp$2(target, key, result);
   return result;
 };
-let TrackEvents = class extends i$3 {
-  constructor() {
-    super(...arguments);
-    this.events = [];
-    this.zIndex = 1;
-  }
-  updated(_changedProperties) {
-    super.updated(_changedProperties);
-    if (_changedProperties.has("currentTime")) {
-      console.log(123);
-      if (this.isPlaying) {
-        this.playTrack();
-      }
-    }
-  }
-  playTrack() {
-  }
-  connectedCallback() {
-    super.connectedCallback();
-    this.track.channel.onPlay(({ detail: { id, duration } }) => {
-      if (!this.isRecording && !this.isPlaying) {
-        return;
-      }
-      const zIndex = this.zIndex + 1;
-      this.events = [
-        {
-          id,
-          done: false,
-          xStart: getPlayheadPosition(this.bpm, this.currentTime),
-          xEnd: msToSeconds(duration ?? 0),
-          zIndex,
-          startTime: this.currentTime,
-          isPlaying: false
-        },
-        ...this.events
-      ];
-      this.zIndex = zIndex;
-    });
-    this.track.channel.onStop(({ detail: { id } }) => {
-      if (!this.isRecording && !this.isPlaying) {
-        return;
-      }
-      this.events = this.events.map((ev) => {
-        if (ev.id === id) {
-          return {
-            ...ev,
-            done: true,
-            xEnd: getPlayheadPosition(this.bpm, this.currentTime) - (ev.xStart ?? 0)
-          };
-        }
-        return ev;
-      });
-    });
-  }
-  render() {
-    return x` <div class="event-container">
-            ${this.events.map(({ xEnd = 0, done, xStart, zIndex }) => {
-      const pos = done ? xEnd : getPlayheadPosition(this.bpm, this.currentTime) - (xStart ?? 0);
-      const styles = o({
-        transform: `translateX(${xStart}px)`,
-        width: `${pos}px`,
-        top: "0px",
-        height: "100%",
-        zIndex
-      });
-      const classes = e$3({
-        event: true,
-        "event-done": !!done,
-        "event-drawing": this.isRecording
-      });
-      return x`<div class="${classes}" style=${styles}></div>`;
-    })}
-        </div>`;
-  }
-};
-TrackEvents.styles = [
-  i$6`
-            .event-container {
-                position: relative;
-                width: 100%;
-                height: 80%;
-            }
-
-            .event {
-                position: absolute;
-                background-color: var(--color-tint-primary);
-                box-shadow: 0 0px 10px rgba(0, 0, 0, 0.5);
-                border-left: 4px solid var(--color-accent);
-            }
-
-            .event-drawing {
-                border-right: none;
-            }
-
-            .event-done {
-                border-right: 1px solid var(--color-accent);
-            }
-        `
-];
-__decorateClass$4([
-  consumeProp({ context: playbackContext, subscribe: true })
-], TrackEvents.prototype, "currentTime", 2);
-__decorateClass$4([
-  consumeProp({ context: playbackContext, subscribe: true })
-], TrackEvents.prototype, "isPlaying", 2);
-__decorateClass$4([
-  consumeProp({ context: playbackContext, subscribe: true })
-], TrackEvents.prototype, "isRecording", 2);
-__decorateClass$4([
-  consumeProp({ context: playbackContext, subscribe: true })
-], TrackEvents.prototype, "bpm", 2);
-__decorateClass$4([
-  n$4({ type: Object })
-], TrackEvents.prototype, "track", 2);
-__decorateClass$4([
-  r$1()
-], TrackEvents.prototype, "events", 2);
-__decorateClass$4([
-  r$1()
-], TrackEvents.prototype, "zIndex", 2);
-TrackEvents = __decorateClass$4([
-  t$1("track-event")
-], TrackEvents);
-var __defProp$1 = Object.defineProperty;
-var __getOwnPropDesc$3 = Object.getOwnPropertyDescriptor;
-var __decorateClass$3 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$3(target, key) : target;
-  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
-    if (decorator = decorators[i4])
-      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$1(target, key, result);
-  return result;
-};
 const MAX_TIME_BEATS = 4;
 const BEAT_WIDTH = 70;
+const NEEDLE_START_POS = 131;
 class Track {
   constructor(channel, parent) {
     this.channel = channel;
@@ -4791,31 +5704,14 @@ class Track {
     this.channel.setMuted(false);
   }
 }
-let TracksView = class extends WithAudioChannelsContext(i$3) {
+let TracksView = class extends i$3 {
   constructor() {
     super(...arguments);
     this.currentQuantisize = 4;
+    this.eventData = [];
   }
   get tracks() {
-    return this.audioChannels.channels.flatMap((channel) => {
-      var _a2;
-      const track = new Track(channel);
-      return [
-        track,
-        ...((_a2 = channel.subChannels) == null ? void 0 : _a2.map((subChannel) => {
-          return new Track(subChannel, track);
-        })) || []
-      ];
-    });
-  }
-  renderQuantisisedLines() {
-    const lines = [];
-    const quantisizedBeats = this.currentQuantisize;
-    const totalBeats = Math.ceil(MAX_TIME_BEATS * BEAT_WIDTH);
-    for (let i4 = 0; i4 < totalBeats; i4 += quantisizedBeats) {
-      lines.push(x`<div class="typography-300 time-cell">${i4}</div>`);
-    }
-    return lines;
+    return this.sources.map((source) => new Track(source));
   }
   generateCells(id) {
     const lines = [];
@@ -4862,9 +5758,8 @@ let TracksView = class extends WithAudioChannelsContext(i$3) {
     return x`
             <div class="tracks-container">
                 <div class="track-pool">
-                    <playhead-node></playhead-node>
                     <div class="times-container">
-                        ${this.renderQuantisisedLines()}
+                        <time-tracker .currentQuantisize=${4}></time-tracker>
                     </div>
                     <div class="tracks-slots">
                         ${this.renderQuantisisedTrackCells()}
@@ -4899,7 +5794,6 @@ TracksView.styles = [
 
             .tracks-container {
                 display: flex;
-                background-color: var(--color-primary);
             }
 
             .time-beat {
@@ -4916,18 +5810,6 @@ TracksView.styles = [
                 padding: 0 5px;
             }
 
-            .time-cell {
-                display: flex;
-                justify-content: flex;
-                align-items: center;
-                font-size: 0.7em;
-                border-bottom: 1px solid var(--color-accent);
-                min-width: ${BEAT_WIDTH}px;
-                max-width: ${BEAT_WIDTH}px;
-                height: 50px;
-                padding: 0 5px;
-            }
-
             .sub-track {
                 position: sticky;
                 left: 0;
@@ -4940,6 +5822,7 @@ TracksView.styles = [
                 background-color: var(--color-primary);
                 border-right: 1px solid var(--color-accent);
                 border-bottom: 1px solid var(--color-accent);
+                border-bottom-left-radius: var(--border-radius);
 
                 cursor: pointer;
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -4972,32 +5855,262 @@ TracksView.styles = [
                 display: flex;
                 background-color: var(--color-secondary);
                 position: relative;
+                border-bottom-left-radius: 100px;
+                border-top-left-radius: 100px;
+            }
+        `
+];
+__decorateClass$4([
+  consumeProp({ context: playbackContext, subscribe: true })
+], TracksView.prototype, "sources", 2);
+__decorateClass$4([
+  r$1()
+], TracksView.prototype, "selectedTrack", 2);
+__decorateClass$4([
+  r$1()
+], TracksView.prototype, "eventData", 2);
+__decorateClass$4([
+  consumeProp({ context: playbackContext })
+], TracksView.prototype, "master", 2);
+TracksView = __decorateClass$4([
+  t$1("tracks-view")
+], TracksView);
+var __defProp$1 = Object.defineProperty;
+var __getOwnPropDesc$3 = Object.getOwnPropertyDescriptor;
+var __decorateClass$3 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$3(target, key) : target;
+  for (var i4 = decorators.length - 1, decorator; i4 >= 0; i4--)
+    if (decorator = decorators[i4])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$1(target, key, result);
+  return result;
+};
+let TracksViewCanvas = class extends i$3 {
+  constructor() {
+    super(...arguments);
+    this.zoomLevel = 1;
+    this.scrollX = 0;
+    this.scrollY = 0;
+    this.isDragging = false;
+    this.lastMouseX = 0;
+    this.lastMouseY = 0;
+    this.gridWidth = 50;
+    this.trackHeight = 60;
+    this.timelineHeight = 30;
+    this.handleWheel = (e3) => {
+      e3.preventDefault();
+      if (e3.ctrlKey || e3.metaKey) {
+        const zoomDelta = e3.deltaY > 0 ? 0.9 : 1.1;
+        const newZoom = Math.max(
+          0.1,
+          Math.min(5, this.zoomLevel * zoomDelta)
+        );
+        const rect = this.canvas.getBoundingClientRect();
+        const mouseX = e3.clientX - rect.left;
+        const worldX = (mouseX - this.scrollX) / this.zoomLevel;
+        this.zoomLevel = newZoom;
+        this.scrollX = mouseX - worldX * this.zoomLevel;
+        this.renderGrid();
+      } else if (e3.shiftKey) {
+        this.scrollY += e3.deltaY;
+        this.renderGrid();
+      } else {
+        this.scrollX = Math.min(0, this.scrollX - e3.deltaX - e3.deltaY);
+        this.renderGrid();
+      }
+    };
+    this.handleMouseDown = (e3) => {
+      this.isDragging = true;
+      this.lastMouseX = e3.clientX;
+      this.lastMouseY = e3.clientY;
+      this.canvas.style.cursor = "grabbing";
+    };
+    this.handleMouseMove = (e3) => {
+      if (this.isDragging) {
+        const deltaX = e3.clientX - this.lastMouseX;
+        const deltaY = e3.clientY - this.lastMouseY;
+        this.scrollX = Math.min(0, this.scrollX + deltaX);
+        this.scrollY += deltaY;
+        this.lastMouseX = e3.clientX;
+        this.lastMouseY = e3.clientY;
+        this.renderGrid();
+      }
+    };
+    this.handleMouseUp = () => {
+      this.isDragging = false;
+      this.canvas.style.cursor = "grab";
+    };
+  }
+  renderGrid() {
+    const canvas = this.canvas;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error("Failed to get canvas context");
+      return;
+    }
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    canvas.width = width;
+    canvas.height = height;
+    ctx.clearRect(0, 0, width, height);
+    const scaledGridWidth = this.gridWidth * this.zoomLevel;
+    const visibleStartTime = Math.floor(-this.scrollX / scaledGridWidth);
+    const visibleEndTime = Math.ceil(
+      (width - this.scrollX) / scaledGridWidth
+    );
+    ctx.fillStyle = "#f8f8f8";
+    ctx.fillRect(0, 0, width, this.timelineHeight);
+    ctx.strokeStyle = "#ddd";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "#666";
+    ctx.font = "10px Montserrat, sans-serif";
+    for (let time = visibleStartTime; time <= visibleEndTime; time++) {
+      const x2 = this.scrollX + time * scaledGridWidth;
+      if (x2 >= 0 && x2 <= width) {
+        ctx.beginPath();
+        ctx.moveTo(x2, 0);
+        ctx.lineTo(x2, height);
+        ctx.stroke();
+        if (time >= 0) {
+          const timeText = `${Math.floor(time / 4)}:${time % 4}`;
+          ctx.fillText(timeText, x2 + 2, 15);
+        }
+      }
+    }
+    const visibleTrackStart = Math.floor(-this.scrollY / this.trackHeight);
+    const visibleTrackEnd = Math.floor(
+      (height - this.timelineHeight - this.scrollY) / this.trackHeight
+    ) + 1;
+    for (let track = visibleTrackStart; track <= visibleTrackEnd; track++) {
+      const y3 = this.timelineHeight + this.scrollY + track * this.trackHeight;
+      if (y3 >= this.timelineHeight && y3 <= height) {
+        ctx.beginPath();
+        ctx.moveTo(0, y3);
+        ctx.lineTo(width, y3);
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = "#999";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, this.timelineHeight);
+    ctx.lineTo(width, this.timelineHeight);
+    ctx.stroke();
+  }
+  handleMouseScrollDirection(e3) {
+    e3.preventDefault();
+    if (e3.deltaY < 0) {
+      this.zoomIn();
+    } else {
+      this.zoomOut();
+    }
+  }
+  zoomIn() {
+    this.zoomLevel = Math.min(5, this.zoomLevel * 1.2);
+    this.renderGrid();
+  }
+  zoomOut() {
+    this.zoomLevel = Math.max(0.1, this.zoomLevel / 1.2);
+    this.renderGrid();
+  }
+  resetZoom() {
+    this.zoomLevel = 1;
+    this.scrollX = 0;
+    this.scrollY = 0;
+    this.renderGrid();
+  }
+  firstUpdated() {
+    this.canvas.addEventListener("wheel", this.handleWheel);
+    this.canvas.addEventListener("mousedown", this.handleMouseDown);
+    this.canvas.addEventListener("mousemove", this.handleMouseMove);
+    this.canvas.addEventListener("mouseup", this.handleMouseUp);
+    this.canvas.addEventListener("mouseleave", this.handleMouseUp);
+    setTimeout(() => this.renderGrid(), 0);
+    new ResizeObserver(() => this.renderGrid()).observe(this.canvas);
+  }
+  disconnectedCallback() {
+    var _a2, _b, _c, _d, _e;
+    super.disconnectedCallback();
+    (_a2 = this.canvas) == null ? void 0 : _a2.removeEventListener("wheel", this.handleWheel);
+    (_b = this.canvas) == null ? void 0 : _b.removeEventListener("mousedown", this.handleMouseDown);
+    (_c = this.canvas) == null ? void 0 : _c.removeEventListener("mousemove", this.handleMouseMove);
+    (_d = this.canvas) == null ? void 0 : _d.removeEventListener("mouseup", this.handleMouseUp);
+    (_e = this.canvas) == null ? void 0 : _e.removeEventListener("mouseleave", this.handleMouseUp);
+  }
+  render() {
+    return x`
+            <div class="tracks-container">
+                <canvas id="tracks-view-canvas"></canvas>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" @click=${this.zoomOut}>-</button>
+                    <button class="zoom-btn" @click=${this.resetZoom}>
+                        Reset
+                    </button>
+                    <button class="zoom-btn" @click=${this.zoomIn}>+</button>
+                </div>
+            </div>
+        `;
+  }
+};
+TracksViewCanvas.styles = [
+  i$6`
+            .tracks-container {
+                width: 100%;
+                min-height: 300px;
+                max-height: 500px;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid #ddd;
             }
 
-            .selected-row {
-                border: 1px solid var(--color-tint-primary);
-                border-left: 0;
-            }
-
-            .selected {
-                border: 1px solid var(--color-tint-primary);
-            }
-
-            .sound-sequence {
-                position: absolute;
+            #tracks-view-canvas {
+                width: 100%;
                 height: 100%;
-                background-color: var(--color-tint-primary);
-                border-radius: 2px;
-                transition: width 0.2s ease-in-out;
+                display: block;
+                cursor: grab;
+            }
+
+            #tracks-view-canvas:active {
+                cursor: grabbing;
+            }
+
+            .zoom-controls {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                display: flex;
+                gap: 5px;
+                z-index: 10;
+            }
+
+            .zoom-btn {
+                padding: 5px 10px;
+                background: #f0f0f0;
+                border: 1px solid #ccc;
+                cursor: pointer;
+                border-radius: 3px;
+            }
+
+            .zoom-btn:hover {
+                background: #e0e0e0;
             }
         `
 ];
 __decorateClass$3([
-  r$1()
-], TracksView.prototype, "selectedTrack", 2);
-TracksView = __decorateClass$3([
-  t$1("tracks-view")
-], TracksView);
+  e$5("#tracks-view-canvas")
+], TracksViewCanvas.prototype, "canvas", 2);
+__decorateClass$3([
+  n$4({ type: Number })
+], TracksViewCanvas.prototype, "zoomLevel", 2);
+__decorateClass$3([
+  n$4({ type: Number })
+], TracksViewCanvas.prototype, "scrollX", 2);
+__decorateClass$3([
+  n$4({ type: Number })
+], TracksViewCanvas.prototype, "scrollY", 2);
+TracksViewCanvas = __decorateClass$3([
+  t$1("tracks-view-canvas")
+], TracksViewCanvas);
 var __getOwnPropDesc$2 = Object.getOwnPropertyDescriptor;
 var __decorateClass$2 = (decorators, target, key, kind) => {
   var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$2(target, key) : target;
@@ -5007,11 +6120,6 @@ var __decorateClass$2 = (decorators, target, key, kind) => {
   return result;
 };
 const tracksPanelElement = "tracks-panel";
-const getPlayheadPosition = (bpm, currentTime) => {
-  const secondsPerBeat = 60 / bpm;
-  const pxPerSecond = 81 / secondsPerBeat;
-  return msToSeconds(currentTime) * pxPerSecond;
-};
 let TracksPanel = class extends WithScreenManager(i$3) {
   connectedCallback() {
     super.connectedCallback();
@@ -5019,7 +6127,6 @@ let TracksPanel = class extends WithScreenManager(i$3) {
       this.screenManager,
       "tracks-view",
       this,
-      PanelType.Custom,
       true,
       true
     );
@@ -5035,7 +6142,7 @@ let TracksPanel = class extends WithScreenManager(i$3) {
                 .isDraggable=${true}
                 .screenManagerInstance=${this.screenManager}
             >
-                <tracks-view></tracks-view>
+                ${x`<tracks-view></tracks-view>`}
             </panel-card>
         `;
   }
@@ -5043,6 +6150,29 @@ let TracksPanel = class extends WithScreenManager(i$3) {
 TracksPanel = __decorateClass$2([
   t$1(tracksPanelElement)
 ], TracksPanel);
+const channelsContext = n$1(
+  Symbol("channelsContext")
+);
+function attachChannelContextEvents(host, ctx) {
+  host.addEventListener("channels-context/add-channel", (event) => {
+    const channel = event.detail;
+    const id = channel.id;
+    const existingIndex = ctx.value.channels.findIndex((c2) => c2.id === id);
+    if (existingIndex !== -1) {
+      ctx.setValue({
+        ...ctx.value,
+        channels: ctx.value.channels.map(
+          (c2, index) => index === existingIndex ? channel : c2
+        )
+      });
+    } else {
+      ctx.setValue({
+        ...ctx.value,
+        channels: [...ctx.value.channels, channel]
+      });
+    }
+  });
+}
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
 var __decorateClass$1 = (decorators, target, key, kind) => {
@@ -5055,7 +6185,7 @@ var __decorateClass$1 = (decorators, target, key, kind) => {
 };
 let AppView = class extends i$3 {
   constructor() {
-    super(...arguments);
+    super();
     this.screenManager = new PanelScreenManager();
     this.channelsCtx = new i3(this, {
       context: channelsContext,
@@ -5064,24 +6194,39 @@ let AppView = class extends i$3 {
       }
     });
     this.keyboardManager = new LayeredKeyboardManager();
+    this.screenManager.onPanelFocused((panel) => {
+      if ((panel == null ? void 0 : panel.name) === "tracks-view") ;
+    });
   }
-  connectedCallback() {
+  firstUpdated() {
+    var _a2;
     super.connectedCallback();
     attachChannelContextEvents(this, this.channelsCtx);
     this.keyboardManager.attachEventListeners();
-  }
-  handleClick(event) {
-    if (event.target instanceof HTMLElement && event.target.classList.contains("container")) {
-      PanelScreenManager.handleBackgroundClick();
-    }
-  }
-  firstUpdated(_changedProperties) {
-    var _a2;
     const firstPanel = (_a2 = this.screenManager.panels) == null ? void 0 : _a2[0];
+    this.keyboardManager.addKeys([
+      {
+        active: true,
+        keys: ["Shift", "C", "ArrowRight"],
+        description: "Focus next panel",
+        handler: () => this.screenManager.focusNext()
+      },
+      {
+        active: true,
+        keys: ["Shift", "C", "ArrowLeft"],
+        description: "Focus previous panel",
+        handler: () => this.screenManager.focusPrevious()
+      }
+    ]);
     if (firstPanel) {
       setTimeout(() => {
         this.screenManager.focus(firstPanel.name);
       });
+    }
+  }
+  handleClick(event) {
+    if (event.target instanceof HTMLElement && event.target.classList.contains("container")) {
+      PanelScreenManager.handleBackgroundClick();
     }
   }
   render() {
@@ -5098,11 +6243,12 @@ AppView.styles = i$6`
         .container {
             position: relative;
             width: 100%;
-            height: calc(100vh - 80px);
+            height: calc(100vh - 40px);
+            overflow: hidden;
         }
     `;
 __decorateClass$1([
-  e2({ context: screenManagerContext })
+  e$1({ context: screenManagerContext })
 ], AppView.prototype, "screenManager", 2);
 AppView = __decorateClass$1([
   t$1("app-view")
@@ -5146,12 +6292,19 @@ App.styles = [
                 --container-width: 1200px;
                 --container-height: 60vh;
                 --card-color: #2c2c2c;
-                --color-tint-primary: #d95656;
+                --color-tint-primary: #f74323;
                 --border-radius: 10px;
+                --nav-bg-color: #595959;
+                --color-success: #5ace5e;
+                --color-error: #ff1e0e;
+                --color-warning: #ff9800;
+                --color-info: #2196f3;
+                --color-border: #333333;
+                --color-border-light: #444444;
             }
 
             html {
-                background-color: var(--color-background);
+                background-color: red;
             }
 
             .container {
