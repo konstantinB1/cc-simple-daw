@@ -56,10 +56,9 @@ export default class Select extends LitElement {
     protected firstUpdated(_changedProperties: PropertyValues): void {
         setTimeout(() => {
             this.slide = slide(this.selectMenu as HTMLDivElement, 155, 10);
-            this.fade = fade(this.backdropElement as HTMLDivElement, 500);
+            this.fade = fade(this.backdropElement as HTMLDivElement, 155);
         });
     }
-
     static styles = [
         typography,
         css`
@@ -187,7 +186,8 @@ export default class Select extends LitElement {
         return selectedOption ? selectedOption.label : this.placeholder;
     }
 
-    private backdropClick(_: Event) { 
+    private backdropClick(_: Event) {
+        console.log("Backdrop clicked");
         this.slide.outToTop();
         this.fade.out();
 
@@ -267,15 +267,10 @@ export default class Select extends LitElement {
         }, 0);
     }
 
-    private clickOption(
-        option: SelectOption,
-        index: number,
-        event: MouseEvent,
-    ) {
+    private clickOption(option: SelectOption, index: number) {
         this.selectedIndex = index;
         this.value = option.value;
         this.isOpen = false;
-        this.backdropClick(event);
 
         this.dispatchEvent(
             new CustomEvent<SelectData>("select-changed", {
@@ -287,7 +282,6 @@ export default class Select extends LitElement {
     }
 
     render() {
-        console.log(this.selectedIndex);
         return html`
             <div
                 @focus=${this.openDropdown}
@@ -312,12 +306,8 @@ export default class Select extends LitElement {
                                         "selected-item":
                                             this.selectedIndex === i,
                                     })}"
-                                    @click="${(e: MouseEvent) =>
-                                        this.clickOption(
-                                            option,
-                                            i,
-                                            e as MouseEvent,
-                                        )}"
+                                    @click="${() =>
+                                        this.clickOption(option, i)}"
                                 >
                                     <span class="typography-300"
                                         >${option.label}</span

@@ -18,9 +18,9 @@ export default class TracksViewCanvas extends LitElement {
     private isDragging = false;
     private lastMouseX = 0;
     private lastMouseY = 0;
-    private gridWidth = 50; // Base grid width in pixels
-    private trackHeight = 60; // Height of each track
-    private timelineHeight = 30; // Height of timeline header
+    private gridWidth = 50;
+    private trackHeight = 60;
+    private timelineHeight = 30;
 
     static styles = [
         css`
@@ -99,7 +99,7 @@ export default class TracksViewCanvas extends LitElement {
         ctx.strokeStyle = "#ddd";
         ctx.lineWidth = 1;
         ctx.fillStyle = "#666";
-        ctx.font = "12px Arial";
+        ctx.font = "10px Montserrat, sans-serif";
 
         for (let time = visibleStartTime; time <= visibleEndTime; time++) {
             const x = this.scrollX + time * scaledGridWidth;
