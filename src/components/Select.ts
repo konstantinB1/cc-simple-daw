@@ -1,8 +1,14 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { typography } from "../global-styles";
 import { portal } from "lit-modal-portal";
 import { classMap } from "lit/directives/class-map.js";
+import {
+    fade,
+    slide,
+    type FadeAnimation,
+    type SlideAnimation,
+} from "@/utils/animate";
 
 export type SelectOption = {
     value: string;
@@ -34,7 +40,8 @@ export default class Select extends LitElement {
 
     private selectMenu: HTMLElement | null = null;
 
-    private isClosing: boolean = false;
+    private slide!: SlideAnimation;
+    private fade!: FadeAnimation;
 
     @state()
     selectedIndex: number = 0;
@@ -44,6 +51,13 @@ export default class Select extends LitElement {
 
         this.backdropClick = this.backdropClick.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
+    }
+
+    protected firstUpdated(_changedProperties: PropertyValues): void {
+        setTimeout(() => {
+            this.slide = slide(this.selectMenu as HTMLDivElement, 155, 10);
+            this.fade = fade(this.backdropElement as HTMLDivElement, 500);
+        });
     }
 
     static styles = [
@@ -101,9 +115,11 @@ export default class Select extends LitElement {
                 .select-menu {
                     width: 100%;
                     background-color: var(--color-secondary);
-                    border: 1px solid var(--color-accent);
-                    border-radius: var(--border-radius);
+                    border: 1px solid var(--color-border);
+                    border-radius: 10px;
                     height: 100%;
+                    max-height: 350px;
+                    overflow-y: auto;
                 }
 
                 .select-option {
@@ -111,7 +127,6 @@ export default class Select extends LitElement {
                     cursor: pointer;
                     background-color: var(--color-secondary);
                     border-bottom: 1px solid var(--color-accent);
-                    border-radius: inherit;
                     transition: background-color 0.2s ease;
                     color: var(--color-text);
                     font-size: 0.9em;
@@ -124,12 +139,15 @@ export default class Select extends LitElement {
                     &:hover {
                         background-color: var(--color-accent);
                     }
+
+                    > span {
+                        font-size: 0.95em;
+                    }
                 }
 
                 .select-option + .selected-item {
                     color: var(--color-text);
                     font-weight: bold;
-                    background-color: var(--color-tint-primary);
 
                     &:hover {
                         background-color: var(--color-tint-primary);
@@ -169,46 +187,9 @@ export default class Select extends LitElement {
         return selectedOption ? selectedOption.label : this.placeholder;
     }
 
-    private backdropClick(_: Event) {
-        const backdrop = this.backdropElement!;
-
-        if (this.isClosing) {
-            return;
-        }
-
-        this.isClosing = true;
-
-        backdrop.animate([{ opacity: 1 }, { opacity: 0 }], {
-            duration: 200,
-            fill: "forwards",
-            easing: "ease-in-out",
-        });
-
-        setTimeout(() => {
-            backdrop.classList.remove("open");
-            this.isClosing = false;
-        }, 200);
-
-        const selectMenu = this.selectMenu!;
-
-        selectMenu.animate(
-            [
-                { transform: "translateY(0)", opacity: 1 },
-                {
-                    opacity: 0,
-                    transform: "translateY(-50px)",
-                },
-            ],
-            {
-                duration: 200,
-                easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            },
-        );
-
-        setTimeout(() => {
-            selectMenu.style.display = "none";
-            this.isOpen = false;
-        }, 200);
+    private backdropClick(_: Event) { 
+        this.slide.outToTop();
+        this.fade.out();
 
         window.removeEventListener("keydown", this.handleKeyDown);
     }
@@ -251,30 +232,13 @@ export default class Select extends LitElement {
         const backdrop = this.backdropElement!;
 
         backdrop.classList.toggle("open", this.isOpen);
-        backdrop.animate([{ opacity: 0 }, { opacity: 1 }], {
-            duration: 200,
-            fill: "forwards",
-            easing: "ease-in-out",
-        });
 
         const selectMenu = this.selectMenu!;
 
         selectMenu.style.display = "block";
 
-        selectMenu.animate(
-            [
-                { transform: "translateY(-50px)", opacity: 0 },
-                {
-                    opacity: 1,
-                    transform: "translateY(0)",
-                },
-            ],
-            {
-                duration: 200,
-                fill: "forwards",
-                easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            },
-        );
+        this.fade.in();
+        this.slide.inFromTop();
 
         window.addEventListener("keydown", this.handleKeyDown);
     }

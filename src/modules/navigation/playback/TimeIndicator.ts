@@ -40,7 +40,7 @@ export default class TimeIndicator extends WithPlaybackContext(LitElement) {
 
     render() {
         return html`
-            <div class="time-indicator typography-200">
+            <div class="time-indicator typography-400">
                 <p>${this.formatedDisplayTime()}</p>
             </div>
         `;
