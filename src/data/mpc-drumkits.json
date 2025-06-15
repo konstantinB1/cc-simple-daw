@@ -1,0 +1,114 @@
+{
+    "programs": [
+        {
+            "name": "TR-808",
+            "program": "mpc",
+            "description": "This is the first program.",
+            "path": "assets/kits/TR-808",
+            "data": [
+                {
+                    "name": "808",
+                    "file": "808.wav"
+                },
+                {
+                    "name": "Clap",
+                    "file": "Clap.wav"
+                },
+                {
+                    "name": "Claves",
+                    "file": "Claves.wav"
+                },
+                {
+                    "name": "Conga High",
+                    "file": "Conga High.wav"
+                },
+                {
+                    "name": "Conga Mid",
+                    "file": "Conga Mid.wav"
+                },
+                {
+                    "name": "Conga Low",
+                    "file": "Conga Low.wav"
+                },
+                {
+                    "name": "Cowbell",
+                    "file": "Cowbell.wav"
+                },
+                {
+                    "name": "Cymbal",
+                    "file": "Cymbal.wav"
+                },
+                {
+                    "name": "HiHat",
+                    "file": "Hihat.wav"
+                },
+                {
+                    "name": "Kick Basic",
+                    "file": "Kick Basic.wav"
+                },
+                {
+                    "name": "Kick Long",
+                    "file": "Kick Long.wav"
+                },
+                {
+                    "name": "Kick Mid",
+                    "file": "Kick Mid.wav"
+                },
+                {
+                    "name": "Kick Short",
+                    "file": "Kick Short.wav"
+                },
+                {
+                    "name": "Maracas",
+                    "file": "Maracas.wav"
+                },
+                {
+                    "name": "Open Hat Long",
+                    "file": "Open Hat Long.wav"
+                },
+                {
+                    "name": "Open Hat Short",
+                    "file": "Open Hat Short.wav"
+                },
+                {
+                    "name": "Rimshot",
+                    "file": "Rimshot.wav"
+                },
+                {
+                    "name": "Snare Bright",
+                    "file": "Snare Bright.wav"
+                },
+                {
+                    "name": "Snare High",
+                    "file": "Snare High.wav"
+                },
+                {
+                    "name": "Snare Low",
+                    "file": "Snare Low.wav"
+                },
+                {
+                    "name": "Snare Mid",
+                    "file": "Snare Mid.wav"
+                },
+                {
+                    "name": "Tom High",
+                    "file": "Tom High.wav"
+                },
+                {
+                    "name": "Tom Low",
+                    "file": "Tom Low.wav"
+                },
+                {
+                    "name": "Tom Mid",
+                    "file": "Tom Mid.wav"
+                }
+            ]
+        },
+        {
+            "name": "Program 2",
+            "description": "This is the second program.",
+            "version": "2.0.0",
+            "author": "Author B"
+        }
+    ]
+}

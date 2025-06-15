@@ -1,5 +1,5 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 
 import "./AddTrackDialog";
 import "./PlayheadNode";
@@ -12,32 +12,12 @@ import { classMap } from "lit/directives/class-map.js";
 import type { TrackEventData } from "./TrackViewEvents";
 import { consumeProp } from "@/decorators/sync";
 import { playbackContext } from "@/context/playbackContext";
+import { SelectSize, type SelectOption } from "@/components/Select";
+import type { Track } from "./Tracks";
 
 export const MAX_TIME_BEATS = 4;
 export const BEAT_WIDTH = 70;
 export const NEEDLE_START_POS = 131;
-
-export class Track {
-    channel: AudioSource;
-
-    id: string;
-
-    parent?: Track;
-
-    constructor(channel: AudioSource, parent?: Track) {
-        this.channel = channel;
-        this.id = channel.id;
-        this.parent = parent;
-    }
-
-    mute(): void {
-        this.channel.setMuted(true);
-    }
-
-    unmute(): void {
-        this.channel.setMuted(false);
-    }
-}
 
 export enum QuantisizeOptions {
     "1/2" = 2,
@@ -64,13 +44,17 @@ export default class TracksView extends LitElement {
     @consumeProp({ context: playbackContext })
     master!: AudioSource;
 
+    @property({ type: Array })
+    tracks: Track[] = [];
+
     static styles = [
         typography,
         css`
             .tracks-container {
                 width: 100%;
                 min-height: 300px;
-                max-height: 500px;
+                max-height: 600px;
+                overflow: hidden;
             }
 
             .times-container {
@@ -85,10 +69,6 @@ export default class TracksView extends LitElement {
                 position: relative;
                 width: 100%;
                 overflow: auto;
-            }
-
-            .tracks-container {
-                display: flex;
             }
 
             .time-beat {
@@ -153,12 +133,18 @@ export default class TracksView extends LitElement {
                 border-bottom-left-radius: 100px;
                 border-top-left-radius: 100px;
             }
+
+            .tools-bar {
+                width: 100%;
+                height: 50px;
+                background-color: var(--color-primary);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 10px;
+            }
         `,
     ];
-
-    private get tracks(): Track[] {
-        return this.sources.map((source) => new Track(source));
-    }
 
     private generateCells(id: string): TemplateResult[] {
         const lines = [];
@@ -210,9 +196,54 @@ export default class TracksView extends LitElement {
         });
     }
 
+    private get quantisizeSelectOptions(): SelectOption[] {
+        return Object.keys(QuantisizeOptions).map((key) => ({
+            label: key,
+            value: QuantisizeOptions[key as keyof typeof QuantisizeOptions],
+        }));
+    }
+
+    connectedCallback(): void {
+        super.connectedCallback();
+        // window.addEventListener("wheel", this.handleZoomChange, {
+        //     passive: false,
+        // });
+    }
+
+    disconnectedCallback(): void {
+        window.removeEventListener("wheel", this.handleZoomChange);
+    }
+
+    private handleZoomChange = (event: WheelEvent): void => {
+        if (event.deltaY < 0) {
+            this.currentQuantisize = Math.max(
+                QuantisizeOptions["1/64"],
+                this.currentQuantisize / 2,
+            );
+        } else {
+            this.currentQuantisize = Math.min(
+                QuantisizeOptions["1/2"],
+                this.currentQuantisize * 2,
+            );
+        }
+        event.preventDefault();
+    };
+
     protected render(): TemplateResult {
         return html`
             <div class="tracks-container">
+                <div class="tools-bar">
+                    <div class="tool-item">
+                        <daw-select
+                            .size=${SelectSize.Small}
+                            .options=${this.quantisizeSelectOptions}
+                            .value=${this.currentQuantisize}
+                            @change=${(e: CustomEvent) => {
+                                this.currentQuantisize = e.detail.value;
+                            }}
+                        ></daw-select>
+                    </div>
+                </div>
                 <div class="track-pool">
                     <div class="times-container">
                         <time-tracker .currentQuantisize=${4}></time-tracker>

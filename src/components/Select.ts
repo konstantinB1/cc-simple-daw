@@ -19,6 +19,12 @@ export type SelectData = {
     value: string;
 };
 
+export enum SelectSize {
+    Small = "small",
+    Medium = "medium",
+    Large = "large",
+}
+
 @customElement("daw-select")
 export default class Select extends LitElement {
     @property({ type: Array })
@@ -28,7 +34,10 @@ export default class Select extends LitElement {
     placeholder: string = "";
 
     @property({ type: String })
-    value: string = "";
+    value: any = "";
+
+    @property({ type: String })
+    size: SelectSize = SelectSize.Medium;
 
     @query(".select-container")
     private selectContainer!: HTMLDivElement;
@@ -78,6 +87,21 @@ export default class Select extends LitElement {
                 > p {
                     margin: 0;
                 }
+            }
+
+            .size-small {
+                font-size: 0.8em;
+                padding: 8px 14px;
+            }
+
+            .size-medium {
+                font-size: 0.9em;
+                padding: 10px 14px;
+            }
+
+            .size-large {
+                font-size: 1em;
+                padding: 12px 12px;
             }
 
             .select {
@@ -282,11 +306,16 @@ export default class Select extends LitElement {
     }
 
     render() {
+        const classes = classMap({
+            "select-container": true,
+            [`size-${this.size}`]: true,
+        });
+
         return html`
             <div
                 @focus=${this.openDropdown}
                 @blur=${this.backdropClick}
-                class="select-container"
+                class=${classes}
                 @click=${this.openDropdown}
                 tabindex="0"
             >

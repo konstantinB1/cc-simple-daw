@@ -132,6 +132,11 @@ export default class PanelCard
             border: 1px solid var(--color-accent);
             position: absolute;
             box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
+
+            &:focus {
+                outline: 0.1px solid var(--color-tint-primary);
+                outline-offset: 1px;
+            }
         }
 
         .card.is-dragging {
@@ -140,7 +145,8 @@ export default class PanelCard
         }
 
         .card.is-focused {
-            border: 1px solid #533f3f;
+            outline: 1px solid rgba(255, 255, 255, 0.4);
+            outline-offset: 5px;
         }
 
         .card-header {

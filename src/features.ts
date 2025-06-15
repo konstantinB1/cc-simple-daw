@@ -1,1 +1,1 @@
-export const SEQUENCER_CANVAS = false;
+export const SEQUENCER_CANVAS = true;
