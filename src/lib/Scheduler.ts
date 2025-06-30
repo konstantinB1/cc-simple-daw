@@ -61,6 +61,7 @@ export default class Scheduler {
             // If this is the first call, we need to reset the previous time window
             this.prevTimeWindow = currentTime;
         }
+        console.log("Scheduler tick at", currentTime);
 
         this.playbackQueue.forEach((cur) => {
             if (

@@ -14,6 +14,8 @@ import TracksCanvasRenderer from "./TracksCanvasRenderer";
 import WithScreenManager from "@/mixins/WithScreenManager";
 import { classMap } from "lit/directives/class-map.js";
 import type Track from "@/lib/AudioTrack";
+import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
+import type Scheduler from "@/lib/Scheduler";
 
 @customElement("tracks-view-canvas")
 export default class TracksViewCanvas extends WithScreenManager(LitElement) {
@@ -35,8 +37,14 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
     @consumeProp({ context: playbackContext, subscribe: true })
     bpm!: number;
 
+    @consumeProp({ context: playbackContext })
+    scheduler!: Scheduler;
+
     @state()
     isFullscreen: boolean = false;
+
+    @state()
+    eventData: AudioEvent[] = [];
 
     private renderHelper!: TracksCanvasRenderer;
 
@@ -104,7 +112,6 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
             this.renderHelper.forceRefresh();
         });
 
-        // Initial render if tracks are already available
         if (this.tracks.length > 0) {
             this.renderHelper.setTracks(this.tracks);
             requestAnimationFrame(() => {
@@ -113,37 +120,46 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
         }
     }
 
+    private handlePlayEvent(event: CustomEvent<PlayEvent>, track: Track): void {
+        this.renderHelper.addEvent(event.detail, this.currentTime, track.id);
+
+        this.scheduler.addToQueue(track.channel, {
+            startTime: this.currentTime,
+            endTime: event.detail.duration,
+            id: track.id,
+        });
+
+        this.renderHelper.render();
+    }
+
     protected updated(changedProperties: PropertyValues): void {
         super.updated(changedProperties);
 
-        // Only re-render when tracks actually change
         if (
             changedProperties.has("tracks") &&
             this.tracks.length > 0 &&
             this.renderHelper
         ) {
-            this.tracks.forEach((track) => {});
+            this.tracks.forEach((track) => {
+                track.channel.onPlay((event: CustomEvent<PlayEvent>) => {
+                    this.handlePlayEvent(event, track);
+                });
+            });
 
             this.renderHelper.setTracks(this.tracks);
-            // Use requestAnimationFrame for smoother rendering
+
             requestAnimationFrame(() => {
                 this.renderHelper.render();
             });
         }
 
-        // Force refresh when fullscreen state changes
         if (changedProperties.has("isFullscreen") && this.renderHelper) {
-            // Use longer timeout to ensure DOM has fully updated
-            setTimeout(() => {
-                this.renderHelper.setTracks(this.tracks);
-                this.renderHelper.forceRefresh();
-            });
+            this.renderHelper.setTracks(this.tracks);
+            this.renderHelper.forceRefresh();
         }
 
         if (changedProperties.has("bpm") && this.renderHelper) {
-            this.renderHelper.setCurrentTime(this.currentTime);
-
-            // Re-render the canvas with updated playhead
+            this.renderHelper.setBPM(this.bpm);
             this.renderHelper.render();
         }
 

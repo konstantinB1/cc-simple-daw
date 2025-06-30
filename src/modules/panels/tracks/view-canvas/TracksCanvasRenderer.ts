@@ -14,7 +14,7 @@ import AnimationState from "./AnimationState";
 import ZoomState from "./ZoomState";
 import { themeVars } from "@/styles";
 import Movement from "./Movement";
-import type { PlayEvent, StopEvent } from "@/lib/AudioSource";
+import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
 import type Track from "@/lib/AudioTrack";
 
 let lastZoomTime = 0;
@@ -26,57 +26,6 @@ const {
     TRACK_LEGEND_TITLE_Y_PADDING_PX,
     TRACK_LINE_BASE_HEIGHT_PX,
 } = lookupGen.constants;
-
-class TrackEvent {
-    startTime: number = 0;
-    endTime: number = -1;
-    track?: Track;
-
-    get isPlaying(): boolean {
-        return this.startTime !== 0 && this.endTime === -1;
-    }
-}
-
-class TracksEventManager extends EventTarget {
-    private tracks: Set<Track> = new Set<Track>();
-
-    currentTime: number = 0;
-
-    constructor() {
-        super();
-
-        this.onPlay = this.onPlay.bind(this);
-        this.onStop = this.onStop.bind(this);
-    }
-
-    addTracks(tracks: Track[]) {
-        for (const track of tracks) {
-            if (!this.tracks.has(track)) {
-                this.tracks.add(track);
-
-                track.channel.addEventListener(
-                    "audio-channel/play",
-                    this.onPlay,
-                );
-
-                track.channel.addEventListener(
-                    "audio-channel/stop",
-                    this.onStop,
-                );
-            }
-        }
-    }
-
-    private onStop(e: Event) {
-        const stopEvent = (e as CustomEvent<StopEvent>).detail;
-        console.log("Track stopped:", stopEvent.id);
-    }
-
-    private onPlay(e: Event) {
-        const playEvent = (e as CustomEvent<PlayEvent>).detail;
-        console.log("Track played:", playEvent.id);
-    }
-}
 
 export default class TracksCanvasRenderer {
     ctx: CanvasRenderingContext2D;
@@ -110,16 +59,11 @@ export default class TracksCanvasRenderer {
 
     private resizeObserver: ResizeObserver | null = null;
 
-    private eventManager: TracksEventManager = new TracksEventManager();
+    private currentTime: number = 0;
+    private bpm?: number;
 
-    currentTime: number = 0;
-
-    setCurrentTime(time: number) {
-        this.currentTime = time;
-        this.eventManager.currentTime = time;
-
-        this.render();
-    }
+    private tracks: Track[] = [];
+    private events: AudioEvent[] = [];
 
     constructor(
         element: HTMLCanvasElement,
@@ -144,11 +88,40 @@ export default class TracksCanvasRenderer {
         this.setupResizeObserver();
     }
 
-    private tracks: Track[] = [];
+    setCurrentTime(time: number) {
+        this.currentTime = time;
+        this.render();
+    }
+
+    setBPM(bpm: number) {
+        this.bpm = bpm;
+        this.render();
+    }
 
     setTracks(tracks: Track[]) {
         this.tracks = tracks;
-        this.eventManager.addTracks(tracks);
+    }
+
+    addEvent(e: PlayEvent, currentTime: number, trackId: string) {
+        const existingEvent = this.events.findIndex(
+            (ev) => ev.data.id === e.id,
+        );
+
+        if (existingEvent === -1) {
+            this.events.push({
+                startTime: currentTime,
+                endTime: 0,
+                data: e,
+                trackId,
+            });
+        } else {
+            this.events[existingEvent] = {
+                data: e,
+                startTime: this.events[existingEvent].startTime,
+                endTime: currentTime,
+                trackId,
+            };
+        }
     }
 
     private setupResizeObserver() {
@@ -363,56 +336,9 @@ export default class TracksCanvasRenderer {
         }
     }
 
-    private startZoomAnimation() {
-        // Simplified - no complex animation needed
-        if (this.animationFrameId) {
-            cancelAnimationFrame(this.animationFrameId);
-        }
-
-        const animate = (currentTime: number) => {
-            const { progress } =
-                this.animationState.getInterpolatedValues(currentTime);
-
-            if (progress < 1) {
-                this.animationFrameId = requestAnimationFrame(animate);
-                this.render();
-            } else {
-                this.animationState.complete();
-                this.animationFrameId = null;
-                this.render();
-            }
-        };
-
-        this.animationFrameId = requestAnimationFrame(animate);
-    }
-
     private withTimelineFont() {
         this.ctx.font = "12px Montserrat, serif";
         this.ctx.lineWidth = 0.5;
-    }
-
-    private handleZoom() {
-        // Simplified zoom handling
-        this.clampViewportOffset();
-        this.render();
-    }
-
-    private clampViewportOffset() {
-        const scrollableWidth =
-            this._bounds.width -
-            TRACK_LEGEND_CONTAINER_PX -
-            LEGEND_CONTENT_LINE;
-        const currentBeatWidth =
-            BASE_CELL_WIDTH * this.zoomState.current!.level;
-        const totalVirtualWidth = currentBeatWidth * this.virtualTimelineBeats;
-
-        // Ensure we can scroll to see the last beat completely
-        const maxScrollX = Math.max(0, totalVirtualWidth - scrollableWidth);
-
-        this.viewportOffsetX = Math.max(
-            0,
-            Math.min(this.viewportOffsetX, maxScrollX),
-        );
     }
 
     private get virtualTimelineBeats(): number {
@@ -674,9 +600,118 @@ export default class TracksCanvasRenderer {
         this.drawTracksLegend();
         this.renderTimelineAtZoom(); // Use the unified timeline rendering method
         this.drawPlayhead();
+        this.drawEvents();
     }
 
-    private drawTrackEvents(track: Track, y: number) {}
+    private drawEvents() {
+        // Remove console.log as events are now drawn in drawTrackEvents
+    }
+
+    private drawTrackEvents(track: Track, trackY: number) {
+        const ctx = this.ctx;
+        const currentBeatWidth =
+            BASE_CELL_WIDTH * this.zoomState.current!.level;
+
+        // Filter events for this track
+        const trackEvents = this.events.filter(
+            (event) => event.trackId === track.channel.id,
+        );
+
+        for (const event of trackEvents) {
+            // Convert event times to beat positions using BPM
+            const startTimeInSeconds = event.startTime / 1000;
+            const startBeatPosition = startTimeInSeconds * (this.bpm! / 60);
+            const startX = startBeatPosition * currentBeatWidth;
+
+            let endX: number;
+            let isPlaying = false;
+
+            if (event.data.isPlaying && event.endTime === 0) {
+                // Event is currently playing - sync with playhead
+                isPlaying = true;
+                const currentTimeInSeconds = this.currentTime / 1000;
+                const currentBeatPosition =
+                    currentTimeInSeconds * (this.bpm! / 60);
+                endX = currentBeatPosition * currentBeatWidth;
+            } else if (event.endTime > 0) {
+                // Event has ended
+                const endTimeInSeconds = event.endTime / 1000;
+                const endBeatPosition = endTimeInSeconds * (this.bpm! / 60);
+                endX = endBeatPosition * currentBeatWidth;
+            } else {
+                // Event hasn't started or has no end time
+                continue;
+            }
+
+            // Calculate screen positions accounting for viewport offset
+            const screenStartX =
+                TRACK_LEGEND_CONTAINER_PX +
+                LEGEND_CONTENT_LINE +
+                startX -
+                this.viewportOffsetX;
+            const screenEndX =
+                TRACK_LEGEND_CONTAINER_PX +
+                LEGEND_CONTENT_LINE +
+                endX -
+                this.viewportOffsetX;
+
+            // Only draw if the event is visible in the viewport
+            const minX = TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE;
+            const maxX = this._bounds.width;
+
+            if (screenEndX < minX || screenStartX > maxX) {
+                continue; // Event is outside visible area
+            }
+
+            // Clamp to visible area
+            const clippedStartX = Math.max(screenStartX, minX);
+            const clippedEndX = Math.min(screenEndX, maxX);
+            const eventWidth = clippedEndX - clippedStartX;
+
+            if (eventWidth <= 0) {
+                continue;
+            }
+
+            // Draw event block
+            const eventHeight = TRACK_LINE_BASE_HEIGHT_PX - 10; // Leave some padding
+            const eventTopY = trackY - TRACK_LINE_BASE_HEIGHT_PX + 5; // Position within track row
+
+            // Set colors based on playing state
+            if (isPlaying) {
+                ctx.fillStyle = cssVars.tintPrimary; // Highlight color for playing events
+                ctx.globalAlpha = 0.8;
+            } else {
+                ctx.fillStyle = cssVars.borderLight; // Different color for stopped events
+                ctx.globalAlpha = 0.6;
+            }
+
+            // Draw the event block
+            ctx.fillRect(clippedStartX, eventTopY, eventWidth, eventHeight);
+
+            // Add a subtle border
+            ctx.strokeStyle = isPlaying ? cssVars.text : cssVars.border;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 1;
+            ctx.strokeRect(clippedStartX, eventTopY, eventWidth, eventHeight);
+
+            // Draw event name if there's enough space
+            if (eventWidth > 50) {
+                ctx.fillStyle = cssVars.text;
+                ctx.font = "10px Montserrat, serif";
+                const textY = eventTopY + eventHeight / 2 + 3;
+                const textX = clippedStartX + 5;
+
+                // Clip text to event width
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(clippedStartX, eventTopY, eventWidth, eventHeight);
+                ctx.clip();
+
+                ctx.fillText(event.data.id || "Event", textX, textY);
+                ctx.restore();
+            }
+        }
+    }
 
     private drawScrollIndicator() {
         const ctx = this.ctx;
@@ -744,8 +779,14 @@ export default class TracksCanvasRenderer {
         const currentBeatWidth =
             BASE_CELL_WIDTH * this.zoomState.current!.level;
 
-        // Convert playheadTime to beat position
-        const beatPosition = this.currentTime / 1000;
+        if (!this.bpm && this.currentTime !== 0) {
+            throw new Error("BPM is not set");
+        }
+
+        // Convert time to beat position using BPM
+        // Formula: beats = (time in seconds) * (BPM / 60)
+        const timeInSeconds = this.currentTime / 1000;
+        const beatPosition = timeInSeconds * (this.bpm! / 60);
         const timelineX = beatPosition * currentBeatWidth;
 
         // Calculate the actual screen X position accounting for viewport offset
@@ -879,7 +920,6 @@ export default class TracksCanvasRenderer {
                 this.momentumAnimationId = requestAnimationFrame(animate);
             } else {
                 this.momentumAnimationId = null;
-                this.dragState.stop(); // Force stop momentum
             }
         };
 

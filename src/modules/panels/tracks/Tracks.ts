@@ -52,28 +52,6 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
         }
     `;
 
-    private handlePlay(event: Event) {
-        const playEvent = event as CustomEvent<PlayEvent>;
-        const id = playEvent.detail.id;
-
-        if (this.events.some((e) => e.id === id)) {
-            this.events = this.events.filter((e) => e.id !== id);
-        } else {
-            this.events = [...this.events, playEvent.detail];
-        }
-    }
-
-    private get normalizedTracks(): Track[] {
-        this.tracks.forEach((track) => {
-            track.channel.stop();
-        });
-
-        return this.tracks.map((track) => {
-            track.channel.onPlay(this.handlePlay.bind(this));
-            return track;
-        });
-    }
-
     connectedCallback(): void {
         super.connectedCallback();
 
@@ -122,10 +100,10 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
                     ${SEQUENCER_CANVAS
                         ? html`<tracks-view-canvas
                               .quantisize=${this.currentQuantisize}
-                              .tracks=${this.normalizedTracks}
+                              .tracks=${this.tracks}
                           ></tracks-view-canvas>`
                         : html`<tracks-view
-                              .tracks=${this.normalizedTracks}
+                              .tracks=${this.tracks}
                           ></tracks-view>`}
                 </div>
             </panel-card>

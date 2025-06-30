@@ -3,17 +3,19 @@ import type AudioEffect from "./AudioEffect";
 import AudioSample from "./AudioSample";
 import Logger from "./Logger";
 
+export type AudioEvent = {
+    data: PlayEvent;
+    startTime: number;
+    endTime: number;
+    trackId: string;
+};
+
 export type PlayEvent = {
     id: string;
     when: number;
     offset: number;
     duration?: number;
     isPlaying?: boolean;
-};
-
-export type StopEvent = {
-    id: string;
-    isPlaying: boolean;
 };
 
 // AudioSource is responsible for separation of audio channels
@@ -142,17 +144,11 @@ export default class AudioSource extends EventTarget {
         onStart?: () => void,
         onEnd?: () => void,
     ): Promise<void> {
-        if (!this.buffer) {
-            throw new Error("No sample loaded to play");
-        }
-
-        if (this.muted) {
-            return Promise.resolve();
-        }
+        if (!this.buffer) throw new Error("No sample loaded to play");
+        if (this.muted) return Promise.resolve();
 
         const source = this.ctx.createBufferSource();
         source.buffer = this.buffer;
-
         const uuid = generateUUID();
 
         if (loopStart !== undefined && loopEnd !== undefined) {
@@ -188,13 +184,17 @@ export default class AudioSource extends EventTarget {
 
         return new Promise((resolve) => {
             source.onended = () => {
-                eventData.isPlaying = false;
+                if (emitEvents) {
+                    eventData.isPlaying = false;
 
-                const event = new CustomEvent<PlayEvent>("audio-channel/play", {
-                    detail: eventData,
-                });
-
-                this.dispatchEvent(event);
+                    const stopEvent = new CustomEvent<PlayEvent>(
+                        "audio-channel/play",
+                        {
+                            detail: eventData,
+                        },
+                    );
+                    this.dispatchEvent(stopEvent);
+                }
 
                 this.bufferSources.delete(source);
                 onEnd?.();
@@ -212,10 +212,11 @@ export default class AudioSource extends EventTarget {
 
     stop(when: number = 0, emitEvents: boolean = true): void {
         this.bufferSources.forEach((source) => {
-            source.stop(this.ctx.currentTime + when);
+            try {
+                source.stop(this.ctx.currentTime + when);
+            } catch {}
             source.disconnect();
         });
-
         this.bufferSources.clear();
 
         if (emitEvents) {
