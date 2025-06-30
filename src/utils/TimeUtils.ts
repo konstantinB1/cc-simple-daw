@@ -10,14 +10,16 @@ export class StopWatch {
         onTick?: StopWatchTickCallback,
         startTime: number = 0,
     ): (() => void) | undefined {
-        if (!this.running) {
-            this.startTime = performance.now();
-            this.elapsedTime = startTime;
-            this.running = true;
+        if (this.running) {
+            return;
+        }
 
-            if (onTick) {
-                return this.onTick(onTick.bind(this, this.getElapsedTime()));
-            }
+        this.startTime = performance.now();
+        this.elapsedTime = startTime;
+        this.running = true;
+
+        if (onTick) {
+            return this.onTick(onTick.bind(this, this.getElapsedTime()));
         }
     }
 

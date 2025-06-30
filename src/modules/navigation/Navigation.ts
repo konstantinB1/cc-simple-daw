@@ -2,6 +2,7 @@ import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import "./playback/Playback";
+import "./TrackList";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 @customElement("top-nav")
@@ -17,8 +18,8 @@ export default class Navigation extends LitElement {
                 top: 0;
                 left: 0;
                 width: 100%;
-                height: 80px;
-                box-shadow: 0 0px 4px rgba(0, 0, 0, 0.2);
+                height: 60px;
+                box-shadow: 0 0px 4px rgba(0, 0, 0, 0.05);
                 z-index: 1000;
                 display: flex;
             }
@@ -63,9 +64,7 @@ export default class Navigation extends LitElement {
                         </div>
                     </div>
                     <nav>
-                        <icon-button size=${40} label-text="Tracks List">
-                            <eq-icon size=${20}></eq-icon>
-                        </icon-button>
+                        <nav-track-list></nav-track-list>
                     </nav>
                 </div>
             </header>

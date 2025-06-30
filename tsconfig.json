@@ -25,7 +25,8 @@
             "@/*": ["./src/*"],
             "@assets/*": ["./src/assets/*"],
             "@modules/*": ["./src/modules/*"],
-            "@lib/*": ["./src/lib/*"]
+            "@lib/*": ["./src/lib/*"],
+            "@gen/*": ["./src/generated/*"]
         }
     },
     "include": ["src"]

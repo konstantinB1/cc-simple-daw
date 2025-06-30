@@ -1,4 +1,8 @@
-import type { SelectData, SelectOption } from "@/components/Select";
+import {
+    SelectSize,
+    type SelectData,
+    type SelectOption,
+} from "@/components/Select";
 import { typography } from "@/global-styles";
 import ProgramManager from "@/lib/ProgramManager";
 import { css, html, LitElement } from "lit";
@@ -73,7 +77,7 @@ export default class Program extends LitElement {
         return html`
             <section class="container">
                 <daw-select
-                    placeholder="Select Program"
+                    .size=${SelectSize.Small}
                     .options=${this.programNames}
                     @select-data=${this.handleSelectProgram}
                 >

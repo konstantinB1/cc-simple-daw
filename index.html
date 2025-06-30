@@ -3,35 +3,24 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/style.css" />
+        <link
+            rel="stylesheet"
+            href="/style.css"
+            blocking="render"
+            fetchpriority="high"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
             href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet"
         />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+            rel="stylesheet"
+        />
         <title>Simple DAW app</title>
-        <style>
-            :host {
-                --color-primary: #1d1d1d;
-                --color-secondary: #171717;
-                --color-accent: hwb(0 22% 78%);
-                --color-text: #ffffff;
-                --color-background: #181818;
-                --container-width: 1200px;
-                --container-height: 60vh;
-                --card-color: #2c2c2c;
-                --color-tint-primary: #f74323;
-                --border-radius: 10px;
-                --nav-bg-color: #595959;
-                --color-success: #5ace5e;
-                --color-error: #ff1e0e;
-                --color-warning: #ff9800;
-                --color-info: #2196f3;
-                --color-border: #333333;
-                --color-border-light: #444444;
-            }
-        </style>
+        <style></style>
     </head>
     <body>
         <script type="module" src="/src/main.ts"></script>

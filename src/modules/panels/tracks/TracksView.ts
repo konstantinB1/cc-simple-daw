@@ -13,20 +13,11 @@ import type { TrackEventData } from "./TrackViewEvents";
 import { consumeProp } from "@/decorators/sync";
 import { playbackContext } from "@/context/playbackContext";
 import { SelectSize, type SelectOption } from "@/components/Select";
-import type { Track } from "./Tracks";
+import { QuantisizeOptions, type Track } from "./Tracks";
 
 export const MAX_TIME_BEATS = 4;
 export const BEAT_WIDTH = 70;
 export const NEEDLE_START_POS = 131;
-
-export enum QuantisizeOptions {
-    "1/2" = 2,
-    "1/4" = 4,
-    "1/8" = 8,
-    "1/16" = 16,
-    "1/32" = 32,
-    "1/64" = 64,
-}
 
 @customElement("tracks-view")
 export default class TracksView extends LitElement {

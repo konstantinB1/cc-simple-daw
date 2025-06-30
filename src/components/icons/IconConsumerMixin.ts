@@ -1,5 +1,5 @@
 import type { Constructor } from "@/utils/types";
-import { html, type LitElement, type TemplateResult } from "lit";
+import { css, html, type LitElement, type TemplateResult } from "lit";
 import { property } from "lit/decorators.js";
 
 interface IconComponent {
@@ -10,6 +10,14 @@ const IconConsumerMixin = <T extends Constructor<LitElement>>(
     superClass: T,
 ) => {
     class IconConsumer extends superClass {
+        static styles = css`
+            svg {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        `;
+
         @property({ type: Number })
         size: number = 24;
 

@@ -95,12 +95,7 @@ export class SimpleKeyboardKanager
     }
 
     attachEventListeners(): void {
-        console.log("SimpleKeyboardKanager: Attaching event listeners.");
-
         if (this.attached) {
-            console.warn(
-                "SimpleKeyboardKanager: Event listeners already attached.",
-            );
             return;
         }
 
@@ -111,9 +106,6 @@ export class SimpleKeyboardKanager
 
     detachEventListeners(): void {
         if (!this.attached) {
-            console.warn(
-                "SimpleKeyboardKanager: No event listeners to detach.",
-            );
             return;
         }
 
@@ -310,7 +302,6 @@ export class LayeredKeyboardManager
 
     attachEventListeners(): void {
         if (this.attached) {
-            console.warn("KeyboardManager: Event listeners already attached.");
             return;
         }
 
@@ -320,7 +311,6 @@ export class LayeredKeyboardManager
 
     detachEventListeners(): void {
         if (!this.attached) {
-            console.warn("KeyboardManager: No event listeners to detach.");
             return;
         }
 

@@ -175,8 +175,6 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
 
         this.stopWatch.reset();
 
-        const currentTime = this.playbackContext.currentTime;
-
         if (this.playbackContext.isPlaying) {
             this.playbackContext.scheduler.reschedule();
 
@@ -194,10 +192,10 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
 
     private get renderIsPlayingIcon(): TemplateResult {
         if (!this.playbackContext.isPlaying) {
-            return html`<play-icon size=${15}></play-icon>`;
+            return html`<play-icon size=${14}></play-icon>`;
         }
 
-        return html`<stop-icon size=${15}></stop-icon>`;
+        return html`<stop-icon size=${14}></stop-icon>`;
     }
 
     private toggleCountdown(): void {
@@ -216,13 +214,10 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
                         <record-icon size=${20}></record-icon>
                     </icon-button>
                     <icon-button size=${40} @handle-click=${this.handleRewind}>
-                        <rewind-icon size=${20}></rewind-icon>
+                        <rewind-icon size=${17}></rewind-icon>
                     </icon-button>
                     <icon-button size=${40} @handle-click=${this.handlePlay}>
                         ${this.renderIsPlayingIcon}
-                    </icon-button>
-                    <icon-button size=${40}>
-                        <forward-icon size=${20}></forward-icon>
                     </icon-button>
                     <bpm-picker></bpm-picker>
                     <icon-button
@@ -230,14 +225,14 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
                         size=${40}
                         @handle-click=${this.toggleMetronome}
                     >
-                        <metronome-icon></metronome-icon>
+                        <metronome-icon .size=${20}></metronome-icon>
                     </icon-button>
                     <icon-button
                         .isActive=${this.countdown}
                         size=${40}
                         @handle-click=${this.toggleCountdown}
                     >
-                        <clock-icon .size=${20}></clock-icon>
+                        <clock-icon .size=${17}></clock-icon>
                     </icon-button>
                 </div>
             </div>

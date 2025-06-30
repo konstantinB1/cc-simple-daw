@@ -1,6 +1,6 @@
 import PanelScreenManager from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, query } from "lit/decorators.js";
 import "./PanelCard";
 import "../panels/tracks/Tracks";
 import "../panels/sampler/Sampler";
@@ -27,30 +27,24 @@ export default class AppView extends LitElement {
         },
     });
 
-    keyboardManager: LayeredKeyboardManager;
+    keyboardManager: LayeredKeyboardManager = new LayeredKeyboardManager();
 
-    constructor() {
-        super();
-
-        this.keyboardManager = new LayeredKeyboardManager();
-
-        this.screenManager.onPanelFocused((panel) => {
-            if (panel?.name === "tracks-view") {
-            }
-        });
-    }
+    @query("#root-container")
+    private container!: HTMLElement;
 
     static styles = css`
         .container {
             position: relative;
-            width: 100%;
-            height: calc(100vh - 40px);
+            height: calc(100vh - 50px);
+            top: 30px;
             overflow: hidden;
         }
     `;
 
     firstUpdated(): void {
         super.connectedCallback();
+
+        this.screenManager.container = this.container;
         attachChannelContextEvents(this, this.channelsCtx);
 
         this.keyboardManager.attachEventListeners();
@@ -73,18 +67,9 @@ export default class AppView extends LitElement {
         ]);
 
         if (firstPanel) {
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 this.screenManager.focus(firstPanel.name);
             });
-        }
-    }
-
-    private handleClick(event: MouseEvent): void {
-        if (
-            event.target instanceof HTMLElement &&
-            event.target.classList.contains("container")
-        ) {
-            PanelScreenManager.handleBackgroundClick();
         }
     }
 
@@ -92,9 +77,9 @@ export default class AppView extends LitElement {
         return html` <top-nav
                 .keyboardManager=${this.keyboardManager}
             ></top-nav>
-            <div class="container" @click="${this.handleClick}">
-                <sampler-root></sampler-root>
+            <div class="container" id="root-container">
                 <tracks-panel></tracks-panel>
+                <sampler-root></sampler-root>
             </div>`;
     }
 }

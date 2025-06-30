@@ -23,8 +23,8 @@ export default class SamplerPanel extends WithScreenManager(LitElement) {
             new VSTIPanel(
                 this.screenManager,
                 "sampler-view",
+                "Virtual Keyboard",
                 this,
-                true,
                 true,
                 vstInstrument,
             ),

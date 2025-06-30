@@ -1,6 +1,9 @@
 import DragController, { DragEvent } from "@/controllers/DragController";
+import { typography } from "@/global-styles";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
+import type { Panel } from "@/lib/PanelScreenManager";
 import WithScreenManager from "@/mixins/WithScreenManager";
+
 import {
     CSSResult,
     LitElement,
@@ -67,13 +70,106 @@ export default class PanelCard
     @state()
     private isFocused: boolean = false;
 
-    protected firstUpdated(_changedProperties: PropertyValues): void {
-        this.dragController = new DragController(this.startPos);
-        this.dragController.setElement(this.cardRef.value!);
+    @state()
+    isFullscreen: boolean = false;
 
+    private panel?: Panel;
+
+    static styles: CSSResult[] = [
+        typography,
+        css`
+            :host {
+                height: 100%;
+            }
+            .card {
+                display: flex;
+                flex-direction: column;
+                background-color: var(--card-color);
+                border-radius: var(--border-radius);
+                position: absolute;
+                box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+                outline: none;
+            }
+
+            .card.is-dragging {
+                cursor: grabbing;
+                box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
+            }
+
+            .card-header {
+                box-sizing: border-box;
+                width: 100%;
+                height: 45px;
+                background-color: var(--color-secondary);
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+                border: 1px solid var(--color-secondary);
+                border-bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .content-wrapper {
+                border-top: none;
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+                background-color: var(--card-color);
+                border: 1px solid var(--color-border);
+                border-top: 0;
+            }
+
+            .fullscreen-card {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                border: none !important;
+            }
+
+            .buttons-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding-right: 10px;
+            }
+
+            .card-title {
+                font-size: 0.85em;
+                color: var(--color-text-primary);
+                padding-left: 16px;
+            }
+
+            .card-padded {
+                padding: 0 16px;
+            }
+
+            .card.is-focused {
+                border: 1px solid var(--color-tint-primary);
+            }
+        `,
+    ];
+
+    connectedCallback(): void {
+        super.connectedCallback();
+        this.panel = this.screenManager.getPanel(this.cardId);
+
+        if (this.startPos) {
+            this.pos = this.startPos;
+        }
+    }
+
+    protected firstUpdated(_changedProperties: PropertyValues): void {
         if (!this.screenManager) {
             return;
         }
+
+        const containerRect =
+            this.screenManager.container!.getBoundingClientRect();
+
+        this.dragController = new DragController(this.startPos, containerRect);
+        this.dragController.setElement(this.cardRef.value!);
 
         this.screenManager.onPanelFocused((panel) => {
             if (panel?.name === this.cardId) {
@@ -105,71 +201,42 @@ export default class PanelCard
                 }
             },
         );
+
+        super.firstUpdated(_changedProperties);
     }
 
     private handleFocus(): void {
         this.screenManager.focus(this.cardId);
     }
 
-    connectedCallback(): void {
-        super.connectedCallback();
+    private handleDoubleClick(): void {
+        this.panel?.toggleFullscreen();
 
-        if (this.startPos) {
-            this.pos = this.startPos;
+        if (this.isFullscreen) {
+            this.elementZIndex = ELEVATED_Z_INDEX;
         }
+
+        this.isFullscreen = this.panel?.isFullscreen ?? false;
+        this.dragController.enabled = !this.isFullscreen;
     }
 
-    static styles: CSSResult = css`
-        :root {
-            --color-drag: #3f3f3f;
+    private renderFullscreenButton(): TemplateResult {
+        if (!this.panel || !this.panel.canFullscreen) {
+            return html``;
         }
 
-        .card {
-            display: flex;
-            flex-direction: column;
-            background-color: var(--card-color);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--color-accent);
-            position: absolute;
-            box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
+        return html` <icon-button
+            variant="basic"
+            size=${30}
+            @handle-click=${this.handleDoubleClick.bind(this)}
+        >
+            <fullscreen-icon .size=${18}></fullscreen-icon>
+        </icon-button>`;
+    }
 
-            &:focus {
-                outline: 0.1px solid var(--color-tint-primary);
-                outline-offset: 1px;
-            }
-        }
-
-        .card.is-dragging {
-            cursor: grabbing;
-            box-shadow: 0 1px 7px rgba(0, 0, 0, 0.2);
-        }
-
-        .card.is-focused {
-            outline: 1px solid rgba(255, 255, 255, 0.4);
-            outline-offset: 5px;
-        }
-
-        .card-header {
-            width: 100%;
-            height: 50px;
-            background-color: var(--color-secondary);
-            border-top-left-radius: inherit;
-            border-top-right-radius: inherit;
-        }
-
-        .content-wrapper {
-            border-top: none;
-            border-bottom-left-radius: inherit;
-            border-bottom-right-radius: inherit;
-            background-color: var(--card-color);
-        }
-
-        .card-padded {
-            padding: 0 20px 20px 20px;
-        }
-    `;
-
-    private handleDoubleClick(): void {}
+    private getPanelName(): string {
+        return this.panel ? this.panel.displayName : "Unknown Panel";
+    }
 
     override render(): TemplateResult {
         const [x, y] = this.pos;
@@ -185,6 +252,7 @@ export default class PanelCard
             card: true,
             "is-dragging": this.isDragging,
             "is-focused": this.isFocused,
+            "fullscreen-card": this.isFullscreen,
         });
 
         const headerClasses = classMap({
@@ -198,10 +266,11 @@ export default class PanelCard
         });
 
         const styles = styleMap({
-            transform: `translate(${x}px, ${y}px)`,
-            width: this.cardWidth,
-            height: this.cardHeight,
+            transform: `translate(${this.isFullscreen ? 0 : x}px, ${this.isFullscreen ? 0 : y}px)`,
+            width: this.isFullscreen ? "100%" : this.cardWidth,
+            height: !this.isFullscreen ? this.cardHeight : "100%",
             zIndex: this.elementZIndex,
+            top: !this.isFullscreen ? "0" : `${80}px`,
         });
 
         return html`<div
@@ -212,11 +281,22 @@ export default class PanelCard
             class=${classes}
             style=${styles}
             @mousedown="${handleMouseDown}"
-            @dblclick="${this.handleDoubleClick.bind(this)}"
             @click="${this.handleFocus.bind(this)}"
         >
-            <div class=${headerClasses}>
-                <slot name="header"></slot>
+            <div
+                class=${headerClasses}
+                @dblclick="${this.handleDoubleClick.bind(this)}"
+            >
+                <div>
+                    <span class="card-title typography-300"
+                        >${this.getPanelName()}
+                    </span>
+                </div>
+                <div class="buttons-wrapper">
+                    <slot name="header">
+                        ${this.renderFullscreenButton()}
+                    </slot>
+                </div>
             </div>
             <div class=${contentClasses}>
                 <slot></slot>

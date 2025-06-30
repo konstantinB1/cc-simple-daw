@@ -1,4 +1,3 @@
-import { typography } from "@/global-styles";
 import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 
 import { css, html, LitElement, type PropertyValues } from "lit";
@@ -11,7 +10,6 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
     private clickedPixel: number = 0;
 
     static styles = [
-        typography,
         css`
             .bpm-picker {
                 display: flex;
@@ -31,6 +29,7 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
                 align-items: center;
                 justify-content: space-between;
                 height: 40px;
+                width: 70px;
                 gap: 20px;
                 border-radius: var(--border-radius);
                 background-color: var(--color-primary);
@@ -137,9 +136,9 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
             @blur=${this.handleBlur}
         >
             <div class="bpm-input">
-                <p class="typography-300 bpm-text">
+                <text-element size="sm" variant="h1" color="text" weight="400">
                     ${this.playbackContext.bpm}
-                </p>
+                </text-element>
                 <div
                     class="bpm-input-icon-wrapper"
                     @mousedown=${this.onMouseDown}

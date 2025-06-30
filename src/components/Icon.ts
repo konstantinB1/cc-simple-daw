@@ -13,6 +13,8 @@ import "./icons/ForwardIcon";
 import "./icons/RewindIcon";
 import "./icons/ClockIcon";
 import "./icons/ArrowDownIcon";
+import "./icons/IconFullscreen";
+import "./icons/PanelsIcon";
 
 export interface SVGIconInterface {
     name: string;

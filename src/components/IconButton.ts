@@ -15,6 +15,12 @@ export default class IconButton extends LitElement {
     @property({ type: String, attribute: "label-text" })
     labelText: string = "";
 
+    @property({ type: String, attribute: "variant" })
+    variant: "classic" | "basic" = "classic";
+
+    @property({ type: String })
+    color: "primary" | "white" | "tool" = "primary";
+
     static styles = [
         typography,
         css`
@@ -22,21 +28,36 @@ export default class IconButton extends LitElement {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-radius: var(--border-radius);
-                border: 1px solid var(--color-accent);
-                background-color: var(--color-primary);
                 color: var(--color-white);
                 cursor: pointer;
-                transition: all 0.15s ease-in-out;
 
                 &:hover {
-                    transform: scale(0.96);
+                    transform: scale(0.99);
                     border-color: var(--color-tint-primary);
                 }
 
                 &:active {
-                    transform: scale(0.91);
+                    transform: scale(0.975);
                 }
+            }
+
+            .icon-button:focus {
+                outline: none;
+                border: 1px solid var(--color-tint-primary);
+            }
+
+            .variant-classic {
+                border-radius: var(--border-radius);
+                border: 0;
+                background-color: var(--color-primary);
+                border: 1px solid var(--color-border);
+                /* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); */
+            }
+
+            .variant-basic {
+                border: 1px solid transparent;
+                background-color: transparent;
+                border-radius: var(--border-radius);
             }
 
             .icon-button > svg {
@@ -44,7 +65,7 @@ export default class IconButton extends LitElement {
             }
 
             .active {
-                border-color: var(--color-tint-primary);
+                border: 1px solid var(--color-tint-primary) !important;
                 background-color: var(--color-tint-primary-active);
             }
 
@@ -103,6 +124,7 @@ export default class IconButton extends LitElement {
                     @blur=${this.handleFocus}
                     class=${classMap({
                         "icon-button": true,
+                        [`variant-${this.variant}`]: true,
                         active: this.isActive && this.isActive !== undefined,
                     })}
                     @click=${this.delegateClick}

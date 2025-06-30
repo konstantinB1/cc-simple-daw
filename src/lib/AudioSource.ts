@@ -155,21 +155,6 @@ export default class AudioSource extends EventTarget {
 
         const uuid = generateUUID();
 
-        source.onended = () => {
-            this.bufferSources.delete(source);
-
-            if (emitEvents) {
-                const event = new CustomEvent<StopEvent>(
-                    "audio-channel/ended",
-                    {
-                        detail: { id: uuid, isPlaying: false },
-                    },
-                );
-                this.dispatchEvent(event);
-            }
-            onEnd?.();
-        };
-
         if (loopStart !== undefined && loopEnd !== undefined) {
             source.loop = true;
             source.loopStart = loopStart;
@@ -181,15 +166,17 @@ export default class AudioSource extends EventTarget {
         source.connect(this.ctx.destination);
         source.start(when, offset, duration);
 
+        const eventData: PlayEvent = {
+            id: uuid,
+            when,
+            offset,
+            duration: duration ?? this.buffer.duration,
+            isPlaying: true,
+        };
+
         if (emitEvents) {
             const event = new CustomEvent<PlayEvent>("audio-channel/play", {
-                detail: {
-                    id: uuid,
-                    when,
-                    offset,
-                    duration: duration ?? this.buffer.duration,
-                    isPlaying: true,
-                },
+                detail: eventData,
             });
 
             this.dispatchEvent(new CustomEvent("audio-channel/play", event));
@@ -201,15 +188,11 @@ export default class AudioSource extends EventTarget {
 
         return new Promise((resolve) => {
             source.onended = () => {
-                const event = new CustomEvent<StopEvent>(
-                    "audio-channel/ended",
-                    {
-                        detail: {
-                            id: uuid,
-                            isPlaying: false,
-                        },
-                    },
-                );
+                eventData.isPlaying = false;
+
+                const event = new CustomEvent<PlayEvent>("audio-channel/play", {
+                    detail: eventData,
+                });
 
                 this.dispatchEvent(event);
 
@@ -224,13 +207,6 @@ export default class AudioSource extends EventTarget {
         this.addEventListener("audio-channel/play", (event: Event) => {
             const playEvent = event as CustomEvent<PlayEvent>;
             callback(playEvent);
-        });
-    }
-
-    onStop(callback: (event: CustomEvent<StopEvent>) => void): void {
-        this.addEventListener("audio-channel/ended", (event: Event) => {
-            const stopEvent = event as CustomEvent<StopEvent>;
-            callback(stopEvent);
         });
     }
 

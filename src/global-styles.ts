@@ -1,9 +1,9 @@
 import { css } from "lit";
 
 export const cssVars = {
-    primary: "rgb(67, 67, 67)",
-    secondary: "#171717",
-    accent: "hwb(0 22% 78%)",
+    colorPrimary: "#1d1d1d",
+    colorSecondary: "#171717",
+    colorAccent: "#363636",
     text: "#ffffff",
     background: "#181818",
     containerWidth: "1200px",

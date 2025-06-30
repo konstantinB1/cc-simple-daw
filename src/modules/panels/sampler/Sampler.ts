@@ -1,4 +1,4 @@
-import { PanelType, VSTIPanel } from "@/lib/PanelScreenManager";
+import { VSTIPanel } from "@/lib/PanelScreenManager";
 import "./Pads";
 import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
@@ -25,16 +25,14 @@ export default class SamplerPanel extends WithScreenManager(
             elementName,
             new VSTIPanel(
                 this.screenManager,
+                "MPC Sampler",
                 "sampler-view",
                 this,
-                true,
-                true,
+                false,
                 vstInstrument,
             ),
         );
     }
-
-    private onSamplePlay(_: CustomEvent): void {}
 
     override render() {
         return html`
@@ -48,9 +46,9 @@ export default class SamplerPanel extends WithScreenManager(
                     padded
                     .keyboardManager=${this.keyboardManager}
                 >
+                    <div slot="header"></div>
                     <sampler-view
                         .keyManager=${this.keyboardManager}
-                        @sample-play=${this.onSamplePlay.bind(this)}
                     ></sampler-view>
                 </panel-card>
             </div>

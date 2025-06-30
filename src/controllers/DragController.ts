@@ -11,7 +11,8 @@ export type DragControllerData = {
     coords: [number, number];
 };
 
-const Y_BOTTOM_PADDING = 40; // 10px padding + 30px for the bottom bar
+const Y_BOTTOM_PADDING = 5;
+const X_PADDING = 5;
 
 export default class DragController extends EventTarget {
     private holdTimeout: NodeJS.Timeout | null = null;
@@ -21,9 +22,18 @@ export default class DragController extends EventTarget {
     public isDragging: boolean = false;
 
     private element?: HTMLElement;
+    private readonly containerRect: DOMRect;
 
-    constructor(startPos: [number, number] = [0, 0]) {
+    private get rect(): DOMRect | undefined {
+        return this.element?.getBoundingClientRect();
+    }
+
+    enabled: boolean = true;
+
+    constructor(startPos: [number, number] = [0, 0], containerRect: DOMRect) {
         super();
+        this.containerRect = containerRect;
+
         this.setStartPos(startPos);
         this.handleWindowMouseMove = this.handleWindowMouseMove.bind(this);
         this.handleWindowMouseUp = this.handleWindowMouseUp.bind(this);
@@ -39,7 +49,10 @@ export default class DragController extends EventTarget {
 
     public handleMouseDown(event: MouseEvent): void {
         if (
-            !(event.target as HTMLElement).classList.contains("card-draggable")
+            !(event.target as HTMLElement).classList.contains(
+                "card-draggable",
+            ) ||
+            !this.enabled
         ) {
             return;
         }
@@ -63,7 +76,7 @@ export default class DragController extends EventTarget {
     }
 
     private handleWindowMouseMove = (event: MouseEvent) => {
-        if (!this.isDragging) {
+        if (!this.isDragging || !this.enabled) {
             return;
         }
 
@@ -80,19 +93,20 @@ export default class DragController extends EventTarget {
     };
 
     private get height(): number {
-        return this.element?.getBoundingClientRect().height || 0;
+        return this.rect?.height ?? 0;
     }
 
     private getY(pos: number): number {
-        const viewportHeight = document.documentElement.clientHeight;
+        const viewportHeight = this.containerRect.height;
 
-        if (pos < 80) {
-            return 80;
+        if (pos < 0) {
+            return 0;
         }
 
-        if (pos + this.height > viewportHeight - Y_BOTTOM_PADDING) {
-            return viewportHeight - this.height - Y_BOTTOM_PADDING; // 10px padding
+        if (pos + this.height > viewportHeight) {
+            return viewportHeight - this.height - 30;
         }
+
         return pos;
     }
 
@@ -101,11 +115,11 @@ export default class DragController extends EventTarget {
         const viewportWidth = document.documentElement.clientWidth;
 
         if (pos + width > viewportWidth) {
-            return viewportWidth - width - 10; // 10px padding
+            return viewportWidth - width - X_PADDING;
         }
 
-        if (pos < 0) {
-            return 0;
+        if (pos < X_PADDING) {
+            return X_PADDING;
         }
 
         return pos;
@@ -122,6 +136,10 @@ export default class DragController extends EventTarget {
     }
 
     private handleWindowMouseUp = (_: MouseEvent) => {
+        if (!this.isDragging || !this.enabled) {
+            return;
+        }
+
         if (this.holdTimeout) {
             clearTimeout(this.holdTimeout);
             this.holdTimeout = null;

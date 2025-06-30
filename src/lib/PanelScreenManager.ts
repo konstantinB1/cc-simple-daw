@@ -44,38 +44,65 @@ export interface PanelRenderer {
 export abstract class Panel extends EventTarget {
     name: string;
     element: HTMLElement;
-    isCurrent: boolean = false;
     isVisible: boolean;
+    isFullscreen: boolean = false;
+
+    readonly displayName: string;
 
     // The instance of PanelScreenManager that this panel belongs to.
     // This is used to manage the panel's state and interactions.
-    screenManagerInstance: PanelScreenManager;
-    type: PanelType;
+    readonly screenManagerInstance: PanelScreenManager;
+    readonly type: PanelType;
+    readonly canFullscreen: boolean = false;
 
     constructor(
-        ...[
-            screenManagerInstance,
-            name,
-            element,
-            type,
-            isVisible = false,
-        ]: PanelArgs
+        screenManagerInstance: PanelScreenManager,
+        displayName: string,
+        name: string,
+        element: HTMLElement,
+        type: PanelType,
+        isVisible: boolean = false,
+        canFullscreen: boolean = false,
     ) {
         super();
 
         this.screenManagerInstance = screenManagerInstance;
+        this.displayName = displayName;
         this.name = name;
         this.element = element;
         this.type = type;
         this.isVisible = isVisible;
-    }
-
-    setCurrent(isCurrent: boolean): void {
-        this.isCurrent = isCurrent;
+        this.canFullscreen = canFullscreen;
     }
 
     setVisible(isVisible: boolean): void {
         this.isVisible = isVisible;
+    }
+
+    toggleFullscreen(): void {
+        if (!this.canFullscreen) {
+            return;
+        }
+
+        this.isFullscreen = !this.isFullscreen;
+
+        this.dispatchEvent(
+            new CustomEvent("fullscreen-change", {
+                detail: { isFullscreen: this.isFullscreen },
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    onFullscreenChange(callback: (isFullscreen: boolean) => void): void {
+        if (!this.canFullscreen) {
+            return;
+        }
+
+        this.addEventListener("fullscreen-change", (event: Event) => {
+            callback((event as CustomEvent).detail.isFullscreen);
+        });
     }
 }
 
@@ -84,19 +111,21 @@ export class VSTIPanel extends Panel {
 
     constructor(
         screenManagerInstance: PanelScreenManager,
+        displayName: string,
         name: string,
         element: HTMLElement,
         isVisible: boolean = false,
-        isDraggable: boolean = true,
         vstData: VSTInstrument,
+        canFullscreen: boolean = false,
     ) {
         super(
             screenManagerInstance,
+            displayName,
             name,
             element,
             PanelType.VSTI,
             isVisible,
-            isDraggable,
+            canFullscreen,
         );
 
         this.vstData = vstData;
@@ -106,36 +135,49 @@ export class VSTIPanel extends Panel {
 export class CustomPanel extends Panel {
     constructor(
         screenManagerInstance: PanelScreenManager,
+        displayName: string,
         name: string,
         element: HTMLElement,
         isVisible: boolean = false,
-        isDraggable: boolean = true,
+        canFullscreen: boolean = false,
     ) {
         super(
             screenManagerInstance,
+            displayName,
             name,
             element,
             PanelType.Custom,
             isVisible,
-            isDraggable,
+            canFullscreen,
         );
     }
 }
 
 export default class PanelScreenManager extends EventTarget {
-    panels: Panel[] = [];
+    readonly panels: Panel[] = [];
 
-    static instance: PanelScreenManager | null = null;
+    container: HTMLElement | null = null;
+
+    current: Panel | undefined;
 
     constructor() {
         super();
-        PanelScreenManager.instance = this;
     }
 
     public onPanelFocused(callback: (panel?: Panel) => void): void {
         this.addEventListener("panel-focus", (event: Event) => {
             callback((event as CustomEvent).detail.panel);
         });
+    }
+
+    getPanel(name: string): Panel | undefined {
+        const panel = this.panels.find((panel) => panel.name === name);
+
+        if (!panel) {
+            throw new Error(`Panel with name ${name} does not exist.`);
+        }
+
+        return panel;
     }
 
     public add(name: string, panel: Panel): PanelScreenManager {
@@ -145,7 +187,21 @@ export default class PanelScreenManager extends EventTarget {
 
         this.panels.push(panel);
 
+        this.dispatchEvent(
+            new CustomEvent("panel-added", {
+                detail: { panel },
+                bubbles: true,
+                composed: true,
+            }),
+        );
+
         return this;
+    }
+
+    onPanelAdded(callback: (panel: Panel) => void): void {
+        this.addEventListener("panel-added", (event: Event) => {
+            callback((event as CustomEvent).detail.panel);
+        });
     }
 
     private dispatchFocusEvent(context?: Panel): void {
@@ -159,18 +215,10 @@ export default class PanelScreenManager extends EventTarget {
     }
 
     // Unfocuses all panels but does not dispatch an event.
-    public quetlyUnfocus(): void {
-        for (const panel of this.panels) {
-            panel.setCurrent(false);
-        }
-    }
-
-    private getCurrentPanel(): Panel | undefined {
-        return this.panels.find((panel) => panel.isCurrent);
-    }
+    public quetlyUnfocus(): void {}
 
     public focusNext(): Panel | undefined {
-        const currentPanel = this.getCurrentPanel();
+        const currentPanel = this.current;
 
         if (!currentPanel) {
             const first = this.panels[0];
@@ -197,7 +245,7 @@ export default class PanelScreenManager extends EventTarget {
     }
 
     public focusPrevious(): Panel | undefined {
-        const currentPanel = this.getCurrentPanel();
+        const currentPanel = this.current;
 
         if (!currentPanel) {
             const last = this.panels[this.panels.length - 1];
@@ -224,11 +272,6 @@ export default class PanelScreenManager extends EventTarget {
         return undefined;
     }
 
-    // Focuses on a panel by its name.
-    // If the panel is already focused, it returns the panel.
-    // If the panel does not exist, it throws an error.
-    // If the panel is focused, it sets all other panels to not current.
-    // It also dispatches a "panel-focused" event with the focused panel.
     public focus(name: string): Panel | undefined {
         const panel = this.panels.find((p) => p.name === name);
 
@@ -236,33 +279,14 @@ export default class PanelScreenManager extends EventTarget {
             throw new Error(`Panel with name ${name} does not exist.`);
         }
 
-        if (panel.isCurrent) {
+        if (this.current === panel) {
             return panel;
         }
 
-        for (const p of this.panels.values()) {
-            if (p.name !== panel.name) {
-                p.setCurrent(false);
-            }
-        }
-
-        panel.setCurrent(true);
+        this.current = panel;
         this.dispatchFocusEvent(panel);
 
         return panel;
-    }
-
-    // We need to handle clicks for non panel elements
-    // so we can lose the current panel and dispatch a focus event
-    static handleBackgroundClick() {
-        const instance = PanelScreenManager.instance;
-
-        if (!instance) {
-            console.warn("No PanelScreenManager instance found.");
-            return;
-        }
-
-        instance.dispatchFocusEvent();
     }
 }
 

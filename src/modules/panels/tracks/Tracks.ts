@@ -1,6 +1,6 @@
 import { CustomPanel } from "@/lib/PanelScreenManager";
-import { html, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import WithScreenManager from "@/mixins/WithScreenManager";
 import "./TracksView";
 import "./view-canvas/TracksViewCanvas";
@@ -8,41 +8,78 @@ import { SEQUENCER_CANVAS } from "@/features";
 import { consumeProp } from "@/decorators/sync";
 import { playbackContext } from "@/context/playbackContext";
 import type AudioSource from "@/lib/AudioSource";
+import type { SelectOption } from "@/components/Select";
+import Track from "@/lib/AudioTrack";
+import type { PlayEvent } from "@/lib/AudioSource";
 
 export const tracksPanelElement = "tracks-panel";
 
-export class Track {
-    channel: AudioSource;
-
-    id: string;
-
-    parent?: Track;
-
-    constructor(channel: AudioSource, parent?: Track) {
-        this.channel = channel;
-        this.id = channel.id;
-        this.parent = parent;
-    }
-
-    mute(): void {
-        this.channel.setMuted(true);
-    }
-
-    unmute(): void {
-        this.channel.setMuted(false);
-    }
+export enum QuantisizeOptions {
+    "1/2" = 2,
+    "1/4" = 4,
+    "1/8" = 8,
+    "1/16" = 16,
+    "1/32" = 32,
+    "1/64" = 64,
 }
+
+const quantisizeOptions: SelectOption[] = [
+    { value: "1", label: "1/1" },
+    { value: "2", label: "1/2" },
+    { value: "4", label: "1/4" },
+    { value: "8", label: "1/8" },
+    { value: "16", label: "1/16" },
+    { value: "32", label: "1/32" },
+    { value: "64", label: "1/64" },
+];
 
 @customElement(tracksPanelElement)
 export default class TracksPanel extends WithScreenManager(LitElement) {
     @consumeProp({ context: playbackContext, subscribe: true })
     sources!: AudioSource[];
 
+    @state()
+    private currentQuantisize: string = quantisizeOptions[2].value;
+
+    @state()
+    events: PlayEvent[] = [];
+
+    static styles = css`
+        .tracks-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+    `;
+
+    private handlePlay(event: Event) {
+        const playEvent = event as CustomEvent<PlayEvent>;
+        const id = playEvent.detail.id;
+
+        if (this.events.some((e) => e.id === id)) {
+            this.events = this.events.filter((e) => e.id !== id);
+        } else {
+            this.events = [...this.events, playEvent.detail];
+        }
+    }
+
+    private get normalizedTracks(): Track[] {
+        this.tracks.forEach((track) => {
+            track.channel.stop();
+        });
+
+        return this.tracks.map((track) => {
+            track.channel.onPlay(this.handlePlay.bind(this));
+            return track;
+        });
+    }
+
     connectedCallback(): void {
         super.connectedCallback();
 
         const panel = new CustomPanel(
             this.screenManager,
+            "Tracks sequencer",
             "tracks-view",
             this,
             true,
@@ -56,20 +93,41 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
         return this.sources.map((source) => new Track(source));
     }
 
+    private setQuantisize({
+        detail: { value },
+    }: CustomEvent<{ value: string }>) {
+        this.currentQuantisize = value;
+    }
+
     override render() {
+        console.log(this.events);
         return html`
             <panel-card
                 card-id="tracks-view"
-                card-width="1100px"
-                .startPos=${[570, 80] as const}
+                card-width="1140px"
                 .isDraggable=${true}
                 .screenManagerInstance=${this.screenManager as any}
             >
-                ${SEQUENCER_CANVAS
-                    ? html`<tracks-view-canvas
-                          .tracks=${this.tracks}
-                      ></tracks-view-canvas>`
-                    : html`<tracks-view .tracks=${this.tracks}></tracks-view>`}
+                <card-sub-header>
+                    <div slot="menu-items">
+                        <daw-select
+                            .options=${quantisizeOptions}
+                            size="small"
+                            .value=${this.currentQuantisize}
+                            @select-changed=${this.setQuantisize}
+                        ></daw-select>
+                    </div>
+                </card-sub-header>
+                <div class="tracks-wrapper">
+                    ${SEQUENCER_CANVAS
+                        ? html`<tracks-view-canvas
+                              .quantisize=${this.currentQuantisize}
+                              .tracks=${this.normalizedTracks}
+                          ></tracks-view-canvas>`
+                        : html`<tracks-view
+                              .tracks=${this.normalizedTracks}
+                          ></tracks-view>`}
+                </div>
             </panel-card>
         `;
     }
