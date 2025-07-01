@@ -1,8 +1,8 @@
 import type AudioSource from "@/lib/AudioSource";
 
 export default class SimpleOscillator {
-    ctx: AudioContext;
-    master: AudioSource;
+    private ctx: AudioContext;
+    private master: AudioSource;
     private activeOscillators: Map<string, OscillatorNode> = new Map();
 
     constructor(ctx: AudioContext, master: AudioSource) {
@@ -13,7 +13,6 @@ export default class SimpleOscillator {
     startNote(note: string, octave: number = 4): void {
         const noteKey = `${note}${octave}`;
 
-        // Stop existing note if already playing
         this.stopNote(note, octave);
 
         const noteFrequency = this.getFrequency(note, octave);
@@ -39,9 +38,10 @@ export default class SimpleOscillator {
     }
 
     stopAllNotes(): void {
-        for (const [noteKey, oscillator] of this.activeOscillators) {
+        for (const [_, oscillator] of this.activeOscillators) {
             oscillator.stop(this.ctx.currentTime);
         }
+
         this.activeOscillators.clear();
     }
 

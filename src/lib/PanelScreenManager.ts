@@ -27,7 +27,7 @@ export type PanelElement = HTMLElement &
     RenderCardOptions & {
         screenManager: PanelScreenManager;
         panel: Panel;
-        icon?: string; // Optional icon for the panel
+        icon?: string;
     };
 
 export type PanelArgs = [
@@ -325,6 +325,7 @@ export default class PanelScreenManager extends EventTarget {
                     name,
                     htmlElement,
                     false,
+                    true,
                 );
                 break;
             default:

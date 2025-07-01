@@ -177,13 +177,11 @@ export default class KeyboardView extends LitElement {
 
         this.keyboardController.addKeys(this.keyData);
 
-        this.screenManager.onPanelFocused((p) => {
-            if (p?.name === this.panel.name) {
-                this.keyboardController.attachEventListeners();
-            } else {
-                this.keyboardController.detachEventListeners();
-            }
-        });
+        this.screenManager.onPanelFocused((p) =>
+            p?.name === this.panel.name
+                ? this.keyboardController.attachEventListeners()
+                : this.keyboardController.detachEventListeners(),
+        );
 
         this.keyboardController.onMappingHit(({ detail }) => {
             const getKey = this.keyData.find(
