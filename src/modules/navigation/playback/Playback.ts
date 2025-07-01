@@ -107,28 +107,27 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
             this.stopWatch.stop();
             this.playbackContext.scheduler.stop();
         } else {
+            const setCurrentTime = (time: number) =>
+                this.consumer.$setCurrentTime({
+                    value: time,
+                    type: TimeEventChange.Natural,
+                });
+
             if (this.countdown) {
                 await this.metronome.fixedCountdown(this.playbackContext.bpm);
 
                 this.stopWatch.start(() => {
                     const elapsedTime = this.stopWatch.getElapsedTime();
-                    this.consumer.$setCurrentTime({
-                        value: elapsedTime,
-                        type: TimeEventChange.Natural,
-                    });
+                    setCurrentTime(elapsedTime);
                 }, currentTime)!;
 
                 this.playbackContext.master.stop();
             } else {
                 this.stopWatch.start(() => {
                     const elapsedTime = this.stopWatch.getElapsedTime();
+                    setCurrentTime(elapsedTime);
 
-                    this.consumer.$setCurrentTime({
-                        value: elapsedTime,
-                        type: TimeEventChange.Natural,
-                    });
-
-                    this.playbackContext.scheduler.startWithSyncedClock(
+                    this.playbackContext.scheduler.startFrom(
                         msToSeconds(elapsedTime),
                     );
                 }, currentTime)!;

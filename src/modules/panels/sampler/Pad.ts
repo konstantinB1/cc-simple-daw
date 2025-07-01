@@ -30,7 +30,7 @@ export default class Pad extends LitElement {
                 border: 0;
                 background-color: var(--color-accent);
                 width: 100px;
-                height: 70px;
+                height: 60px;
                 transition: background-color 0.4s
                     cubic-bezier(0.165, 0.84, 0.44, 1);
                 box-shadow: 0px 0px 2px #1c1c1c;

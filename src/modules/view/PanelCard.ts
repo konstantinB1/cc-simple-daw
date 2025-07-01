@@ -1,26 +1,31 @@
 import DragController, { DragEvent } from "@/controllers/DragController";
-import { typography } from "@/global-styles";
+
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import type { Panel } from "@/lib/PanelScreenManager";
+
 import WithScreenManager from "@/mixins/WithScreenManager";
+import { clampXToViewport, clampYToViewport } from "@/utils/geometry";
 
 import {
     CSSResult,
     LitElement,
     css,
     html,
+    nothing,
     type PropertyValues,
     type TemplateResult,
 } from "lit";
+
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { createRef, ref, type Ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 const ELEVATED_Z_INDEX = 100;
 const DEFAULT_Z_INDEX = 50;
 
-export interface PanelCardProps {
+export interface PanelCardElement extends HTMLElement {
     startPos?: [number, number];
     cardId: string;
     cardWidth?: string;
@@ -31,12 +36,12 @@ export interface PanelCardProps {
 @customElement("panel-card")
 export default class PanelCard
     extends WithScreenManager(LitElement)
-    implements PanelCardProps
+    implements PanelCardElement
 {
     @property({ type: Array })
     startPos?: [number, number];
 
-    @property({ type: String, attribute: "card-id" })
+    @property({ type: String })
     cardId!: string;
 
     @property({ type: String, attribute: "card-width" })
@@ -53,6 +58,9 @@ export default class PanelCard
 
     @property({ type: Boolean, attribute: true })
     padded: boolean = false;
+
+    @property({ type: String })
+    icon?: string;
 
     @state()
     private isDragging: boolean = false;
@@ -76,11 +84,12 @@ export default class PanelCard
     private panel?: Panel;
 
     static styles: CSSResult[] = [
-        typography,
         css`
             :host {
+                display: block;
                 height: 100%;
             }
+
             .card {
                 display: flex;
                 flex-direction: column;
@@ -99,7 +108,7 @@ export default class PanelCard
             .card-header {
                 box-sizing: border-box;
                 width: 100%;
-                height: 45px;
+                height: 55px;
                 background-color: var(--color-secondary);
                 border-top-left-radius: inherit;
                 border-top-right-radius: inherit;
@@ -145,14 +154,25 @@ export default class PanelCard
                 padding: 0 16px;
             }
 
-            .card.is-focused {
-                border: 1px solid var(--color-tint-primary);
+            .card.card.is-focused {
+                outline: 2px solid var(--color-tint-primary);
+                outline-offset: -2px;
+            }
+
+            .icon-wrapper {
+                padding-left: 16px;
+            }
+
+            .header-title {
+                display: flex;
+                align-items: center;
             }
         `,
     ];
 
     connectedCallback(): void {
         super.connectedCallback();
+        console.log(this.cardId);
         this.panel = this.screenManager.getPanel(this.cardId);
 
         if (this.startPos) {
@@ -161,14 +181,17 @@ export default class PanelCard
     }
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
-        if (!this.screenManager) {
-            return;
-        }
-
         const containerRect =
             this.screenManager.container!.getBoundingClientRect();
 
-        this.dragController = new DragController(this.startPos, containerRect);
+        const [x, y] = this.pos;
+
+        this.pos = [x, y];
+        this.dragController = new DragController(
+            this.computedPos,
+            containerRect,
+        );
+
         this.dragController.setElement(this.cardRef.value!);
 
         this.screenManager.onPanelFocused((panel) => {
@@ -220,9 +243,9 @@ export default class PanelCard
         this.dragController.enabled = !this.isFullscreen;
     }
 
-    private renderFullscreenButton(): TemplateResult {
+    private get renderFullscreenButton(): TemplateResult | symbol {
         if (!this.panel || !this.panel.canFullscreen) {
-            return html``;
+            return nothing;
         }
 
         return html` <icon-button
@@ -234,12 +257,48 @@ export default class PanelCard
         </icon-button>`;
     }
 
-    private getPanelName(): string {
+    private get computedPos(): [number, number] {
+        const [x, y] = this.pos;
+        const containerRect =
+            this.screenManager.container!.getBoundingClientRect();
+        const width = this.cardRef.value?.offsetWidth ?? 0;
+        const height = this.cardRef.value?.offsetHeight ?? 0;
+
+        containerRect.height = containerRect.height - 70; // Adjust for header height
+
+        return [
+            clampXToViewport(x, width),
+            clampYToViewport(containerRect, y, height),
+        ];
+    }
+
+    private get panelName(): string {
         return this.panel ? this.panel.displayName : "Unknown Panel";
     }
 
+    private get renderIcon(): TemplateResult<1> | symbol {
+        if (!this.icon) {
+            return nothing;
+        }
+
+        const Icon = customElements.get(this.icon);
+
+        if (!Icon) {
+            console.warn(`Icon ${this.icon} not found`);
+            return nothing;
+        }
+
+        const element = document.createElement(this.icon) as HTMLElement;
+        element.setAttribute("size", "30");
+
+        return html`<div class="icon-wrapper">
+            ${unsafeHTML(element.outerHTML)}
+        </div>`;
+    }
+
     override render(): TemplateResult {
-        const [x, y] = this.pos;
+        const [x, y] = this.computedPos;
+
         let handleMouseDown = (_: MouseEvent) => {};
 
         if (this.isDraggable && this.dragController) {
@@ -287,15 +346,14 @@ export default class PanelCard
                 class=${headerClasses}
                 @dblclick="${this.handleDoubleClick.bind(this)}"
             >
-                <div>
-                    <span class="card-title typography-300"
-                        >${this.getPanelName()}
-                    </span>
+                <div class="header-title">
+                    ${this.renderIcon}
+                    <text-element variant="tiny" class="card-title">
+                        ${this.panelName}
+                    </text-element>
                 </div>
                 <div class="buttons-wrapper">
-                    <slot name="header">
-                        ${this.renderFullscreenButton()}
-                    </slot>
+                    <slot name="header"> ${this.renderFullscreenButton} </slot>
                 </div>
             </div>
             <div class=${contentClasses}>

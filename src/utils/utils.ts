@@ -9,5 +9,5 @@ export function assert(cond: boolean, msg: string) {
 }
 
 export function fromCamelToPascalCase(str: string): string {
-    return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+    return str.replace(/([a-z])([A-Z0-9])/g, "$1-$2").toLowerCase();
 }

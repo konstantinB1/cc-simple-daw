@@ -2,9 +2,18 @@ import type { VSTInstrument } from "@/modules/vst/VST";
 
 export enum PanelType {
     VSTI,
+    Essential,
     Custom,
     Effect,
 }
+
+export type PanelCreateOptions = {
+    displayName: string;
+    name: string;
+    type: PanelType;
+    startPos?: [number, number];
+    icon?: string; // Optional icon for the panel
+};
 
 export interface FocusablePanel {
     dispatchFocusEvent: (cb: () => void) => void;
@@ -14,6 +23,13 @@ export type FocusPanelEvent = {
     panel?: Panel;
 };
 
+export type PanelElement = HTMLElement &
+    RenderCardOptions & {
+        screenManager: PanelScreenManager;
+        panel: Panel;
+        icon?: string; // Optional icon for the panel
+    };
+
 export type PanelArgs = [
     PanelScreenManager,
     string,
@@ -22,12 +38,6 @@ export type PanelArgs = [
     boolean?,
     boolean?,
 ];
-
-export type PanelHTMLElement = HTMLElement & {
-    screenManagerInstance: PanelScreenManager;
-    startPos?: [number, number];
-    isDraggable?: boolean;
-};
 
 export interface RenderCardOptions {
     cardId: string;
@@ -40,6 +50,8 @@ export interface RenderCardOptions {
 export interface PanelRenderer {
     render(): void;
 }
+
+const DEFAULT_START_POS: [number, number] = [0, 0];
 
 export abstract class Panel extends EventTarget {
     name: string;
@@ -54,6 +66,7 @@ export abstract class Panel extends EventTarget {
     readonly screenManagerInstance: PanelScreenManager;
     readonly type: PanelType;
     readonly canFullscreen: boolean = false;
+    readonly startPos?: [number, number];
 
     constructor(
         screenManagerInstance: PanelScreenManager,
@@ -113,7 +126,7 @@ export class VSTIPanel extends Panel {
         screenManagerInstance: PanelScreenManager,
         displayName: string,
         name: string,
-        element: HTMLElement,
+        element: PanelElement,
         isVisible: boolean = false,
         vstData: VSTInstrument,
         canFullscreen: boolean = false,
@@ -178,24 +191,6 @@ export default class PanelScreenManager extends EventTarget {
         }
 
         return panel;
-    }
-
-    public add(name: string, panel: Panel): PanelScreenManager {
-        if (this.panels.find((p) => p.name === name)) {
-            throw new Error(`Panel with name ${name} already exists.`);
-        }
-
-        this.panels.push(panel);
-
-        this.dispatchEvent(
-            new CustomEvent("panel-added", {
-                detail: { panel },
-                bubbles: true,
-                composed: true,
-            }),
-        );
-
-        return this;
     }
 
     onPanelAdded(callback: (panel: Panel) => void): void {
@@ -285,6 +280,64 @@ export default class PanelScreenManager extends EventTarget {
 
         this.current = panel;
         this.dispatchFocusEvent(panel);
+
+        return panel;
+    }
+
+    public createAndAppend({
+        displayName,
+        name,
+        type,
+        startPos,
+        icon,
+    }: PanelCreateOptions) {
+        let panel: Panel;
+
+        if (this.panels.find((p) => p.name === name)) {
+            throw new Error(`Panel with name ${name} already exists.`);
+        }
+
+        const htmlElement = document.createElement(name) as PanelElement;
+
+        htmlElement.cardId = name;
+        htmlElement.startPos = startPos || DEFAULT_START_POS;
+
+        htmlElement.screenManager = this;
+        htmlElement.icon = icon;
+
+        switch (type) {
+            case PanelType.VSTI:
+                panel = new VSTIPanel(
+                    this,
+                    displayName,
+                    name,
+                    htmlElement,
+                    true,
+                    null,
+                    true,
+                );
+
+                break;
+            case PanelType.Essential:
+                panel = new CustomPanel(
+                    this,
+                    displayName,
+                    name,
+                    htmlElement,
+                    false,
+                );
+                break;
+            default:
+                throw new Error(`Unsupported panel type: ${type}`);
+        }
+
+        htmlElement.panel = panel;
+
+        if (this.container) {
+            this.container.appendChild(htmlElement);
+        }
+
+        this.panels.push(panel);
 
         return panel;
     }

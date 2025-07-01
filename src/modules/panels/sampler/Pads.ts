@@ -183,7 +183,7 @@ export default class Pads extends WithPlaybackContext(
         this.playbackContext.master.addSubChannel(this.samplerMaster);
 
         this.screenManager.onPanelFocused((p) => {
-            if (p?.name === this.nodeName.toLowerCase()) {
+            if (p?.name === "sampler-root") {
                 this.samplerKeyMgr.attachEventListeners();
             } else {
                 this.samplerKeyMgr.detachEventListeners();

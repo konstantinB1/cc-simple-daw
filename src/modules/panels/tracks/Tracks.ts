@@ -1,7 +1,7 @@
-import { CustomPanel } from "@/lib/PanelScreenManager";
+import PanelScreenManager, { Panel } from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import WithScreenManager from "@/mixins/WithScreenManager";
+import { customElement, property, state } from "lit/decorators.js";
+
 import "./TracksView";
 import "./view-canvas/TracksViewCanvas";
 import { SEQUENCER_CANVAS } from "@/features";
@@ -34,7 +34,7 @@ const quantisizeOptions: SelectOption[] = [
 ];
 
 @customElement(tracksPanelElement)
-export default class TracksPanel extends WithScreenManager(LitElement) {
+export default class TracksPanel extends LitElement {
     @consumeProp({ context: playbackContext, subscribe: true })
     sources!: AudioSource[];
 
@@ -44,6 +44,15 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
     @state()
     events: PlayEvent[] = [];
 
+    @property({ type: Object, attribute: false })
+    screenManager!: PanelScreenManager;
+
+    @property({ type: Array })
+    startPos: [number, number] = [0, 0];
+
+    @property({ type: Object })
+    panel!: Panel;
+
     static styles = css`
         .tracks-wrapper {
             position: relative;
@@ -51,21 +60,6 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
             height: 100%;
         }
     `;
-
-    connectedCallback(): void {
-        super.connectedCallback();
-
-        const panel = new CustomPanel(
-            this.screenManager,
-            "Tracks sequencer",
-            "tracks-view",
-            this,
-            true,
-            true,
-        );
-
-        this.screenManager.add(tracksPanelElement, panel);
-    }
 
     private get tracks(): Track[] {
         return this.sources.map((source) => new Track(source));
@@ -78,12 +72,12 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
     }
 
     override render() {
-        console.log(this.events);
         return html`
             <panel-card
-                card-id="tracks-view"
+                .cardId=${tracksPanelElement}
                 card-width="1140px"
                 .isDraggable=${true}
+                .startPos=${this.startPos}
                 .screenManagerInstance=${this.screenManager as any}
             >
                 <card-sub-header>
@@ -101,6 +95,7 @@ export default class TracksPanel extends WithScreenManager(LitElement) {
                         ? html`<tracks-view-canvas
                               .quantisize=${this.currentQuantisize}
                               .tracks=${this.tracks}
+                              .panel=${this.panel}
                           ></tracks-view-canvas>`
                         : html`<tracks-view
                               .tracks=${this.tracks}

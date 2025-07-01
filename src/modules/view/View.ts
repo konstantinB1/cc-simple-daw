@@ -1,4 +1,7 @@
-import PanelScreenManager from "@/lib/PanelScreenManager";
+import PanelScreenManager, {
+    PanelType,
+    type PanelCreateOptions,
+} from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
 import "./PanelCard";
@@ -12,6 +15,30 @@ import channelsContext, {
 } from "@/context/channelsContext";
 import { ContextProvider } from "@lit/context";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
+
+// This is hardcoded list of panels for now.
+// This functionality will be expanded for adding/removing panels dynamically in the future.
+const currentPanels: PanelCreateOptions[] = [
+    {
+        name: "tracks-panel",
+        displayName: "Tracks",
+        type: PanelType.Essential,
+        startPos: [520, 350],
+    },
+    {
+        name: "sampler-root",
+        displayName: "Sampler",
+        type: PanelType.VSTI,
+        startPos: [10, 0],
+    },
+    {
+        name: "simple-keyboard",
+        displayName: "Basic Keyboard",
+        type: PanelType.VSTI,
+        startPos: [520, 0],
+        icon: "keyboard-icon",
+    },
+];
 
 @customElement("app-view")
 export default class AppView extends LitElement {
@@ -35,7 +62,7 @@ export default class AppView extends LitElement {
     static styles = css`
         .container {
             position: relative;
-            height: calc(100vh - 50px);
+            height: calc(100vh - var(--container-top-offset));
             top: 30px;
             overflow: hidden;
         }
@@ -50,6 +77,10 @@ export default class AppView extends LitElement {
         this.keyboardManager.attachEventListeners();
 
         const firstPanel = this.screenManager.panels?.[0];
+
+        currentPanels.forEach(
+            this.screenManager.createAndAppend.bind(this.screenManager),
+        );
 
         this.keyboardManager.addKeys([
             {
@@ -77,9 +108,6 @@ export default class AppView extends LitElement {
         return html` <top-nav
                 .keyboardManager=${this.keyboardManager}
             ></top-nav>
-            <div class="container" id="root-container">
-                <tracks-panel></tracks-panel>
-                <sampler-root></sampler-root>
-            </div>`;
+            <div class="container" id="root-container"></div>`;
     }
 }

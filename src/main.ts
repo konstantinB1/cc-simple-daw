@@ -11,6 +11,7 @@ import "./components/Text";
 import "@/modules/navigation/Navigation";
 
 import "./modules/panels/sampler/Sampler";
+import "./modules/panels/basic-keyboard/BasicKeyboard";
 
 import "./App";
 

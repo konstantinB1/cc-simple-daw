@@ -1,4 +1,3 @@
-import { cssVars } from "@/global-styles";
 import lookupGen from "@gen/track-canvas-lookup.json" assert { type: "json" };
 import {
     ZOOM_THROTTLE_MS,
@@ -200,7 +199,7 @@ export default class TracksCanvasRenderer {
             this.ctx.scale(devicePixelRatio, devicePixelRatio);
         }
 
-        this.ctx.fillStyle = cssVars.tintPrimary;
+        this.ctx.fillStyle = themeVars.colorPrimary;
         this.ctx.clearRect(0, 0, width, height);
 
         // Clamp vertical scroll after bounds change
@@ -414,7 +413,7 @@ export default class TracksCanvasRenderer {
             // Only draw if there's something visible and beat is positive
             if (actualBeatWidth > 0 && beat > 0) {
                 // Draw beat background (clipped)
-                ctx.fillStyle = cssVars.cardColor;
+                ctx.fillStyle = themeVars.cardColor;
                 ctx.fillRect(
                     clippedBeatStart,
                     0,
@@ -453,7 +452,7 @@ export default class TracksCanvasRenderer {
                     }
 
                     if (shouldShowText) {
-                        ctx.fillStyle = cssVars.text;
+                        ctx.fillStyle = themeVars.colorText;
                         ctx.fillText(
                             String(beat),
                             Math.max(clippedBeatStart + 5, beatStart + 10),
@@ -469,7 +468,7 @@ export default class TracksCanvasRenderer {
         const ctx = this.ctx;
 
         // Clear the legend area first
-        ctx.fillStyle = cssVars.cardColor;
+        ctx.fillStyle = themeVars.cardColor;
         ctx.fillRect(
             0,
             TIME_LEGEND_CELL_HEIGHT,
@@ -477,7 +476,7 @@ export default class TracksCanvasRenderer {
             this._bounds.height - TIME_LEGEND_CELL_HEIGHT,
         );
 
-        ctx.fillStyle = cssVars.border;
+        ctx.fillStyle = themeVars.colorBorder;
         ctx.fillRect(
             TRACK_LEGEND_CONTAINER_PX,
             TIME_LEGEND_CELL_HEIGHT,
@@ -542,7 +541,7 @@ export default class TracksCanvasRenderer {
                 ctx.lineTo(TRACK_LEGEND_CONTAINER_PX, trackY);
                 ctx.stroke();
 
-                ctx.fillStyle = cssVars.text;
+                ctx.fillStyle = themeVars.colorText;
                 ctx.fillText(
                     trackName,
                     TRACK_LEGEND_TITLE_X_PADDING_PX,
@@ -560,7 +559,7 @@ export default class TracksCanvasRenderer {
         const ctx = this.ctx;
 
         ctx.lineWidth = 0.5;
-        ctx.strokeStyle = cssVars.cardColor;
+        ctx.strokeStyle = themeVars.cardColor;
 
         ctx.beginPath();
 
@@ -577,14 +576,14 @@ export default class TracksCanvasRenderer {
 
     private drawPlaceholderToolbar() {
         const ctx = this.ctx;
-        ctx.fillStyle = cssVars.cardColor;
+        ctx.fillStyle = themeVars.cardColor;
         ctx.fillRect(
             0,
             0,
             TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE,
             TIME_LEGEND_CELL_HEIGHT,
         );
-        ctx.strokeStyle = cssVars.border;
+        ctx.strokeStyle = themeVars.colorBorder;
         ctx.strokeStyle = "rgba(255,255,255,0.1)";
         ctx.strokeRect(
             0,
@@ -678,10 +677,10 @@ export default class TracksCanvasRenderer {
 
             // Set colors based on playing state
             if (isPlaying) {
-                ctx.fillStyle = cssVars.tintPrimary; // Highlight color for playing events
+                ctx.fillStyle = themeVars.colorTintPrimary;
                 ctx.globalAlpha = 0.8;
             } else {
-                ctx.fillStyle = cssVars.borderLight; // Different color for stopped events
+                ctx.fillStyle = themeVars.colorBorder;
                 ctx.globalAlpha = 0.6;
             }
 
@@ -689,14 +688,16 @@ export default class TracksCanvasRenderer {
             ctx.fillRect(clippedStartX, eventTopY, eventWidth, eventHeight);
 
             // Add a subtle border
-            ctx.strokeStyle = isPlaying ? cssVars.text : cssVars.border;
+            ctx.strokeStyle = isPlaying
+                ? themeVars.colorText
+                : themeVars.colorBorder;
             ctx.lineWidth = 1;
             ctx.globalAlpha = 1;
             ctx.strokeRect(clippedStartX, eventTopY, eventWidth, eventHeight);
 
             // Draw event name if there's enough space
             if (eventWidth > 50) {
-                ctx.fillStyle = cssVars.text;
+                ctx.fillStyle = themeVars.colorText;
                 ctx.font = "10px Montserrat, serif";
                 const textY = eventTopY + eventHeight / 2 + 3;
                 const textX = clippedStartX + 5;
@@ -755,7 +756,7 @@ export default class TracksCanvasRenderer {
         const indicatorY = indicatorTopY + scrollProgress * maxIndicatorTravel;
 
         // Draw scrollbar track (background)
-        ctx.fillStyle = cssVars.border;
+        ctx.fillStyle = themeVars.colorBorder;
         ctx.fillRect(
             indicatorX,
             indicatorTopY,
@@ -805,7 +806,7 @@ export default class TracksCanvasRenderer {
         }
 
         // Draw playhead line
-        ctx.strokeStyle = cssVars.tintPrimary;
+        ctx.strokeStyle = themeVars.colorTintPrimary;
         ctx.lineWidth = 0.8;
         ctx.beginPath();
         ctx.moveTo(playheadX, 0);
@@ -871,13 +872,11 @@ export default class TracksCanvasRenderer {
 
         const maxScrollX = Math.max(0, totalVirtualWidth - scrollableWidth);
 
-        // Simple, direct update without complex physics
         this.viewportOffsetX = Math.max(
             0,
             Math.min(maxScrollX, this.viewportOffsetX + deltaX),
         );
 
-        // Direct render for immediate response
         this.render();
     }
 

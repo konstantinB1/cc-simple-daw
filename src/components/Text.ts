@@ -18,6 +18,7 @@ export default class Text extends LitElement {
         | "h5"
         | "body1"
         | "body2"
+        | "tiny"
         | "caption"
         | "mono" = "body1";
 
@@ -105,6 +106,14 @@ export default class Text extends LitElement {
                 font-weight: 400;
                 font-style: normal;
                 font-size: 0.875rem; /* 14px */
+            }
+
+            .variant-tiny {
+                font-family: "Montserrat", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: 400;
+                font-style: normal;
+                font-size: 0.75rem; /* 12px */
             }
 
             .variant-caption {

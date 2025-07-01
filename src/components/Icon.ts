@@ -15,6 +15,7 @@ import "./icons/ClockIcon";
 import "./icons/ArrowDownIcon";
 import "./icons/IconFullscreen";
 import "./icons/PanelsIcon";
+import "./icons/KeyboardIcon";
 
 export interface SVGIconInterface {
     name: string;

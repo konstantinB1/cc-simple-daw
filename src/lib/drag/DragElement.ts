@@ -1,5 +1,3 @@
-import { clampXToViewport, clampYToViewport } from "@/utils/geometry";
-
 const HOLD_TIMEOUT_MS = 100;
 
 export enum DragEvent {
@@ -16,35 +14,7 @@ export type DragControllerData = {
 const Y_BOTTOM_PADDING = 5;
 const X_PADDING = 5;
 
-export function getAxisBoundaries(
-    containerRect: DOMRect,
-    pos: number,
-    axis: "x" | "y",
-): number {
-    const viewportWidth = document.documentElement.clientWidth;
-    const viewportHeight = containerRect.height;
-
-    if (axis === "x") {
-        if (pos < X_PADDING) {
-            return X_PADDING;
-        }
-        if (pos + X_PADDING > viewportWidth) {
-            return viewportWidth - X_PADDING;
-        }
-    } else if (axis === "y") {
-        const top = containerRect.top;
-        if (pos < top) {
-            return top + Y_BOTTOM_PADDING;
-        }
-        if (pos + Y_BOTTOM_PADDING > viewportHeight) {
-            return viewportHeight - Y_BOTTOM_PADDING - top;
-        }
-    }
-
-    return pos;
-}
-
-export default class DragController extends EventTarget {
+export default class DragElement extends EventTarget {
     private holdTimeout: NodeJS.Timeout | null = null;
     private dragOffset: [number, number] = [0, 0];
     private pos: [number, number] = [0, 0];
@@ -54,10 +24,11 @@ export default class DragController extends EventTarget {
     private element?: HTMLElement;
     private readonly containerRect: DOMRect;
 
-    enabled: boolean = true;
+    private get rect(): DOMRect | undefined {
+        return this.element?.getBoundingClientRect();
+    }
 
-    private pendingMeasure = true;
-    private startPos: [number, number] = [0, 0];
+    enabled: boolean = true;
 
     constructor(startPos: [number, number] = [0, 0], containerRect: DOMRect) {
         super();
@@ -68,38 +39,12 @@ export default class DragController extends EventTarget {
         this.handleWindowMouseUp = this.handleWindowMouseUp.bind(this);
     }
 
-    private get elRect(): DOMRect | undefined {
-        return this.element?.getBoundingClientRect();
-    }
-
     public setElement(element: HTMLElement): void {
         this.element = element;
-
-        requestAnimationFrame(() => {
-            if (this.pendingMeasure) {
-                this.pendingMeasure = false;
-                const [startX, startY] = this.startPos;
-
-                this.pos = [this.getX(startX), this.getY(startY)];
-            }
-        });
     }
 
     public setStartPos([x, y]: [number, number]): void {
-        if (!this.element) {
-            this.pendingMeasure = true;
-            this.startPos = [this.getX(x), this.getY(y)];
-
-            this.dispatchEvent(
-                new CustomEvent("start-pos-change", {
-                    detail: this.startPos,
-                    bubbles: true,
-                    composed: true,
-                }),
-            );
-        } else {
-            this.pos = [this.getX(x), this.getY(y)];
-        }
+        this.pos = [this.getX(x), this.getY(y)];
     }
 
     public handleMouseDown(event: MouseEvent): void {
@@ -147,17 +92,38 @@ export default class DragController extends EventTarget {
         });
     };
 
+    private get height(): number {
+        return this.rect?.height ?? 0;
+    }
+
     private getY(pos: number): number {
-        return clampYToViewport(
-            this.containerRect,
-            pos,
-            this.elRect?.height ?? 0,
-            Y_BOTTOM_PADDING,
-        );
+        const viewportHeight = this.containerRect.height;
+        const top = this.containerRect.top;
+
+        if (pos < top) {
+            return top + Y_BOTTOM_PADDING;
+        }
+
+        if (pos + this.height > viewportHeight) {
+            return viewportHeight - this.height - top;
+        }
+
+        return pos;
     }
 
     private getX(pos: number): number {
-        return clampXToViewport(pos, this.elRect?.width ?? 0, X_PADDING);
+        const width = this.element?.getBoundingClientRect().width!;
+        const viewportWidth = document.documentElement.clientWidth;
+
+        if (pos + width > viewportWidth) {
+            return viewportWidth - width - X_PADDING;
+        }
+
+        if (pos < X_PADDING) {
+            return X_PADDING;
+        }
+
+        return pos;
     }
 
     private triggerDragEvent(event: DragControllerData): void {

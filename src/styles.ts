@@ -6,26 +6,38 @@ import Color from "color";
 
 const globalStyles = new CSSStyleSheet();
 
-const basePrimary = Color("#d95656");
+const basePrimary = Color("#aac7d2");
+
+export const boxShadows = {
+    elevated1: "0 1px 5px rgba(0, 0, 0, 0.4)",
+    elevated2: "0 2px 10px rgba(0, 0, 0, 0.4)",
+    elevated3: "0 4px 15px rgba(0, 0, 0, 0.4)",
+};
+
+export const layoutVars = {
+    containerTopOffset: "15px",
+};
 
 export const themeVars = {
     colorPrimary: "#1d1d1d",
-    colorSecondary: "#171717",
-    colorAccent: "hwb(0 13% 87%)",
+    colorSecondary: "#181818",
+    colorAccent: "#363636",
     colorText: "#ffffff",
-    colorBackground: "#202020",
+    colorBackground: "#222222",
     containerWidth: "1200px",
-    containerHeight: "60vh",
-    cardColor: "#414141",
+    cardColor: "#2c2c2c",
     colorTintPrimary: basePrimary.hex(),
     colorTintPrimaryActive: basePrimary.darken(1.1).hex(),
-    borderRadius: "2px",
-    navBgColor: "#000000",
+    colorTintDark: basePrimary.darken(0.2).hex(),
+    borderRadius: "7px",
+    navBgColor: "#595959",
     colorSuccess: "#5ace5e",
     colorError: "#f44336",
     colorWarning: "#ff9800",
     colorInfo: "#2196f3",
     colorBorder: "#333333",
+    ...boxShadows,
+    ...layoutVars,
 };
 
 export const colorClasses = css`

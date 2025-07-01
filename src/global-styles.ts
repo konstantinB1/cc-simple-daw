@@ -1,25 +1,5 @@
 import { css } from "lit";
 
-export const cssVars = {
-    colorPrimary: "#1d1d1d",
-    colorSecondary: "#171717",
-    colorAccent: "#363636",
-    text: "#ffffff",
-    background: "#181818",
-    containerWidth: "1200px",
-    containerHeight: "60vh",
-    cardColor: "#2c2c2c",
-    tintPrimary: "#f74323",
-    borderRadius: "10px",
-    navBgColor: "#595959",
-    success: "#5ace5e",
-    error: "#ff1e0e",
-    warning: "#ff9800",
-    info: "#2196f3",
-    border: "#333333",
-    borderLight: "#444444",
-};
-
 export const typography = css`
     .typography-100 {
         font-family: "Montserrat", sans-serif;

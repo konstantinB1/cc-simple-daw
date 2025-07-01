@@ -1,5 +1,6 @@
 import type { PlaybackContextStore } from "@/context/playbackContext";
 import type AudioSource from "./AudioSource";
+import type { PlaybackTime } from "@/types";
 
 export type QueueItemParams = {
     startTime: number;
@@ -56,12 +57,11 @@ export default class Scheduler {
     // on real time updates for the queue scheduling
     // This method needs to be called on each "tick" of the clock
     // (ie window.requestAnimationFrame + performance.now())
-    startWithSyncedClock(currentTime: number): void {
+    startFrom(currentTime: PlaybackTime): void {
         if (this.prevTimeWindow === 0) {
             // If this is the first call, we need to reset the previous time window
             this.prevTimeWindow = currentTime;
         }
-        console.log("Scheduler tick at", currentTime);
 
         this.playbackQueue.forEach((cur) => {
             if (
@@ -69,6 +69,12 @@ export default class Scheduler {
                 cur.params.startTime < currentTime + this.lookahead &&
                 cur.params.startTime >= this.prevTimeWindow
             ) {
+                console.log(
+                    "Scheduling item",
+                    cur.params.id,
+                    "at",
+                    cur.params.startTime,
+                );
                 this.tick(currentTime, cur);
 
                 cur.params.scheduled = true;

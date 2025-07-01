@@ -1,4 +1,4 @@
-import { css, html, LitElement, type PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import "@modules/view/View";
@@ -10,15 +10,11 @@ import {
 import { ContextProvider } from "@lit/context";
 import { themeVars } from "./styles";
 import StyleManager, { Theme } from "./utils/stylesheets";
-import { cssVars } from "./global-styles";
+
 import { stylesContext } from "./context/stylesContext";
 
 export function createTheme(context: LitElement) {
     const theme = new Theme(themeVars);
-
-    Object.entries(cssVars).forEach(([key, value]) => {
-        theme.registerVariable(key, value);
-    });
 
     theme.attachToHost();
 
@@ -58,7 +54,6 @@ export class App extends LitElement {
     render() {
         return html`
             <main class="container">
-                <text-element .variant=${"h1"}>hello world</text-element>
                 <app-view></app-view>
             </main>
         `;

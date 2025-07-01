@@ -1,56 +1,47 @@
-import { VSTIPanel } from "@/lib/PanelScreenManager";
 import "./KeyboardView";
 import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-import { customElement } from "lit/decorators.js";
-import { VSTInstrument } from "@/modules/vst/VST";
-import WithScreenManager from "@/mixins/WithScreenManager";
+import { customElement, property } from "lit/decorators.js";
 
-const elementName = "keyboard-view";
+import type { Panel } from "@/lib/PanelScreenManager";
+import type PanelScreenManager from "@/lib/PanelScreenManager";
+
+const elementName = "simple-keyboard";
 
 @customElement(elementName)
-export default class SamplerPanel extends WithScreenManager(LitElement) {
+export default class SamplerPanel extends LitElement {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
 
-    connectedCallback(): void {
-        super.connectedCallback();
+    @property({ type: Array })
+    startPos: [number, number] = [0, 0];
 
-        const vstInstrument = new VSTInstrument("Sampler", "sampler");
+    @property({ type: String })
+    icon: string = "keyboard-icon";
 
-        this.screenManager.add(
-            elementName,
-            new VSTIPanel(
-                this.screenManager,
-                "sampler-view",
-                "Virtual Keyboard",
-                this,
-                true,
-                vstInstrument,
-            ),
-        );
-    }
+    @property({ type: Object })
+    panel!: Panel;
 
-    private onSamplePlay(_: CustomEvent): void {}
+    @property({ type: Object })
+    screenManager!: PanelScreenManager;
 
     override render() {
         return html`
-            <div class="sampler-root">
-                <panel-card
-                    card-height="auto"
-                    card-width="500px"
-                    card-id="sampler-view"
-                    .startPos=${[10, 80] as const}
-                    .isDraggable=${true}
-                    padded
-                    .keyboardManager=${this.keyboardManager}
-                >
-                    <sampler-view
-                        .keyManager=${this.keyboardManager}
-                        @sample-play=${this.onSamplePlay.bind(this)}
-                    ></sampler-view>
-                </panel-card>
-            </div>
+            <panel-card
+                card-height="220px"
+                card-width="1140px"
+                .cardId=${elementName}
+                .icon=${this.icon}
+                .startPos=${this.startPos}
+                .isDraggable=${true}
+                padded
+                .keyboardManager=${this.keyboardManager}
+            >
+                <keyboard-view
+                    .panel=${this.panel}
+                    .screenManager=${this.screenManager}
+                ></keyboard-view>
+            </panel-card>
         `;
     }
 }

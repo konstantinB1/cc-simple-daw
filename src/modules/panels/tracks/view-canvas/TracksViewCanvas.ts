@@ -16,6 +16,7 @@ import { classMap } from "lit/directives/class-map.js";
 import type Track from "@/lib/AudioTrack";
 import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
 import type Scheduler from "@/lib/Scheduler";
+import type { Panel } from "@/lib/PanelScreenManager";
 
 @customElement("tracks-view-canvas")
 export default class TracksViewCanvas extends WithScreenManager(LitElement) {
@@ -24,6 +25,9 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
 
     @property({ type: String })
     quantisize?: string;
+
+    @property({ type: Object })
+    panel!: Panel;
 
     @query("#tracks-view-canvas")
     private canvas!: HTMLCanvasElement;
@@ -39,6 +43,9 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
 
     @consumeProp({ context: playbackContext })
     scheduler!: Scheduler;
+
+    @consumeProp({ context: playbackContext, subscribe: true })
+    isRecording!: boolean;
 
     @state()
     isFullscreen: boolean = false;
@@ -103,9 +110,7 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
             this.tracksContainer,
         );
 
-        const panel = this.screenManager.getPanel("tracks-view");
-
-        panel?.onFullscreenChange((isFullscreen) => {
+        this.panel?.onFullscreenChange((isFullscreen) => {
             this.isFullscreen = isFullscreen;
 
             this.renderHelper.setTracks(this.tracks);
@@ -121,6 +126,10 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
     }
 
     private handlePlayEvent(event: CustomEvent<PlayEvent>, track: Track): void {
+        if (!this.isRecording) {
+            return;
+        }
+
         this.renderHelper.addEvent(event.detail, this.currentTime, track.id);
 
         this.scheduler.addToQueue(track.channel, {
