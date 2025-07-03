@@ -1,5 +1,4 @@
-import { typography } from "@/global-styles";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -22,7 +21,6 @@ export default class IconButton extends LitElement {
     color: "primary" | "white" | "tool" = "primary";
 
     static styles = [
-        typography,
         css`
             .icon-button {
                 display: flex;
@@ -136,10 +134,10 @@ export default class IconButton extends LitElement {
                     <slot></slot>
                 </button>
                 ${this.labelText
-                    ? html`<span class="label-text typography-400"
-                          >${this.labelText}</span
+                    ? html`<text-element variant="tiny"
+                          >${this.labelText}</text-element
                       >`
-                    : ""}
+                    : nothing}
             </div>
         `;
     }

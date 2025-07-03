@@ -1,11 +1,11 @@
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import type { Track } from "./TracksView";
+
 import { consumeProp } from "@/decorators/sync";
 import { playbackContext, TimeEventChange } from "@/context/playbackContext";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
-import type { PlayEvent, StopEvent } from "@/lib/AudioSource";
+import type { PlayEvent } from "@/lib/AudioSource";
 import { msToSeconds } from "@/utils/TimeUtils";
 import type Scheduler from "@/lib/Scheduler";
 import { getPlayheadPosition } from "./TimeTracker";
@@ -131,6 +131,7 @@ export default class TrackEvents extends LitElement {
         this.events.forEach((ev) => {
             const startTime = msToSeconds(ev.startTime);
             const endTime = msToSeconds(ev.endTime ?? 0);
+            console.log(ev.startTime, ev.endTime);
 
             this.scheduler.addToQueue(this.track.channel, {
                 startTime,

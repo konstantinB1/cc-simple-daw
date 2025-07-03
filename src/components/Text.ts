@@ -38,6 +38,9 @@ export default class Text extends LitElement {
     @property({ type: String })
     spacing: "none" | "small" | "medium" | "large" = "small";
 
+    @property({ type: Boolean, attribute: "overflow" })
+    overflow: boolean = false;
+
     static styles = [
         colorClasses,
         css`
@@ -97,7 +100,7 @@ export default class Text extends LitElement {
                 font-optical-sizing: auto;
                 font-weight: 400;
                 font-style: normal;
-                font-size: 1rem; /* 16px */
+                font-size: 0.8em; /* 14px */
             }
 
             .variant-body2 {
@@ -105,7 +108,7 @@ export default class Text extends LitElement {
                 font-optical-sizing: auto;
                 font-weight: 400;
                 font-style: normal;
-                font-size: 0.875rem; /* 14px */
+                font-size: 0.75rem; /* 12px */
             }
 
             .variant-tiny {
@@ -203,6 +206,12 @@ export default class Text extends LitElement {
                 font-style: normal;
                 letter-spacing: 0.1em; /* 0.025em */
             }
+
+            .overflow {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
         `,
     ];
 
@@ -245,6 +254,7 @@ export default class Text extends LitElement {
             `color-${this.color}`,
             `size-${this.size ?? ""}`,
             `spacing-${this.spacing}`,
+            this.overflow ? "overflow" : "",
         ]
             .filter(Boolean)
             .join(" ");

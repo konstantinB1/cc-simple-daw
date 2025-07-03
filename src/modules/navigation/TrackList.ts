@@ -68,11 +68,10 @@ export default class TrackList extends LitElement {
             <div class="track-list">
                 <icon-button
                     .isActive="${this.isOpen}"
-                    size=${35}
-                    label-text="Tracks List"
+                    size=${40}
                     @handle-click="${this.handleClick}"
                 >
-                    <panels-icon size=${19}></panels-icon>
+                    <panels-icon size=${20}></panels-icon>
                 </icon-button>
             </div>
         `;

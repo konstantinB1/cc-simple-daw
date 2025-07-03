@@ -11,15 +11,16 @@ import {
 import { customElement, query, property, state } from "lit/decorators.js";
 
 import TracksCanvasRenderer from "./TracksCanvasRenderer";
-import WithScreenManager from "@/mixins/WithScreenManager";
+
 import { classMap } from "lit/directives/class-map.js";
 import type Track from "@/lib/AudioTrack";
 import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
 import type Scheduler from "@/lib/Scheduler";
 import type { Panel } from "@/lib/PanelScreenManager";
+import { msToSeconds } from "@/utils/TimeUtils";
 
 @customElement("tracks-view-canvas")
-export default class TracksViewCanvas extends WithScreenManager(LitElement) {
+export default class TracksViewCanvas extends LitElement {
     @property({ type: Array })
     tracks: Track[] = [];
 
@@ -54,6 +55,10 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
     eventData: AudioEvent[] = [];
 
     private renderHelper!: TracksCanvasRenderer;
+
+    private get currentTimeSeconds(): number {
+        return msToSeconds(this.currentTime);
+    }
 
     static styles = [
         css`
@@ -133,9 +138,10 @@ export default class TracksViewCanvas extends WithScreenManager(LitElement) {
         this.renderHelper.addEvent(event.detail, this.currentTime, track.id);
 
         this.scheduler.addToQueue(track.channel, {
-            startTime: this.currentTime,
+            startTime: this.currentTimeSeconds,
             endTime: event.detail.duration,
-            id: track.id,
+            id: event.detail.id,
+            isPlaying: event.detail.isPlaying,
         });
 
         this.renderHelper.render();

@@ -170,8 +170,8 @@ export default class Select extends LitElement {
                             })}"
                             @click="${() => this.clickOption(option, i)}"
                         >
-                            <span class="typography-300 value-text"
-                                >${option.label}</span
+                            <text-element class="value-text" variant="body2"
+                                >${option.label}</text-element
                             >
                         </div>
                     `,

@@ -7,6 +7,7 @@ export type QueueItemParams = {
     endTime?: number;
     id: string;
     scheduled?: boolean;
+    isPlaying?: boolean;
 };
 
 export type QueueItem = {
@@ -27,7 +28,7 @@ export default class Scheduler {
 
     private lookahead: number;
 
-    private prevTimeWindow: number = 0;
+    private prevTimeWindow: PlaybackTime = 0;
 
     constructor(store: PlaybackContextStore, lookahead: number = 0.1) {
         this.store = store;
@@ -41,15 +42,20 @@ export default class Scheduler {
         return this.playbackQueue.some((item) => item.params.id === id);
     }
 
+    private getItemIndex(id: string): number {
+        return this.playbackQueue.findIndex((item) => item.params.id === id);
+    }
+
     addToQueue(audioSource: AudioSource, params: QueueItemParams): void {
         if (this.hasId(params.id)) {
-            return;
+            const id = this.getItemIndex(params.id);
+            this.playbackQueue.splice(id, 1, { audioSource, params });
+        } else {
+            this.playbackQueue.push({
+                params,
+                audioSource,
+            });
         }
-
-        this.playbackQueue.push({
-            params,
-            audioSource,
-        });
     }
 
     // Sync with external clock (Stopwatch) so we don't need
@@ -63,18 +69,14 @@ export default class Scheduler {
             this.prevTimeWindow = currentTime;
         }
 
+        console.log(this.playbackQueue, currentTime);
+
         this.playbackQueue.forEach((cur) => {
             if (
                 !cur.params.scheduled &&
                 cur.params.startTime < currentTime + this.lookahead &&
                 cur.params.startTime >= this.prevTimeWindow
             ) {
-                console.log(
-                    "Scheduling item",
-                    cur.params.id,
-                    "at",
-                    cur.params.startTime,
-                );
                 this.tick(currentTime, cur);
 
                 cur.params.scheduled = true;
@@ -96,6 +98,11 @@ export default class Scheduler {
         const endTime = params.endTime
             ? when + (params.endTime - params.startTime)
             : undefined;
+
+        console.log(
+            `Scheduling audio source with ID: ${params.id} at time: ${when.toFixed(3)}s`,
+            `End time: ${endTime ? endTime.toFixed(3) : "not specified"}`,
+        );
 
         audioSource.play(when, 0, endTime, false);
 

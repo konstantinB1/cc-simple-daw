@@ -190,6 +190,8 @@ export default class PanelCard
         this.dragController = new DragController(
             this.computedPos,
             containerRect,
+            (e: MouseEvent) =>
+                (e.target as HTMLElement).classList.contains("card-draggable"),
         );
 
         this.dragController.setElement(this.cardRef.value!);

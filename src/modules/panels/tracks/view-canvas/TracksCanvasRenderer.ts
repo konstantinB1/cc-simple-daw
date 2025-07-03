@@ -94,7 +94,6 @@ export default class TracksCanvasRenderer {
 
     setBPM(bpm: number) {
         this.bpm = bpm;
-        this.render();
     }
 
     setTracks(tracks: Track[]) {

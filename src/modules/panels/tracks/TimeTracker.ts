@@ -7,7 +7,6 @@ import {
 } from "lit";
 import { MAX_TIME_BEATS, BEAT_WIDTH } from "./TracksView";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { typography } from "@/global-styles";
 
 import { consumeProp } from "@/decorators/sync";
 import { playbackContext, TimeEventChange } from "@/context/playbackContext";
@@ -55,7 +54,6 @@ export default class TimeTracker extends LitElement {
     private seeking: boolean = false;
 
     static styles = [
-        typography,
         css`
             .time-container {
                 width: 100%;

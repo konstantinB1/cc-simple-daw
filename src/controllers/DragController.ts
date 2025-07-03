@@ -1,6 +1,6 @@
 import { clampXToViewport, clampYToViewport } from "@/utils/geometry";
 
-const HOLD_TIMEOUT_MS = 100;
+const HOLD_TIMEOUT_MS = 15;
 
 export enum DragEvent {
     Start,
@@ -59,10 +59,17 @@ export default class DragController extends EventTarget {
     private pendingMeasure = true;
     private startPos: [number, number] = [0, 0];
 
-    constructor(startPos: [number, number] = [0, 0], containerRect: DOMRect) {
+    private dragBoundary?: (e: MouseEvent) => boolean;
+
+    constructor(
+        startPos: [number, number] = [0, 0],
+        containerRect: DOMRect,
+        dragBoundary?: (e: MouseEvent) => boolean,
+    ) {
         super();
         this.containerRect = containerRect;
 
+        this.dragBoundary = dragBoundary;
         this.setStartPos(startPos);
         this.handleWindowMouseMove = this.handleWindowMouseMove.bind(this);
         this.handleWindowMouseUp = this.handleWindowMouseUp.bind(this);
@@ -103,12 +110,7 @@ export default class DragController extends EventTarget {
     }
 
     public handleMouseDown(event: MouseEvent): void {
-        if (
-            !(event.target as HTMLElement).classList.contains(
-                "card-draggable",
-            ) ||
-            !this.enabled
-        ) {
+        if (!this.dragBoundary?.(event) || !this.enabled) {
             return;
         }
 

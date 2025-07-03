@@ -3,7 +3,7 @@ import { customElement } from "lit/decorators.js";
 import IconConsumerMixin from "./IconConsumerMixin";
 
 @customElement("arrow-down-icon")
-export default class ClockIcon extends IconConsumerMixin(LitElement) {
+export default class ArrowDownIcon extends IconConsumerMixin(LitElement) {
     static styles = css`
         svg {
             width: 100%;

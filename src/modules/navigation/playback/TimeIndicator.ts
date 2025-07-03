@@ -10,7 +10,7 @@ export default class TimeIndicator extends WithPlaybackContext(LitElement) {
         litStyles,
         css`
             .time-indicator {
-                width: 130px;
+                width: 200px;
                 height: 40px;
             }
         `,

@@ -63,7 +63,7 @@ export default class AppView extends LitElement {
         .container {
             position: relative;
             height: calc(100vh - var(--container-top-offset));
-            top: 30px;
+            top: 35px;
             overflow: hidden;
         }
     `;
@@ -106,6 +106,7 @@ export default class AppView extends LitElement {
 
     override render() {
         return html` <top-nav
+                .screenManager=${this.screenManager}
                 .keyboardManager=${this.keyboardManager}
             ></top-nav>
             <div class="container" id="root-container"></div>`;

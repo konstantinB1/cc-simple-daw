@@ -7,7 +7,6 @@ import {
     type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { typography } from "../global-styles";
 import { portal } from "lit-modal-portal";
 import type { AnchorElementProps, AnchorPosition } from "./AnchorElement";
 import { WithStyles } from "@/styles";
@@ -73,7 +72,6 @@ export default class Select
     }
 
     static styles = [
-        typography,
         css`
             .select-container {
                 box-sizing: border-box;

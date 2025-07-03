@@ -93,6 +93,7 @@ export default class TracksPanel extends LitElement {
                 <div class="tracks-wrapper">
                     ${SEQUENCER_CANVAS
                         ? html`<tracks-view-canvas
+                              .screenManager=${this.screenManager}
                               .quantisize=${this.currentQuantisize}
                               .tracks=${this.tracks}
                               .panel=${this.panel}

@@ -1,4 +1,4 @@
-import type { VSTInstrument } from "@/modules/vst/VST";
+import { VSTInstrument } from "@/modules/vst/VST";
 
 export enum PanelType {
     VSTI,
@@ -15,10 +15,6 @@ export type PanelCreateOptions = {
     icon?: string; // Optional icon for the panel
 };
 
-export interface FocusablePanel {
-    dispatchFocusEvent: (cb: () => void) => void;
-}
-
 export type FocusPanelEvent = {
     panel?: Panel;
 };
@@ -29,15 +25,6 @@ export type PanelElement = HTMLElement &
         panel: Panel;
         icon?: string;
     };
-
-export type PanelArgs = [
-    PanelScreenManager,
-    string,
-    HTMLElement,
-    PanelType,
-    boolean?,
-    boolean?,
-];
 
 export interface RenderCardOptions {
     cardId: string;
@@ -58,6 +45,7 @@ export abstract class Panel extends EventTarget {
     element: HTMLElement;
     isVisible: boolean;
     isFullscreen: boolean = false;
+    isMinimized: boolean = false;
 
     readonly displayName: string;
 
@@ -313,7 +301,7 @@ export default class PanelScreenManager extends EventTarget {
                     name,
                     htmlElement,
                     true,
-                    null,
+                    new VSTInstrument(name, name, []), // Placeholder for VST data
                     true,
                 );
 
@@ -342,9 +330,4 @@ export default class PanelScreenManager extends EventTarget {
 
         return panel;
     }
-}
-
-export interface PanelCardRenderer extends RenderCardOptions {
-    screenManagerInstance: PanelScreenManager;
-    contents: HTMLElement;
 }
