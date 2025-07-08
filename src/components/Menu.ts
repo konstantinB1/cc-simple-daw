@@ -10,7 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators.js";
 import { portal } from "lit-modal-portal";
 import type { AnchorElementProps, AnchorPosition } from "./AnchorElement";
-import { WithStyles } from "@/styles";
+import type { DirectiveResult } from "lit/async-directive.js";
 
 export type SelectOption = {
     value: string;
@@ -28,10 +28,7 @@ export enum SelectSize {
 }
 
 @customElement("menu-list")
-export default class MenuList
-    extends WithStyles(LitElement)
-    implements AnchorElementProps
-{
+export default class MenuList extends LitElement implements AnchorElementProps {
     @property({ type: String })
     anchor: AnchorPosition = "bottom-left";
 
@@ -260,7 +257,7 @@ export default class MenuList
         container.addEventListener("click", this.backdropClick);
     }
 
-    private get renderBackdrop(): TemplateResult | typeof nothing {
+    private get renderBackdrop(): DirectiveResult | typeof nothing {
         if (!this.backdrop) {
             return nothing;
         }

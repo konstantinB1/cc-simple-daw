@@ -1,36 +1,20 @@
 import { css, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
-import { playbackContext } from "./context/playbackContext";
-import { ContextProvider } from "@lit/context";
 import { createGlobalStylesheet, themeVars } from "./styles";
 import StyleManager, { Theme } from "./utils/stylesheets";
 
-import { stylesContext } from "./context/stylesContext";
-import { configContext, ConfigContextStore } from "./context/configContext";
-
-import { html } from "@lit-labs/signals";
+import { html } from "lit";
 import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
 import AppView from "@modules/view/View";
 
-export function createTheme(context: LitElement) {
+export function createTheme() {
     const theme = new Theme(themeVars);
-
     theme.attachToHost();
-
-    const mgr = new StyleManager(theme);
-
-    return new ContextProvider(context, {
-        context: stylesContext,
-        initialValue: mgr,
-    });
+    return new StyleManager(theme);
 }
 
-export type AppElement = LitElement & {
-    playbackProvider: ContextProvider<typeof playbackContext>;
-    stylesProvider: ContextProvider<typeof stylesContext>;
-    configContext: ContextProvider<typeof configContext>;
-};
+export type AppElement = LitElement;
 
 @customElement("root-app")
 export class App extends ScopedRegistryHost(LitElement) {
@@ -38,15 +22,9 @@ export class App extends ScopedRegistryHost(LitElement) {
         "app-view": AppView,
     };
 
-    stylesProvider: ContextProvider<typeof stylesContext> = createTheme(this);
-
-    configContext = new ContextProvider(this, {
-        context: configContext,
-        initialValue: new ConfigContextStore(),
-    });
-
     connectedCallback(): void {
         super.connectedCallback();
+        createTheme();
         createGlobalStylesheet();
     }
 

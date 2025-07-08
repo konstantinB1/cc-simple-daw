@@ -1,4 +1,4 @@
-import { css, LitElement, type PropertyValues, type TemplateResult } from "lit";
+import { css, html, LitElement, type PropertyValues, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import "./BpmPicker";
@@ -6,8 +6,6 @@ import "./TimeIndicator";
 import Metronome from "./Metronome";
 
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-
-import { html } from "@lit-labs/signals";
 
 import { store } from "@/store/AppStore";
 import WatchController, { storeSubscriber } from "@/store/StoreLit";

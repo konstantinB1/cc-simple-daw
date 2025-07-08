@@ -1,20 +1,12 @@
-import PanelScreenManager, {
-    PanelType,
-    type PanelCreateOptions,
-} from "@/lib/PanelScreenManager";
+import { PanelType, type PanelCreateOptions } from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
 import { query } from "lit/decorators.js";
 import "./PanelCard";
 import "../panels/tracks/Tracks";
 import "../panels/sampler/Sampler";
-import { provide } from "@lit/context";
-import screenManagerContext from "@/context/screenManagerContext";
 
-import channelsContext, {
-    attachChannelContextEvents,
-} from "@/context/channelsContext";
-import { ContextProvider } from "@lit/context";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
+import { store } from "@/store/AppStore";
 
 const currentPanels: PanelCreateOptions[] = [
     {
@@ -39,18 +31,6 @@ const currentPanels: PanelCreateOptions[] = [
 ];
 
 export default class AppView extends LitElement {
-    @provide({ context: screenManagerContext })
-    screenManager: PanelScreenManager = new PanelScreenManager();
-
-    channelsCtx: ContextProvider<typeof channelsContext> = new ContextProvider<
-        typeof channelsContext
-    >(this, {
-        context: channelsContext,
-        initialValue: {
-            channels: [],
-        },
-    });
-
     keyboardManager: LayeredKeyboardManager = new LayeredKeyboardManager();
 
     @query("#root-container")
@@ -65,11 +45,14 @@ export default class AppView extends LitElement {
         }
     `;
 
+    private get screenManager() {
+        return store.getState().screenManager;
+    }
+
     firstUpdated(): void {
         super.connectedCallback();
 
         this.screenManager.container = this.container;
-        attachChannelContextEvents(this, this.channelsCtx);
 
         this.keyboardManager.attachEventListeners();
 

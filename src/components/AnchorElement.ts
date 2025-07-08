@@ -1,5 +1,5 @@
-import { WithStyles } from "@/styles";
 import { beziers, slide, type SlideAnimation } from "@/utils/animate";
+import { TempStylesheet } from "@/utils/stylesheets";
 import {
     CSSResult,
     LitElement,
@@ -73,10 +73,7 @@ export default function getAnchorPosition(
 }
 
 @customElement("anchor-element")
-export class AnchorElement
-    extends WithStyles(LitElement)
-    implements AnchorElementProps
-{
+export class AnchorElement extends LitElement implements AnchorElementProps {
     @property({ type: String, attribute: "anchor" })
     anchor!: AnchorPosition;
 
@@ -120,10 +117,10 @@ export class AnchorElement
         super.firstUpdated(_changedProperties);
 
         if (this.styles) {
-            this.styleManager.createStyleElement(
+            new TempStylesheet(
                 "anchor-element-styles",
                 this.styles,
-            );
+            ).attachToHost();
         }
     }
 

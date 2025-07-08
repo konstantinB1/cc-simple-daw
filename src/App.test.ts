@@ -43,9 +43,4 @@ describe("App", () => {
         expect(hoisted.createGlobalStylesheet).toHaveBeenCalled();
         expect(element.shadowRoot?.querySelector("style")).toBeDefined();
     });
-
-    it("should have a signal context provider with initial value", () => {
-        const signalContext = element.signalContext;
-        expect(signalContext).toBeDefined();
-    });
 });

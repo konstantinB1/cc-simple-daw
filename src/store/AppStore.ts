@@ -2,6 +2,7 @@ import { StopWatch } from "@/utils/TimeUtils";
 import Store from "./Store";
 import Scheduler from "@/lib/Scheduler";
 import AudioSource from "@/lib/AudioSource";
+import PanelScreenManager from "@/lib/PanelScreenManager";
 
 export type PlaybackState = {
     isPlaying: boolean; // Indicates if playback is currently active
@@ -19,6 +20,7 @@ export type ConfigState = {
 type InitialState = {
     playback: PlaybackState; // Optional playback state
     config: ConfigState; // Optional configuration state
+    screenManager: PanelScreenManager; // Screen manager for handling UI panels
 };
 
 export enum TimeEventChange {
@@ -41,6 +43,7 @@ const initialState: InitialState = {
     config: {
         persistPlaybackData: true,
     },
+    screenManager: new PanelScreenManager(),
 };
 
 class AppStore extends Store<InitialState> {

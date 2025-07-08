@@ -1,12 +1,10 @@
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 
-import { playbackContext, TimeEventChange } from "@/context/playbackContext";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
 import type { PlayEvent } from "@/lib/AudioSource";
 import { msToSeconds } from "@/utils/TimeUtils";
-import type Scheduler from "@/lib/Scheduler";
 import { getPlayheadPosition } from "./TimeTracker";
 import type Track from "@/lib/AudioTrack";
 import { storeSubscriber } from "@/store/StoreLit";
@@ -94,12 +92,11 @@ export default class TrackEvents extends LitElement {
         super.connectedCallback();
 
         this.track.channel.onPlay(this.handlePlayEvent.bind(this));
-        this.track.channel.onStop(this.handleStopEvent.bind(this));
     }
 
     updated(
         _changedProperties: PropertyValues<{
-            lastTimeEventChange: TimeEventChange;
+            lastTimeEventChange: any;
             currentTime: number;
             isPlaying: boolean;
             isRecording: boolean;

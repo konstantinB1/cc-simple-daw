@@ -8,8 +8,6 @@ import {
 import { MAX_TIME_BEATS, BEAT_WIDTH } from "./TracksView";
 import { customElement, property, query, state } from "lit/decorators.js";
 
-import { playbackContext, TimeEventChange } from "@/context/playbackContext";
-
 import { msToSeconds } from "@/utils/TimeUtils";
 import { styleMap } from "lit/directives/style-map.js";
 
@@ -78,7 +76,7 @@ export default class TimeTracker extends LitElement {
 
     protected updated(_changedProperties: PropertyValues): void {
         if (_changedProperties.has("currentTime")) {
-            this.xPos = getPlayheadPosition(this.bpm, this.currentTime);
+            this.xPos = getPlayheadPosition(0, 0);
         }
 
         if (_changedProperties.has("currentQuantisize")) {
@@ -119,7 +117,7 @@ export default class TimeTracker extends LitElement {
         if (this.seeking) {
             const x = e.clientX - this.xLeft;
 
-            const time = x <= 0 ? 0 : getCurrentTimeFromPosition(this.bpm, x);
+            const time = x <= 0 ? 0 : getCurrentTimeFromPosition(0, x);
         }
     }
 

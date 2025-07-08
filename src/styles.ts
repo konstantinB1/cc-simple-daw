@@ -1,7 +1,4 @@
-import { css, LitElement } from "lit";
-import StyleManager from "./utils/stylesheets";
-import { consume } from "@lit/context";
-import { stylesContext } from "./context/stylesContext";
+import { css } from "lit";
 import Color from "color";
 
 const globalStyles = new CSSStyleSheet();
@@ -771,30 +768,4 @@ export function createGlobalStylesheet() {
     }
 
     globalStyles.replaceSync(stylesText);
-}
-
-export function WithStyles<T extends new (...args: any[]) => LitElement>(
-    Base: T,
-) {
-    class StylesConsumer extends Base {
-        @consume({ context: stylesContext, subscribe: true })
-        styleManager!: StyleManager<typeof themeVars>;
-
-        connectedCallback() {
-            super.connectedCallback();
-
-            if (this.shadowRoot) {
-                this.shadowRoot.adoptedStyleSheets = [
-                    ...this.shadowRoot.adoptedStyleSheets,
-                    globalStyles,
-                ];
-            }
-        }
-    }
-
-    return StylesConsumer as unknown as T & {
-        new (
-            ...args: any[]
-        ): LitElement & { styleManager: StyleManager<typeof themeVars> };
-    };
 }

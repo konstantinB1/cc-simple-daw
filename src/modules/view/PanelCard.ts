@@ -3,7 +3,7 @@ import DragController, { DragEvent } from "@/controllers/DragController";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import type { Panel } from "@/lib/PanelScreenManager";
 
-import WithScreenManager from "@/mixins/WithScreenManager";
+import { store } from "@/store/AppStore";
 import { clampXToViewport, clampYToViewport } from "@/utils/geometry";
 
 import {
@@ -34,10 +34,7 @@ export interface PanelCardElement extends HTMLElement {
 }
 
 @customElement("panel-card")
-export default class PanelCard
-    extends WithScreenManager(LitElement)
-    implements PanelCardElement
-{
+export default class PanelCard extends LitElement implements PanelCardElement {
     @property({ type: Array })
     startPos?: [number, number];
 
@@ -169,6 +166,10 @@ export default class PanelCard
             }
         `,
     ];
+
+    private get screenManager() {
+        return store.getState().screenManager;
+    }
 
     connectedCallback(): void {
         super.connectedCallback();

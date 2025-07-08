@@ -12,8 +12,8 @@ import {
     NestedMenuItemType,
     type NestedMenuItem,
 } from "@/components/NestedMenu";
-import { configContext, ConfigContextStore } from "@/context/configContext";
-import { consume } from "@lit/context";
+import { storeSubscriber } from "@/store/StoreLit";
+import { store } from "@/store/AppStore";
 
 @customElement("top-nav")
 export default class Navigation extends LitElement {
@@ -23,11 +23,15 @@ export default class Navigation extends LitElement {
     @property({ type: Object })
     screenManager!: PanelScreenManager;
 
-    @consume({ context: configContext, subscribe: true })
-    configStore!: ConfigContextStore;
-
     @property({ type: Array })
     menuItems: NestedMenuItem[] = [];
+
+    @storeSubscriber(store, (state) => ({
+        persistPlaybackData: state.config.persistPlaybackData,
+    }))
+    configStore!: {
+        persistPlaybackData: boolean;
+    };
 
     static styles = [
         helperStyles,
@@ -49,11 +53,13 @@ export default class Navigation extends LitElement {
                 description: "Saves current playback state into local storage",
                 type: NestedMenuItemType.Bool,
                 onClick: () => {
-                    const value = this.configStore.persistPlaybackData.get();
-                    this.configStore.setPersistPlaybackData(!value);
+                    const value = this.configStore.persistPlaybackData;
                     this.menuItems[0].checked = !value;
+                    store.setState((state) => {
+                        state.config.persistPlaybackData = !value;
+                    });
                 },
-                checked: this.configStore.persistPlaybackData.get(),
+                checked: this.configStore.persistPlaybackData,
             },
         ];
     }

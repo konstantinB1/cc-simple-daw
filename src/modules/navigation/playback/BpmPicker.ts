@@ -1,8 +1,7 @@
 import { store } from "@/store/AppStore";
 import { storeSubscriber } from "@/store/StoreLit";
-import { html } from "@lit-labs/signals";
 
-import { css, LitElement, type PropertyValues } from "lit";
+import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("bpm-picker")

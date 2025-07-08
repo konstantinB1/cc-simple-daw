@@ -2,15 +2,13 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import SimpleOscillator from "./SimpleOscilator";
-import { playbackContext } from "@/context/playbackContext";
-import type AudioSource from "@/lib/AudioSource";
 import {
     KeyMappingWithPressed,
     SimpleKeyboardKanager,
 } from "@/lib/KeyboardManager";
 import type { Panel } from "@/lib/PanelScreenManager";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
-import { storeSubscriber } from "@/store/StoreLit";
+
 import { store } from "@/store/AppStore";
 
 const notesMap = [
