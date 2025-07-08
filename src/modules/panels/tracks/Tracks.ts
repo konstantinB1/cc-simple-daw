@@ -5,12 +5,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import "./TracksView";
 import "./view-canvas/TracksViewCanvas";
 import { SEQUENCER_CANVAS } from "@/features";
-import { consumeProp } from "@/decorators/sync";
-import { playbackContext } from "@/context/playbackContext";
-import type AudioSource from "@/lib/AudioSource";
 import type { SelectOption } from "@/components/Select";
-import Track from "@/lib/AudioTrack";
-import type { PlayEvent } from "@/lib/AudioSource";
 
 export const tracksPanelElement = "tracks-panel";
 
@@ -35,14 +30,8 @@ const quantisizeOptions: SelectOption[] = [
 
 @customElement(tracksPanelElement)
 export default class TracksPanel extends LitElement {
-    @consumeProp({ context: playbackContext, subscribe: true })
-    sources!: AudioSource[];
-
     @state()
     private currentQuantisize: string = quantisizeOptions[2].value;
-
-    @state()
-    events: PlayEvent[] = [];
 
     @property({ type: Object, attribute: false })
     screenManager!: PanelScreenManager;
@@ -60,10 +49,6 @@ export default class TracksPanel extends LitElement {
             height: 100%;
         }
     `;
-
-    private get tracks(): Track[] {
-        return this.sources.map((source) => new Track(source));
-    }
 
     private setQuantisize({
         detail: { value },
@@ -95,12 +80,9 @@ export default class TracksPanel extends LitElement {
                         ? html`<tracks-view-canvas
                               .screenManager=${this.screenManager}
                               .quantisize=${this.currentQuantisize}
-                              .tracks=${this.tracks}
                               .panel=${this.panel}
                           ></tracks-view-canvas>`
-                        : html`<tracks-view
-                              .tracks=${this.tracks}
-                          ></tracks-view>`}
+                        : html`<tracks-view></tracks-view>`}
                 </div>
             </panel-card>
         `;

@@ -172,7 +172,7 @@ export default class PanelCard
 
     connectedCallback(): void {
         super.connectedCallback();
-        console.log(this.cardId);
+
         this.panel = this.screenManager.getPanel(this.cardId);
 
         if (this.startPos) {
@@ -181,6 +181,18 @@ export default class PanelCard
     }
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
+        this.dispatchEvent(
+            new CustomEvent("state-change", {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    cardId: this.cardId,
+                    cardWidth: this.cardWidth,
+                    cardHeight: this.cardHeight,
+                    isDraggable: this.isDraggable,
+                },
+            }),
+        );
         const containerRect =
             this.screenManager.container!.getBoundingClientRect();
 

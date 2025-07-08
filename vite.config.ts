@@ -80,6 +80,7 @@ export default defineConfig({
             "@modules": "/src/modules",
             "@lib": "/src/lib",
             "@gen": "/src/generated",
+            "@packages/": "/src/packages",
         },
     },
 });

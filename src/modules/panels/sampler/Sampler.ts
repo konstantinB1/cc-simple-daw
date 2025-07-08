@@ -1,21 +1,21 @@
 import "./Pads";
 import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
 import { customElement, property } from "lit/decorators.js";
-import WithScreenManager from "@/mixins/WithScreenManager";
+import type PanelScreenManager from "@/lib/PanelScreenManager";
 
 const elementName = "sampler-root";
 
 @customElement(elementName)
-export default class SamplerPanel extends WithScreenManager(
-    WithPlaybackContext(LitElement),
-) {
+export default class SamplerPanel extends LitElement {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
 
     @property({ type: Array })
     startPos: [number, number] = [0, 0];
+
+    @property({ type: Object })
+    screenManager!: PanelScreenManager;
 
     override render() {
         return html`
@@ -31,6 +31,7 @@ export default class SamplerPanel extends WithScreenManager(
                 >
                     <div slot="header"></div>
                     <sampler-view
+                        .screenManager=${this.screenManager}
                         .keyManager=${this.keyboardManager}
                     ></sampler-view>
                 </panel-card>

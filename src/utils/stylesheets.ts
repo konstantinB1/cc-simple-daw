@@ -200,3 +200,59 @@ export default class StyleManager<T extends Record<string, any>> {
         return null;
     }
 }
+
+export class TempStylesheet {
+    id: string;
+    styles: CSSResult | CSSResult[];
+
+    constructor(id: string, styles: CSSResult | CSSResult[]) {
+        this.id = id;
+        this.styles = styles;
+    }
+
+    private get normalizedStyles(): string {
+        if (Array.isArray(this.styles)) {
+            return this.styles.map((s) => s.cssText).join("\n");
+        }
+
+        return this.styles.cssText;
+    }
+
+    attachToHost(host: Document = document): TempStylesheet {
+        if (!host) {
+            throw new Error(
+                "Host element is required to attach the stylesheet.",
+            );
+        }
+
+        if (host.getElementById(this.id)) {
+            console.warn(
+                `Style element with id "${this.id}" already exists. Skipping attachment.`,
+            );
+            return this;
+        }
+
+        const styleElement = host.createElement("style");
+        styleElement.id = this.id;
+        styleElement.textContent = this.normalizedStyles;
+
+        host.head.appendChild(styleElement);
+
+        return this;
+    }
+
+    removeFromHost(host: Document = document): void {
+        if (!host) {
+            throw new Error(
+                "Host element is required to remove the stylesheet.",
+            );
+        }
+
+        const styleElement = host.getElementById(this.id);
+        if (styleElement) {
+            styleElement.remove();
+        } else {
+            console.warn(`Style element with id "${this.id}" not found.`);
+        }
+    }
+}

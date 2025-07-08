@@ -170,6 +170,15 @@ export const spacing = css`
 `;
 
 export const litStyles = css`
+    .clickable {
+        cursor: pointer;
+        transition: opacity 0.4s ease-in-out;
+    }
+
+    .clickable:hover {
+        opacity: 0.8;
+    }
+
     .bbox {
         box-sizing: border-box;
     }
@@ -418,6 +427,30 @@ export const litStyles = css`
         background-color: var(--color-error);
     }
 
+    .bg-hover-primary:hover {
+        background-color: var(--color-primary);
+    }
+
+    .bg-hover-secondary:hover {
+        background-color: var(--color-secondary);
+    }
+
+    .bg-hover-accent:hover {
+        background-color: var(--color-accent);
+    }
+
+    .bg-hover-text:hover {
+        background-color: var(--color-text);
+    }
+
+    .bg-hover-background:hover {
+        background-color: var(--color-background);
+    }
+
+    .bg-hover-success:hover {
+        background-color: var(--color-success);
+    }
+
     .radius-normal {
         border-radius: var(--border-radius);
     }
@@ -448,6 +481,26 @@ export const litStyles = css`
 
     .border-error {
         border: 1px solid var(--color-error);
+    }
+
+    .border-bottom-primary {
+        border-bottom: 1px solid var(--color-primary);
+    }
+
+    .border-bottom-secondary {
+        border-bottom: 1px solid var(--color-secondary);
+    }
+
+    .border-bottom-accent {
+        border-bottom: 1px solid var(--color-accent);
+    }
+
+    .border-bottom-text {
+        border-bottom: 1px solid var(--color-text);
+    }
+
+    .border-bottom-background {
+        border-bottom: 1px solid var(--color-background);
     }
 
     .elevated-1 {
@@ -704,6 +757,20 @@ export const helperStyles = css`
 
 export function globalToString() {
     return litStyles.cssText + colorClasses.cssText;
+}
+
+export function createGlobalStylesheet() {
+    const stylesText = helperStyles.cssText;
+    const styleElement = document.createElement("style");
+    const id = `global-styles-ONCE`;
+
+    if (!document.getElementById(id)) {
+        styleElement.id = id;
+        styleElement.textContent = stylesText;
+        document.head.appendChild(styleElement);
+    }
+
+    globalStyles.replaceSync(stylesText);
 }
 
 export function WithStyles<T extends new (...args: any[]) => LitElement>(

@@ -14,7 +14,10 @@ import ZoomState from "./ZoomState";
 import { themeVars } from "@/styles";
 import Movement from "./Movement";
 import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
-import type Track from "@/lib/AudioTrack";
+
+import type AudioSource from "@/lib/AudioSource";
+import Watcher from "@/store/Watcher";
+import { store } from "@/store/AppStore";
 
 let lastZoomTime = 0;
 
@@ -61,8 +64,10 @@ export default class TracksCanvasRenderer {
     private currentTime: number = 0;
     private bpm?: number;
 
-    private tracks: Track[] = [];
+    private tracks: AudioSource[] = [];
     private events: AudioEvent[] = [];
+
+    private watchers: Watcher<any>[] = [];
 
     constructor(
         element: HTMLCanvasElement,
@@ -85,6 +90,20 @@ export default class TracksCanvasRenderer {
 
         this.startEvents();
         this.setupResizeObserver();
+
+        const watchCurrentTime = new Watcher<number>(
+            store,
+            "playback.currentTime",
+            this.setCurrentTime.bind(this),
+        );
+
+        const watchBPM = new Watcher<number>(
+            store,
+            "playback.bpm",
+            this.setBPM.bind(this),
+        );
+
+        this.watchers.push(watchCurrentTime, watchBPM);
     }
 
     setCurrentTime(time: number) {
@@ -96,8 +115,9 @@ export default class TracksCanvasRenderer {
         this.bpm = bpm;
     }
 
-    setTracks(tracks: Track[]) {
-        this.tracks = tracks;
+    setTracks(tracks: AudioSource[]) {
+        this.tracks = Array.from(tracks);
+        this.render();
     }
 
     addEvent(e: PlayEvent, currentTime: number, trackId: string) {
@@ -514,7 +534,7 @@ export default class TracksCanvasRenderer {
             if (trackIndex >= this.tracks.length) break;
 
             const track = this.tracks[trackIndex];
-            const trackName = track?.channel.name ?? "Unknown track";
+            const trackName = track?.name ?? "Unknown track";
 
             // Calculate the relative position within the viewport
             const relativePosition = trackIndex - firstVisibleTrack;
@@ -605,14 +625,14 @@ export default class TracksCanvasRenderer {
         // Remove console.log as events are now drawn in drawTrackEvents
     }
 
-    private drawTrackEvents(track: Track, trackY: number) {
+    private drawTrackEvents(track: AudioSource, trackY: number) {
         const ctx = this.ctx;
         const currentBeatWidth =
             BASE_CELL_WIDTH * this.zoomState.current!.level;
 
         // Filter events for this track
         const trackEvents = this.events.filter(
-            (event) => event.trackId === track.channel.id,
+            (event) => event.trackId === track.id,
         );
 
         for (const event of trackEvents) {

@@ -10,10 +10,9 @@ import { typography } from "@/global-styles";
 import type AudioSource from "@/lib/AudioSource";
 import { classMap } from "lit/directives/class-map.js";
 import type { TrackEventData } from "./TrackViewEvents";
-import { consumeProp } from "@/decorators/sync";
-import { playbackContext } from "@/context/playbackContext";
+
 import { SelectSize, type SelectOption } from "@/components/Select";
-import { QuantisizeOptions, type Track } from "./Tracks";
+import { QuantisizeOptions } from "./Tracks";
 
 export const MAX_TIME_BEATS = 4;
 export const BEAT_WIDTH = 70;
@@ -23,7 +22,6 @@ export const NEEDLE_START_POS = 131;
 export default class TracksView extends LitElement {
     private currentQuantisize: QuantisizeOptions = QuantisizeOptions["1/4"];
 
-    @consumeProp({ context: playbackContext, subscribe: true })
     sources!: AudioSource[];
 
     @state()
@@ -32,7 +30,6 @@ export default class TracksView extends LitElement {
     @state()
     eventData: TrackEventData[] = [];
 
-    @consumeProp({ context: playbackContext })
     master!: AudioSource;
 
     @property({ type: Array })

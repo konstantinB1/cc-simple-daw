@@ -15,9 +15,9 @@ import {
     KeyMappingWithPressed,
     SimpleKeyboardKanager,
 } from "@/lib/KeyboardManager";
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
-import WithScreenManager from "@/mixins/WithScreenManager";
 import AudioSource from "@/lib/AudioSource";
+import type PanelScreenManager from "@/lib/PanelScreenManager";
+import { store } from "@/store/AppStore";
 
 const noop = () => {};
 
@@ -111,9 +111,7 @@ const getBank = (index: number) => {
 const element = "sampler-view";
 
 @customElement(element)
-export default class Pads extends WithPlaybackContext(
-    WithScreenManager(LitElement),
-) {
+export default class Pads extends LitElement {
     private samplerKeyMgr: SimpleKeyboardKanager = new SimpleKeyboardKanager();
 
     // Do not use this for rendering view, this is only used
@@ -135,6 +133,9 @@ export default class Pads extends WithPlaybackContext(
 
     @property({ type: Boolean })
     isFocused: boolean = false;
+
+    @property({ type: Object })
+    screenManager!: PanelScreenManager;
 
     private samplerMaster!: AudioSource;
 
@@ -174,13 +175,13 @@ export default class Pads extends WithPlaybackContext(
 
         this.samplerMaster = new AudioSource(
             "sampler-master",
-            this.playbackContext.audioContext,
+            store.ctx,
             "Sampler Master",
-            this.playbackContext.master,
+            store.master,
             true,
         );
 
-        this.playbackContext.master.addSubChannel(this.samplerMaster);
+        store.master.addSubChannel(this.samplerMaster);
 
         this.screenManager.onPanelFocused((p) => {
             if (p?.name === "sampler-root") {
@@ -231,7 +232,7 @@ export default class Pads extends WithPlaybackContext(
         return { bank, realIndex };
     }
 
-    private createMappings() {
+    private createKeyboardMappings() {
         this.mappedKeyPads = (this.programData?.data ?? []).map(
             (data, index) => {
                 const { realIndex, bank } = this.getBankAndRealIndex(index);
@@ -245,7 +246,7 @@ export default class Pads extends WithPlaybackContext(
                     data.name,
                 );
 
-                const ctx = this.playbackContext.audioContext;
+                const ctx = store.ctx;
 
                 return new MappedPadKeyWithPressed(
                     ctx,
@@ -281,12 +282,9 @@ export default class Pads extends WithPlaybackContext(
     }
 
     private createMappedKeysFromProgram() {
-        this.createMappings();
+        this.createKeyboardMappings();
 
-        this.mappedKeyPads.forEach(({ sample }) => {
-            this.samplerMaster.addSubChannel(sample);
-            this.consumer.$addChannel(sample);
-        });
+        store.addChannels(this.mappedKeyPads.map((pad) => pad.sample));
     }
 
     private setPadBankFromEvent(

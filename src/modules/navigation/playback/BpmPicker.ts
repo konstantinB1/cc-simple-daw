@@ -1,27 +1,23 @@
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
+import { store } from "@/store/AppStore";
+import { storeSubscriber } from "@/store/StoreLit";
+import { html } from "@lit-labs/signals";
 
-import { css, html, LitElement, type PropertyValues } from "lit";
+import { css, LitElement, type PropertyValues } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("bpm-picker")
-export default class BpmPicker extends WithPlaybackContext(LitElement) {
+export default class BpmPicker extends LitElement {
     private isDragging: boolean = false;
     private iconBounds: DOMRect | null = null;
     private clickedPixel: number = 0;
 
+    @storeSubscriber(store, (state) => state.playback.bpm)
+    private bpm!: number;
+
     static styles = [
         css`
             .bpm-picker {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 100%;
                 gap: 5px;
-            }
-
-            .bpm-text {
-                font-size: 1.2em;
-                width: 40px;
             }
 
             .bpm-input {
@@ -88,14 +84,16 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
             return;
         }
 
-        const currentBpm = this.playbackContext.bpm;
+        const currentBpm = this.bpm;
 
         const bpm =
             diffBpm > 0
                 ? Math.max(0, currentBpm - diffBpm)
                 : Math.min(999, currentBpm - diffBpm);
 
-        this.consumer.$setBpm(bpm);
+        store.setState((state) => {
+            state.playback.bpm = bpm;
+        });
     };
 
     private onMouseUp = () => {
@@ -107,17 +105,22 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
 
     private onKeyDown = (e: KeyboardEvent) => {
         let bpm: number | null = null;
+
         if (e.key === "ArrowUp") {
-            bpm = Math.min(999, this.playbackContext.bpm + 1);
+            bpm = Math.min(999, this.bpm + 1);
         } else if (e.key === "ArrowDown") {
-            bpm = Math.max(0, this.playbackContext.bpm - 1);
+            bpm = Math.max(0, this.bpm - 1);
+        } else {
+            return; // Ignore other keys
         }
 
         if (bpm === null) {
             throw new Error("BPM value is null somehow");
         }
 
-        this.consumer.$setBpm(bpm);
+        store.setState((state) => {
+            state.playback.bpm = bpm;
+        });
     };
 
     private handleFocus = () => {
@@ -130,14 +133,13 @@ export default class BpmPicker extends WithPlaybackContext(LitElement) {
 
     render() {
         return html`<div
-            class="bpm-picker"
             tabindex="0"
             @focus=${this.handleFocus}
             @blur=${this.handleBlur}
         >
             <div class="bpm-input">
                 <text-element size="sm" variant="h1" color="text" weight="400">
-                    ${this.playbackContext.bpm}
+                    ${this.bpm}
                 </text-element>
                 <div
                     class="bpm-input-icon-wrapper"

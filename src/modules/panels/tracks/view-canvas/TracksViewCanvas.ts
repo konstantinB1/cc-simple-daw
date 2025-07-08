@@ -1,6 +1,3 @@
-import { playbackContext } from "@/context/playbackContext";
-import { consumeProp } from "@/decorators/sync";
-
 import {
     css,
     html,
@@ -13,17 +10,16 @@ import { customElement, query, property, state } from "lit/decorators.js";
 import TracksCanvasRenderer from "./TracksCanvasRenderer";
 
 import { classMap } from "lit/directives/class-map.js";
-import type Track from "@/lib/AudioTrack";
 import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
-import type Scheduler from "@/lib/Scheduler";
 import type { Panel } from "@/lib/PanelScreenManager";
 import { msToSeconds } from "@/utils/TimeUtils";
 
+import AudioSource from "@/lib/AudioSource";
+import { store } from "@/store/AppStore";
+import WatchController, { storeSubscriber } from "@/store/StoreLit";
+
 @customElement("tracks-view-canvas")
 export default class TracksViewCanvas extends LitElement {
-    @property({ type: Array })
-    tracks: Track[] = [];
-
     @property({ type: String })
     quantisize?: string;
 
@@ -36,28 +32,40 @@ export default class TracksViewCanvas extends LitElement {
     @query(".tracks-container")
     private tracksContainer!: HTMLDivElement;
 
-    @consumeProp({ context: playbackContext, subscribe: true })
-    currentTime!: number;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    bpm!: number;
-
-    @consumeProp({ context: playbackContext })
-    scheduler!: Scheduler;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    isRecording!: boolean;
-
     @state()
     isFullscreen: boolean = false;
 
     @state()
     eventData: AudioEvent[] = [];
 
+    @storeSubscriber(store, (state) => ({
+        currentTime: state.playback.currentTime,
+        channels: state.playback.channels,
+    }))
+    private playback!: {
+        currentTime: number;
+        channels: AudioSource[];
+    };
+
+    watcherController = new WatchController(this, store, {
+        "playback.channels": async (channels: AudioSource[]) => {
+            channels.forEach((track) => {
+                track.onPlay((event: CustomEvent<PlayEvent>) => {
+                    this.handlePlayEvent(event, track);
+                });
+            });
+
+            this.renderHelper?.setTracks(this.playback.channels);
+
+            await this.updateComplete;
+            this.renderHelper.render();
+        },
+    });
+
     private renderHelper!: TracksCanvasRenderer;
 
     private get currentTimeSeconds(): number {
-        return msToSeconds(this.currentTime);
+        return msToSeconds(this.playback.currentTime);
     }
 
     static styles = [
@@ -108,38 +116,47 @@ export default class TracksViewCanvas extends LitElement {
         `,
     ];
 
-    protected firstUpdated(): void {
+    protected async firstUpdated(): Promise<void> {
         this.renderHelper = new TracksCanvasRenderer(
             this.canvas,
             this.canvas.getContext("2d")!,
             this.tracksContainer,
         );
 
+        this.renderHelper.setTracks(this.playback.channels);
+
         this.panel?.onFullscreenChange((isFullscreen) => {
             this.isFullscreen = isFullscreen;
-
-            this.renderHelper.setTracks(this.tracks);
             this.renderHelper.forceRefresh();
         });
 
-        if (this.tracks.length > 0) {
-            this.renderHelper.setTracks(this.tracks);
-            requestAnimationFrame(() => {
-                this.renderHelper.render();
-            });
+        await this.updateComplete;
+
+        if (this.playback.channels.length > 0) {
+            this.renderHelper.render();
         }
     }
 
-    private handlePlayEvent(event: CustomEvent<PlayEvent>, track: Track): void {
-        if (!this.isRecording) {
+    private handlePlayEvent(
+        event: CustomEvent<PlayEvent>,
+        track: AudioSource,
+    ): void {
+        const state = store.getState();
+        const playback = state.playback;
+
+        if (!playback.isPlaying) {
             return;
         }
 
-        this.renderHelper.addEvent(event.detail, this.currentTime, track.id);
+        this.renderHelper.addEvent(
+            event.detail,
+            playback.currentTime,
+            track.id,
+        );
 
-        this.scheduler.addToQueue(track.channel, {
+        store.scheduler.addToQueue(track, {
             startTime: this.currentTimeSeconds,
-            endTime: event.detail.duration,
+            endTime: this.currentTimeSeconds,
             id: event.detail.id,
             isPlaying: event.detail.isPlaying,
         });
@@ -150,37 +167,9 @@ export default class TracksViewCanvas extends LitElement {
     protected updated(changedProperties: PropertyValues): void {
         super.updated(changedProperties);
 
-        if (
-            changedProperties.has("tracks") &&
-            this.tracks.length > 0 &&
-            this.renderHelper
-        ) {
-            this.tracks.forEach((track) => {
-                track.channel.onPlay((event: CustomEvent<PlayEvent>) => {
-                    this.handlePlayEvent(event, track);
-                });
-            });
-
-            this.renderHelper.setTracks(this.tracks);
-
-            requestAnimationFrame(() => {
-                this.renderHelper.render();
-            });
-        }
-
         if (changedProperties.has("isFullscreen") && this.renderHelper) {
-            this.renderHelper.setTracks(this.tracks);
+            this.renderHelper.setTracks(this.playback.channels);
             this.renderHelper.forceRefresh();
-        }
-
-        if (changedProperties.has("bpm") && this.renderHelper) {
-            this.renderHelper.setBPM(this.bpm);
-            this.renderHelper.render();
-        }
-
-        if (changedProperties.has("currentTime") && this.renderHelper) {
-            this.renderHelper.setCurrentTime(this.currentTime);
-            this.renderHelper.render();
         }
     }
 

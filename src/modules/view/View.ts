@@ -3,7 +3,7 @@ import PanelScreenManager, {
     type PanelCreateOptions,
 } from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
-import { customElement, query } from "lit/decorators.js";
+import { query } from "lit/decorators.js";
 import "./PanelCard";
 import "../panels/tracks/Tracks";
 import "../panels/sampler/Sampler";
@@ -16,8 +16,6 @@ import channelsContext, {
 import { ContextProvider } from "@lit/context";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
-// This is hardcoded list of panels for now.
-// This functionality will be expanded for adding/removing panels dynamically in the future.
 const currentPanels: PanelCreateOptions[] = [
     {
         name: "tracks-panel",
@@ -40,7 +38,6 @@ const currentPanels: PanelCreateOptions[] = [
     },
 ];
 
-@customElement("app-view")
 export default class AppView extends LitElement {
     @provide({ context: screenManagerContext })
     screenManager: PanelScreenManager = new PanelScreenManager();
@@ -76,8 +73,6 @@ export default class AppView extends LitElement {
 
         this.keyboardManager.attachEventListeners();
 
-        const firstPanel = this.screenManager.panels?.[0];
-
         currentPanels.forEach(
             this.screenManager.createAndAppend.bind(this.screenManager),
         );
@@ -96,12 +91,6 @@ export default class AppView extends LitElement {
                 handler: () => this.screenManager.focusPrevious(),
             },
         ]);
-
-        if (firstPanel) {
-            requestAnimationFrame(() => {
-                this.screenManager.focus(firstPanel.name);
-            });
-        }
     }
 
     override render() {

@@ -1,6 +1,6 @@
-import type { PlaybackContextStore } from "@/context/playbackContext";
 import type AudioSource from "./AudioSource";
 import type { PlaybackTime } from "@/types";
+import type PlaybackSignal from "@/signals/PlaybackSignal";
 
 export type QueueItemParams = {
     startTime: number;
@@ -24,13 +24,13 @@ export default class Scheduler {
     private playbackQueue: QueueItem[] = [];
     private stopQueue: QueueItem[] = [];
 
-    private store: PlaybackContextStore;
+    private store: PlaybackSignal;
 
     private lookahead: number;
 
     private prevTimeWindow: PlaybackTime = 0;
 
-    constructor(store: PlaybackContextStore, lookahead: number = 0.1) {
+    constructor(store: any, lookahead: number = 0.1) {
         this.store = store;
         this.lookahead = lookahead;
     }
@@ -69,8 +69,6 @@ export default class Scheduler {
             this.prevTimeWindow = currentTime;
         }
 
-        console.log(this.playbackQueue, currentTime);
-
         this.playbackQueue.forEach((cur) => {
             if (
                 !cur.params.scheduled &&
@@ -78,7 +76,6 @@ export default class Scheduler {
                 cur.params.startTime >= this.prevTimeWindow
             ) {
                 this.tick(currentTime, cur);
-
                 cur.params.scheduled = true;
             }
         });
@@ -98,11 +95,6 @@ export default class Scheduler {
         const endTime = params.endTime
             ? when + (params.endTime - params.startTime)
             : undefined;
-
-        console.log(
-            `Scheduling audio source with ID: ${params.id} at time: ${when.toFixed(3)}s`,
-            `End time: ${endTime ? endTime.toFixed(3) : "not specified"}`,
-        );
 
         audioSource.play(when, 0, endTime, false);
 

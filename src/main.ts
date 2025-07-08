@@ -1,3 +1,5 @@
+import "@webcomponents/scoped-custom-element-registry";
+
 import "./components/Slider";
 import "./components/MpcButton";
 import "./components/Select";
@@ -7,6 +9,7 @@ import "./components/CardSubHeader";
 import "./components/AnchorElement";
 import "./components/Menu";
 import "./components/Text";
+import "./components/NestedMenu";
 
 import "@/modules/navigation/Navigation";
 
@@ -16,6 +19,7 @@ import "./modules/panels/basic-keyboard/BasicKeyboard";
 import "./App";
 
 function main() {
+    console.log("Initializing the app...");
     const element: App = document.createElement("root-app", {
         is: "root-app",
     });

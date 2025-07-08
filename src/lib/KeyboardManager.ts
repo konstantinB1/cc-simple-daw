@@ -154,6 +154,7 @@ export class SimpleKeyboardKanager
 
     private handleKeyDown(event: KeyboardEvent): void {
         const key = event.key.toLowerCase();
+
         if (this.keys.has(key)) {
             const padKey = this.keys.get(key);
 
@@ -164,6 +165,8 @@ export class SimpleKeyboardKanager
                     startTime: performance.now(),
                 });
 
+                padKey.handler?.();
+
                 this.dispatchEvent(this.pressedEvent(padKey, true));
             }
         }
@@ -171,6 +174,7 @@ export class SimpleKeyboardKanager
 
     private handleKeyUp(event: KeyboardEvent): void {
         const key = event.key.toLowerCase();
+        console.log("Key up:", key);
         if (this.keys.has(key)) {
             const metadata = this.pressedKeysMetadata.get(key);
 
@@ -316,7 +320,5 @@ export class LayeredKeyboardManager
 
         this.attached = false;
         document.removeEventListener("keydown", this.handleKeyDown);
-
-        console.log("KeyboardManager: Event listeners detached.");
     }
 }

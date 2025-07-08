@@ -1,7 +1,6 @@
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 
-import { consumeProp } from "@/decorators/sync";
 import { playbackContext, TimeEventChange } from "@/context/playbackContext";
 import { styleMap } from "lit/directives/style-map.js";
 import { classMap } from "lit/directives/class-map.js";
@@ -9,6 +8,9 @@ import type { PlayEvent } from "@/lib/AudioSource";
 import { msToSeconds } from "@/utils/TimeUtils";
 import type Scheduler from "@/lib/Scheduler";
 import { getPlayheadPosition } from "./TimeTracker";
+import type Track from "@/lib/AudioTrack";
+import { storeSubscriber } from "@/store/StoreLit";
+import { store } from "@/store/AppStore";
 
 export type TrackEventData = {
     id: string;
@@ -30,23 +32,22 @@ export type TrackEventDataEvent = {
 
 @customElement("track-event")
 export default class TrackEvents extends LitElement {
-    @consumeProp({ context: playbackContext })
-    scheduler!: Scheduler;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    currentTime!: number;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    isPlaying!: boolean;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    isRecording!: boolean;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    bpm!: number;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    lastTimeEventChange?: TimeEventChange;
+    @storeSubscriber(store, (state) => ({
+        currentTime: state.playback.currentTime,
+        isPlaying: state.playback.isPlaying,
+        isRecording: state.playback.isRecording,
+        bpm: state.playback.bpm,
+        lastTimeEventChange: state.playback.timeEventChange,
+        track: state.playback.channels, // Assuming you have a currentTrack in your store
+    }))
+    private store = {
+        currentTime: 0,
+        isPlaying: false,
+        isRecording: false,
+        bpm: 120,
+        lastTimeEventChange: undefined,
+        track: null, // This should be set to the current track
+    };
 
     @property({ type: Object })
     track!: Track;
@@ -114,8 +115,8 @@ export default class TrackEvents extends LitElement {
 
         if (
             _changedProperties.has("currentTime") &&
-            this.isPlaying &&
-            this.isRecording
+            this.store.isPlaying &&
+            this.store.isRecording
         ) {
             children.forEach(this.animateWidth.bind(this));
         }
@@ -124,7 +125,7 @@ export default class TrackEvents extends LitElement {
     }
 
     private scheduleEvents() {
-        if (!this.isPlaying) {
+        if (!this.store.isPlaying) {
             return;
         }
 
@@ -133,7 +134,7 @@ export default class TrackEvents extends LitElement {
             const endTime = msToSeconds(ev.endTime ?? 0);
             console.log(ev.startTime, ev.endTime);
 
-            this.scheduler.addToQueue(this.track.channel, {
+            store.scheduler.addToQueue(this.track.channel, {
                 startTime,
                 endTime,
                 id: ev.id,
@@ -144,7 +145,7 @@ export default class TrackEvents extends LitElement {
     private handlePlayEvent({
         detail: { id, duration },
     }: CustomEvent<PlayEvent>) {
-        if (!this.isRecording) {
+        if (!this.store.isRecording) {
             return;
         }
 
@@ -153,10 +154,13 @@ export default class TrackEvents extends LitElement {
         this.events = [
             {
                 id,
-                startTime: this.currentTime,
+                startTime: this.store.currentTime,
                 done: false,
                 endTime: duration,
-                xStart: getPlayheadPosition(this.bpm, this.currentTime),
+                xStart: getPlayheadPosition(
+                    this.store.bpm,
+                    this.store.currentTime,
+                ),
                 zIndex,
             },
             ...this.events,
@@ -165,8 +169,8 @@ export default class TrackEvents extends LitElement {
         this.zIndex = zIndex;
     }
 
-    private handleStopEvent({ detail: { id } }: CustomEvent<StopEvent>) {
-        if (!this.isRecording) {
+    private handleStopEvent({ detail: { id } }: CustomEvent<PlayEvent>) {
+        if (!this.store.isRecording) {
             return;
         }
 
@@ -175,8 +179,11 @@ export default class TrackEvents extends LitElement {
                 return {
                     ...ev,
                     done: true,
-                    endTime: this.currentTime,
-                    xEnd: getPlayheadPosition(this.bpm, this.currentTime),
+                    endTime: this.store.currentTime,
+                    xEnd: getPlayheadPosition(
+                        this.store.bpm,
+                        this.store.currentTime,
+                    ),
                 };
             }
 
@@ -195,8 +202,8 @@ export default class TrackEvents extends LitElement {
             ev?.xEnd && ev.done
                 ? ev?.xEnd - ev?.xStart + "px"
                 : getPlayheadPosition(
-                      this.bpm,
-                      this.currentTime - ev.startTime,
+                      this.store.bpm,
+                      this.store.currentTime - ev.startTime,
                   ) + "px";
     }
 
@@ -213,7 +220,7 @@ export default class TrackEvents extends LitElement {
                 const classes = classMap({
                     event: true,
                     "event-done": !!done,
-                    "event-drawing": !done && this.isRecording,
+                    "event-drawing": !done && this.store.isRecording,
                 });
 
                 return html`<div

@@ -2,7 +2,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import SimpleOscillator from "./SimpleOscilator";
-import { consumeProp } from "@/decorators/sync";
 import { playbackContext } from "@/context/playbackContext";
 import type AudioSource from "@/lib/AudioSource";
 import {
@@ -11,6 +10,8 @@ import {
 } from "@/lib/KeyboardManager";
 import type { Panel } from "@/lib/PanelScreenManager";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
+import { storeSubscriber } from "@/store/StoreLit";
+import { store } from "@/store/AppStore";
 
 const notesMap = [
     {
@@ -76,12 +77,6 @@ const notesMap = [
 
 @customElement("keyboard-view")
 export default class KeyboardView extends LitElement {
-    @consumeProp({ context: playbackContext })
-    audioContext!: AudioContext;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    master!: AudioSource;
-
     @property({ type: Object })
     panel!: Panel;
 
@@ -173,7 +168,7 @@ export default class KeyboardView extends LitElement {
     connectedCallback(): void {
         super.connectedCallback();
 
-        this.osc = new SimpleOscillator(this.audioContext, this.master);
+        this.osc = new SimpleOscillator(store.ctx, store.master);
 
         this.keyboardController.addKeys(this.keyData);
 

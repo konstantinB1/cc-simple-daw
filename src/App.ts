@@ -1,17 +1,17 @@
-import { css, html, LitElement } from "lit";
+import { css, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
-import "@modules/view/View";
-import {
-    attachPlaybackContextEvents,
-    playbackContext,
-    PlaybackContextStore,
-} from "./context/playbackContext";
+import { playbackContext } from "./context/playbackContext";
 import { ContextProvider } from "@lit/context";
-import { themeVars } from "./styles";
+import { createGlobalStylesheet, themeVars } from "./styles";
 import StyleManager, { Theme } from "./utils/stylesheets";
 
 import { stylesContext } from "./context/stylesContext";
+import { configContext, ConfigContextStore } from "./context/configContext";
+
+import { html } from "@lit-labs/signals";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
+import AppView from "@modules/view/View";
 
 export function createTheme(context: LitElement) {
     const theme = new Theme(themeVars);
@@ -26,18 +26,28 @@ export function createTheme(context: LitElement) {
     });
 }
 
+export type AppElement = LitElement & {
+    playbackProvider: ContextProvider<typeof playbackContext>;
+    stylesProvider: ContextProvider<typeof stylesContext>;
+    configContext: ContextProvider<typeof configContext>;
+};
+
 @customElement("root-app")
-export class App extends LitElement {
-    playbackProvider = new ContextProvider(this, {
-        context: playbackContext,
-        initialValue: new PlaybackContextStore(),
-    });
+export class App extends ScopedRegistryHost(LitElement) {
+    static elementDefinitions = {
+        "app-view": AppView,
+    };
 
     stylesProvider: ContextProvider<typeof stylesContext> = createTheme(this);
 
+    configContext = new ContextProvider(this, {
+        context: configContext,
+        initialValue: new ConfigContextStore(),
+    });
+
     connectedCallback(): void {
         super.connectedCallback();
-        attachPlaybackContextEvents(this, this.playbackProvider);
+        createGlobalStylesheet();
     }
 
     static styles = [

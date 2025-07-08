@@ -8,9 +8,8 @@ import {
 import { MAX_TIME_BEATS, BEAT_WIDTH } from "./TracksView";
 import { customElement, property, query, state } from "lit/decorators.js";
 
-import { consumeProp } from "@/decorators/sync";
 import { playbackContext, TimeEventChange } from "@/context/playbackContext";
-import { PlaybackContextConsumerBase } from "@/mixins/WithPlaybackContext";
+
 import { msToSeconds } from "@/utils/TimeUtils";
 import { styleMap } from "lit/directives/style-map.js";
 
@@ -34,16 +33,8 @@ export default class TimeTracker extends LitElement {
     @property({ type: Number })
     currentQuantisize!: number;
 
-    @consumeProp({ context: playbackContext, subscribe: true })
-    bpm!: number;
-
-    @consumeProp({ context: playbackContext, subscribe: true })
-    currentTime!: number;
-
     @state()
     xPos: number = 0;
-
-    private playbackCtxConsumer = new PlaybackContextConsumerBase(this);
 
     @state()
     private cachedCells!: TemplateResult[];
@@ -129,20 +120,10 @@ export default class TimeTracker extends LitElement {
             const x = e.clientX - this.xLeft;
 
             const time = x <= 0 ? 0 : getCurrentTimeFromPosition(this.bpm, x);
-
-            this.playbackCtxConsumer.$setCurrentTime({
-                value: time,
-                type: TimeEventChange.SeekEnd,
-            });
         }
     }
 
     private mouseDownHandler() {
-        this.playbackCtxConsumer.$setCurrentTime({
-            value: this.currentTime,
-            type: TimeEventChange.SeekStart,
-        });
-
         this.seeking = true;
     }
 

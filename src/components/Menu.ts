@@ -3,6 +3,7 @@ import {
     html,
     LitElement,
     nothing,
+    type CSSResultGroup,
     type PropertyValues,
     type TemplateResult,
 } from "lit";
@@ -27,7 +28,7 @@ export enum SelectSize {
 }
 
 @customElement("menu-list")
-export default class Select
+export default class MenuList
     extends WithStyles(LitElement)
     implements AnchorElementProps
 {
@@ -60,6 +61,12 @@ export default class Select
 
     @property({ type: Object })
     root: HTMLElement = document.body;
+
+    @property({ type: Object })
+    override?: CSSResultGroup;
+
+    @property({ type: Boolean })
+    backdrop: boolean = true;
 
     @state()
     backdropElement: HTMLElement | null = null;
@@ -130,6 +137,14 @@ export default class Select
             }
         `,
     ];
+
+    protected firstUpdated(_changedProperties: PropertyValues): void {
+        if (this.override) {
+            const stylesheet = new CSSStyleSheet();
+            stylesheet.replaceSync(this.override?.toString() || "");
+            this.shadowRoot?.adoptedStyleSheets.push(stylesheet);
+        }
+    }
 
     private get dropdownStyles() {
         return [
@@ -212,7 +227,7 @@ export default class Select
     private async openDropdown() {
         this.isOpen = !this.isOpen;
 
-        if (this.isOpen) {
+        if (this.isOpen && this.backdropElement) {
             this.backdropElement!.classList.add("visible");
             window.addEventListener("keydown", this.handleKeyDown);
         } else {
@@ -245,6 +260,16 @@ export default class Select
         container.addEventListener("click", this.backdropClick);
     }
 
+    private get renderBackdrop(): TemplateResult | typeof nothing {
+        if (!this.backdrop) {
+            return nothing;
+        }
+
+        return portal(nothing, this.root, {
+            modifyContainer: this.backdropAndDropdownElement.bind(this),
+        });
+    }
+
     render() {
         return html`
             <div
@@ -253,9 +278,7 @@ export default class Select
                 class="select-container"
                 tabindex="0"
             >
-                ${portal(nothing, this.root, {
-                    modifyContainer: this.backdropAndDropdownElement.bind(this),
-                })}
+                ${this.renderBackdrop}
                 <anchor-element
                     .visible=${this.visible}
                     anchor="bottom-left"

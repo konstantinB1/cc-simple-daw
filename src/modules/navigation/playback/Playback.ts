@@ -1,23 +1,19 @@
-import {
-    css,
-    html,
-    LitElement,
-    type PropertyValues,
-    type TemplateResult,
-} from "lit";
+import { css, LitElement, type PropertyValues, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import "./BpmPicker";
 import "./TimeIndicator";
 import Metronome from "./Metronome";
 
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
-import { msToSeconds, StopWatch } from "@/utils/TimeUtils";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-import { TimeEventChange } from "@/context/playbackContext";
+
+import { html } from "@lit-labs/signals";
+
+import { store } from "@/store/AppStore";
+import WatchController, { storeSubscriber } from "@/store/StoreLit";
 
 @customElement("playback-element")
-export default class PlaybackElement extends WithPlaybackContext(LitElement) {
+export default class PlaybackElement extends LitElement {
     @property({ type: Object })
     keyboardManager!: LayeredKeyboardManager;
 
@@ -29,7 +25,35 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     @state()
     private countdown: boolean = false;
 
-    private stopWatch = new StopWatch();
+    @storeSubscriber(store, (state) => ({
+        currentTime: state.playback.currentTime,
+        isPlaying: state.playback.isPlaying,
+        isRecording: state.playback.isRecording,
+        bpm: state.playback.bpm,
+    }))
+    private state = {
+        currentTime: 0,
+        isPlaying: false,
+        isRecording: false,
+        bpm: 120,
+    };
+
+    watchController = new WatchController(this, store, {
+        "playback.lastTimeEventChange": () => {
+            store.scheduler.stop();
+        },
+        "playback.isPlaying": (isPlaying: boolean) => {
+            if (isPlaying && this.isMetronomeOn) {
+                if (!this.metronomeRafId) {
+                    this.metronomeLoop();
+                }
+            } else if (this.metronomeRafId) {
+                cancelAnimationFrame(this.metronomeRafId);
+                this.metronome.stop();
+                this.metronomeRafId = undefined;
+            }
+        },
+    });
 
     static styles = [
         css`
@@ -52,10 +76,8 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     connectedCallback(): void {
         super.connectedCallback();
 
-        this.metronome = new Metronome(
-            this.playbackContext.preview,
-            this.playbackContext.audioContext,
-        );
+        this.metronome = new Metronome(store.preview, store.ctx);
+
         this.metronome.preloadTickSound();
 
         this.keyboardManager.addKeys([
@@ -97,50 +119,23 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     }
 
     private async handlePlay(): Promise<void> {
-        this.consumer.$toggleIsPlaying();
-
-        const isPlaying = !this.playbackContext.isPlaying;
-        const currentTime = this.playbackContext.currentTime;
+        const isPlaying = this.state.isPlaying;
 
         if (isPlaying) {
             this.metronome.cancelCountdown();
-            this.stopWatch.stop();
-            this.playbackContext.scheduler.stop();
+            store.stopPlayback();
         } else {
-            const setCurrentTime = (time: number) =>
-                this.consumer.$setCurrentTime({
-                    value: time,
-                    type: TimeEventChange.Natural,
-                });
-
             if (this.countdown) {
-                await this.metronome.fixedCountdown(this.playbackContext.bpm);
-
-                this.stopWatch.start(() => {
-                    const elapsedTime = this.stopWatch.getElapsedTime();
-                    setCurrentTime(elapsedTime);
-                }, currentTime)!;
-
-                this.playbackContext.master.stop();
-            } else {
-                this.stopWatch.start(() => {
-                    const elapsedTime = this.stopWatch.getElapsedTime();
-                    setCurrentTime(elapsedTime);
-
-                    this.playbackContext.scheduler.startFrom(
-                        msToSeconds(elapsedTime),
-                    );
-                }, currentTime)!;
+                await this.metronome.fixedCountdown(this.state.bpm);
             }
+
+            store.startPlayback();
         }
     }
 
     private metronomeLoop() {
-        if (this.isMetronomeOn && this.playbackContext.isPlaying) {
-            this.metronome.tick(
-                this.playbackContext.currentTime,
-                this.playbackContext.bpm,
-            );
+        if (this.isMetronomeOn && this.state.isPlaying) {
+            this.metronome.tick(this.state.currentTime, this.state.bpm);
         }
 
         this.metronomeRafId = requestAnimationFrame(
@@ -151,11 +146,7 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     protected updated(_changedProperties: PropertyValues) {
         super.updated?.(_changedProperties);
 
-        if (_changedProperties.has("lastTimeEventChange")) {
-            this.playbackContext.scheduler.stop();
-        }
-
-        if (this.playbackContext.isPlaying && this.isMetronomeOn) {
+        if (this.state.isPlaying && this.isMetronomeOn) {
             if (!this.metronomeRafId) {
                 this.metronomeLoop();
             }
@@ -167,17 +158,10 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     }
 
     private handleRewind(): void {
-        this.consumer.$setCurrentTime({
-            value: 0,
-            type: TimeEventChange.Rewinded,
-        });
+        store.rewind();
 
-        this.stopWatch.reset();
-
-        if (this.playbackContext.isPlaying) {
-            this.playbackContext.scheduler.reschedule();
-
-            this.stopWatch.start();
+        if (this.state.isPlaying) {
+            store.scheduler.reschedule();
 
             if (this.isMetronomeOn) {
                 this.metronome.rewind();
@@ -186,11 +170,11 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
     }
 
     private handleRecord(): void {
-        this.consumer.$toggleIsRecording();
+        store.toggleRecording();
     }
 
     private get renderIsPlayingIcon(): TemplateResult {
-        if (!this.playbackContext.isPlaying) {
+        if (!this.state.isPlaying) {
             return html`<play-icon size=${14}></play-icon>`;
         }
 
@@ -206,7 +190,7 @@ export default class PlaybackElement extends WithPlaybackContext(LitElement) {
             <div class="container">
                 <div class="button-wrapper">
                     <icon-button
-                        .isActive=${this.playbackContext.isRecording}
+                        .isActive=${this.state.isRecording}
                         size=${40}
                         @handle-click=${this.handleRecord}
                     >

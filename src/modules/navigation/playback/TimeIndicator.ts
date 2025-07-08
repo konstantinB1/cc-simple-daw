@@ -1,11 +1,13 @@
-import WithPlaybackContext from "@/mixins/WithPlaybackContext";
+import { store } from "@/store/AppStore";
+import { storeSubscriber } from "@/store/StoreLit";
 import { litStyles } from "@/styles";
 import { msToSeconds } from "@/utils/TimeUtils";
-import { css, html, LitElement, type PropertyValues } from "lit";
+import { html } from "@lit-labs/signals";
+import { css, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("time-indicator")
-export default class TimeIndicator extends WithPlaybackContext(LitElement) {
+export default class TimeIndicator extends LitElement {
     static styles = [
         litStyles,
         css`
@@ -16,14 +18,15 @@ export default class TimeIndicator extends WithPlaybackContext(LitElement) {
         `,
     ];
 
-    protected shouldUpdate(_changedProperties: PropertyValues): boolean {
-        super.shouldUpdate(_changedProperties);
-
-        return true;
-    }
+    @storeSubscriber(store, (state) => ({
+        currentTime: state.playback.currentTime,
+    }))
+    private store = {
+        currentTime: 0,
+    };
 
     formatedDisplayTime(): string {
-        const ms = this.playbackContext.currentTime;
+        const ms = this.store.currentTime;
         const sec = msToSeconds(ms);
 
         return `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}:${String(

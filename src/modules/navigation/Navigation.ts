@@ -8,6 +8,12 @@ import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
 
 import { helperStyles } from "@/styles";
+import {
+    NestedMenuItemType,
+    type NestedMenuItem,
+} from "@/components/NestedMenu";
+import { configContext, ConfigContextStore } from "@/context/configContext";
+import { consume } from "@lit/context";
 
 @customElement("top-nav")
 export default class Navigation extends LitElement {
@@ -16,6 +22,12 @@ export default class Navigation extends LitElement {
 
     @property({ type: Object })
     screenManager!: PanelScreenManager;
+
+    @consume({ context: configContext, subscribe: true })
+    configStore!: ConfigContextStore;
+
+    @property({ type: Array })
+    menuItems: NestedMenuItem[] = [];
 
     static styles = [
         helperStyles,
@@ -29,6 +41,22 @@ export default class Navigation extends LitElement {
             }
         `,
     ];
+
+    firstUpdated(): void {
+        this.menuItems = [
+            {
+                label: "Persist playback data",
+                description: "Saves current playback state into local storage",
+                type: NestedMenuItemType.Bool,
+                onClick: () => {
+                    const value = this.configStore.persistPlaybackData.get();
+                    this.configStore.setPersistPlaybackData(!value);
+                    this.menuItems[0].checked = !value;
+                },
+                checked: this.configStore.persistPlaybackData.get(),
+            },
+        ];
+    }
 
     render(): TemplateResult {
         return html`
@@ -50,10 +78,11 @@ export default class Navigation extends LitElement {
                         <div class="time-indicator-wrapper">
                             <time-indicator></time-indicator>
                         </div>
+                        <nested-menu
+                            .items=${this.menuItems}
+                            menu-title="Menu"
+                        ></nested-menu>
                     </div>
-                    <!-- <nav>
-                        <nav-track-list></nav-track-list>
-                    </nav> -->
                 </div>
             </header>
         `;

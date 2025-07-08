@@ -1,5 +1,3 @@
-import { playbackContext } from "@/context/playbackContext";
-import { consumeProp } from "@/decorators/sync";
 import type AudioSource from "@/lib/AudioSource";
 import { css, html, LitElement } from "lit";
 
@@ -8,7 +6,6 @@ import { customElement } from "lit/decorators/custom-element.js";
 
 @customElement("nav-track-list")
 export default class TrackList extends LitElement {
-    @consumeProp({ context: playbackContext, subscribe: true })
     master!: AudioSource;
 
     @queryAsync("icon-button")

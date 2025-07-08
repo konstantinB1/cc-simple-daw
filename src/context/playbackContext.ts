@@ -1,6 +1,8 @@
 import AudioSource from "@/lib/AudioSource";
 import Scheduler from "@/lib/Scheduler";
 import VSTRegistry from "@/lib/VSTRegistry";
+import { StopWatch } from "@/utils/TimeUtils";
+import { signal, type Signal } from "@lit-labs/signals";
 import { ContextProvider, createContext } from "@lit/context";
 import type { LitElement } from "lit";
 
@@ -38,12 +40,27 @@ export class PlaybackContextStore {
     preview: AudioSource;
     timeSignature: [number, number] = [4, 4];
     currentTime: number = 0;
-    scheduler: Scheduler;
+    scheduler: Scheduler = new Scheduler(this);
     vstRegistry: VSTRegistry = new VSTRegistry();
     lastTimeEventChange?: TimeEventChange = undefined;
 
+    private stopWatch: StopWatch = new StopWatch();
+
+    private _curTime: Signal.State<number> = signal<number>(0);
+
     constructor() {
         this.audioContext = new AudioContext();
+        this.audioContext.addEventListener("statechange", () => {
+            if (this.audioContext.state === "running") {
+                this.isPlaying = true;
+            } else if (this.audioContext.state === "suspended") {
+                this.isPlaying = false;
+            }
+        });
+
+        this.audioContext.addEventListener("suspend", () => {
+            this.isPlaying = false;
+        });
 
         this.master = new AudioSource(
             "master",
@@ -60,10 +77,54 @@ export class PlaybackContextStore {
             this.master,
             true,
         );
+    }
 
-        this.scheduler = new Scheduler(this);
+    get curTime(): number {
+        return this._curTime.get();
+    }
+
+    rewindToStart(): void {
+        this._curTime.set(0);
+        this.stopWatch.reset();
+        this.stopWatch.start(() => {
+            this._curTime.set(this.stopWatch.getElapsedTime());
+        }, 0);
+
+        this.stop();
+        this.scheduler.startFrom(0);
+    }
+
+    startClean(): void {
+        if (this.audioContext.state === "suspended") {
+            this.audioContext.resume().then(() => {
+                this.stopWatch.start();
+                this.scheduler.startFrom(this.currentTimeSeconds);
+            });
+        } else {
+            this.stopWatch.start();
+            this.scheduler.startFrom(this.currentTimeSeconds);
+        }
+
+        this.isPlaying = true;
+    }
+
+    get currentTimeSeconds(): number {
+        return this.stopWatch.getElapsedTime() / 1000;
+    }
+
+    async stop(): Promise<void> {
+        this.stopWatch.stop();
+        this.scheduler.stop();
+
+        try {
+            await this.audioContext.suspend();
+        } catch (error) {
+            console.error("Error suspending AudioContext:", error);
+        }
     }
 }
+
+export const playbackContextStore = new PlaybackContextStore();
 
 export function attachPlaybackContextEvents(
     host: LitElement,
@@ -92,7 +153,7 @@ export function attachPlaybackContextEvents(
     });
 
     host.addEventListener("playback-context/record", () => {
-        ctx.setValue({
+        return ctx.setValue({
             ...ctx.value,
             isRecording: !ctx.value.isRecording,
         });

@@ -1,7 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { typography } from "../global-styles";
 import { classMap } from "lit/directives/class-map.js";
+import type { TextVariant } from "./Text";
 
 @customElement("mpc-button")
 export default class MpcButton extends LitElement {
@@ -28,7 +28,6 @@ export default class MpcButton extends LitElement {
     }
 
     static styles = [
-        typography,
         css`
             .btn {
                 border-radius: 5px;
@@ -93,16 +92,33 @@ export default class MpcButton extends LitElement {
     }
 
     render() {
+        const classes = classMap({
+            btn: true,
+            [this.sizeClass]: true,
+            "active-indicator": this.active !== undefined && this.active,
+        });
+
+        let labelVariant: TextVariant = "body2";
+
+        switch (this.size) {
+            case "small":
+                labelVariant = "tiny";
+                break;
+            case "medium":
+                labelVariant = "body2";
+                break;
+            case "large":
+                labelVariant = "body1";
+                break;
+        }
+
         return html`
-            <button
-                class=${classMap({
-                    btn: true,
-                    [this.sizeClass]: true,
-                    "active-indicator":
-                        this.active !== undefined && this.active,
-                })}
-            >
-                ${this.renderLabel}
+            <button class=${classes}>
+                <slot name="before-label"></slot>
+                <text-element .variant=${labelVariant}>
+                    ${this.renderLabel}
+                </text-element>
+                <slot name="after-label"></slot>
             </button>
         `;
     }

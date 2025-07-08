@@ -4,23 +4,25 @@ import type { DirectiveResult } from "lit/async-directive.js";
 import { customElement, property } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
+export type TextVariant =
+    | "h1"
+    | "h2"
+    | "h3"
+    | "h4"
+    | "h5"
+    | "body1"
+    | "body2"
+    | "tiny"
+    | "caption"
+    | "mono";
+
 @customElement("text-element")
 export default class Text extends LitElement {
     @property({ type: String })
     weight: "100" | "200" | "300" | "400" | "500" = "300";
 
     @property({ type: String })
-    variant:
-        | "h1"
-        | "h2"
-        | "h3"
-        | "h4"
-        | "h5"
-        | "body1"
-        | "body2"
-        | "tiny"
-        | "caption"
-        | "mono" = "body1";
+    variant: TextVariant = "body1";
 
     @property({ type: String })
     color:

@@ -1,4 +1,3 @@
-import WithStyleManager from "@/mixins/WithStyleManager";
 import { WithStyles } from "@/styles";
 import { beziers, slide, type SlideAnimation } from "@/utils/animate";
 import {
@@ -33,7 +32,6 @@ export type AnchorPosition =
 export default function getAnchorPosition(
     element: HTMLElement,
     anchor: AnchorPosition,
-    width: number = 0,
 ): [number, number] {
     const rect = element.getBoundingClientRect();
     let x: number, y: number;
@@ -160,10 +158,10 @@ export class AnchorElement
 
         const anchorEl = await this.resolvedElement();
 
-        const [x, y] = getAnchorPosition(anchorEl, this.anchor, this.width);
+        const [x, y] = getAnchorPosition(anchorEl, this.anchor);
 
         this.container!.style.left = `${x}px`;
-        this.container!.style.top = `${y}px`;
+        this.container!.style.top = `${y + 5}px`;
     }
 
     render() {
@@ -184,11 +182,7 @@ export class AnchorElement
                 await this.updateComplete;
                 const anchorEl = await this.targetElement;
 
-                const [x, y] = getAnchorPosition(
-                    anchorEl,
-                    this.anchor,
-                    this.width,
-                );
+                const [x, y] = getAnchorPosition(anchorEl, this.anchor);
 
                 if (this.visible) {
                     container.style.display = "block";
