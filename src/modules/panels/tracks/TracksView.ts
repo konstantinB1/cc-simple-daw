@@ -18,7 +18,6 @@ export const MAX_TIME_BEATS = 4;
 export const BEAT_WIDTH = 70;
 export const NEEDLE_START_POS = 131;
 
-@customElement("tracks-view")
 export default class TracksView extends LitElement {
     private currentQuantisize: QuantisizeOptions = QuantisizeOptions["1/4"];
 

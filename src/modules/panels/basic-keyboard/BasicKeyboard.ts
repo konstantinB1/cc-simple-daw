@@ -1,15 +1,14 @@
 import "./KeyboardView";
 import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-import { customElement, property } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 
 import type { Panel } from "@/lib/PanelScreenManager";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
 
-const elementName = "simple-keyboard";
+export const basicKeyboardPanelId = "basic-keyboard";
 
-@customElement(elementName)
-export default class SamplerPanel extends LitElement {
+export default class SimpleKeyboardPanel extends LitElement {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
 
@@ -30,7 +29,7 @@ export default class SamplerPanel extends LitElement {
             <panel-card
                 card-height="220px"
                 card-width="1140px"
-                .cardId=${elementName}
+                .cardId=${basicKeyboardPanelId}
                 .icon=${this.icon}
                 .startPos=${this.startPos}
                 .isDraggable=${true}

@@ -1,37 +1,50 @@
 import { PanelType, type PanelCreateOptions } from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
 import { query } from "lit/decorators.js";
-import "./PanelCard";
-import "../panels/tracks/Tracks";
-import "../panels/sampler/Sampler";
 
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import { store } from "@/store/AppStore";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
+import PanelCard from "./PanelCard";
+import TopNav from "../navigation/TopNav";
+import TracksPanel, { tracksPanelId } from "../panels/tracks/Tracks";
+import SamplerPanel, { samplerPanelId } from "../panels/sampler/Sampler";
+import SimpleKeyboardPanel, {
+    basicKeyboardPanelId,
+} from "../panels/basic-keyboard/BasicKeyboard";
 
 const currentPanels: PanelCreateOptions[] = [
     {
-        name: "tracks-panel",
+        name: tracksPanelId,
         displayName: "Tracks",
         type: PanelType.Essential,
         startPos: [520, 350],
+        element: TracksPanel,
     },
     {
-        name: "sampler-root",
+        name: samplerPanelId,
         displayName: "Sampler",
         type: PanelType.VSTI,
         startPos: [10, 0],
+        element: SamplerPanel,
     },
     {
-        name: "simple-keyboard",
+        name: basicKeyboardPanelId,
         displayName: "Basic Keyboard",
         type: PanelType.VSTI,
         startPos: [520, 0],
         icon: "keyboard-icon",
+        element: SimpleKeyboardPanel,
     },
 ];
 
-export default class AppView extends LitElement {
+export default class AppView extends ScopedRegistryHost(LitElement) {
     keyboardManager: LayeredKeyboardManager = new LayeredKeyboardManager();
+
+    static elementDefinitions = {
+        "panel-card": PanelCard,
+        "top-nav": TopNav,
+    };
 
     @query("#root-container")
     private container!: HTMLElement;

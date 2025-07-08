@@ -11,7 +11,7 @@ import "./components/Menu";
 import "./components/Text";
 import "./components/NestedMenu";
 
-import "@/modules/navigation/Navigation";
+import "@/modules/navigation/TopNav";
 
 import "./modules/panels/sampler/Sampler";
 import "./modules/panels/basic-keyboard/BasicKeyboard";

@@ -16,7 +16,7 @@ import { storeSubscriber } from "@/store/StoreLit";
 import { store } from "@/store/AppStore";
 
 @customElement("top-nav")
-export default class Navigation extends LitElement {
+export default class TopNav extends LitElement {
     @property({ type: Object })
     keyboardManager!: LayeredKeyboardManager;
 

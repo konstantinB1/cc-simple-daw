@@ -5,7 +5,7 @@ import {
     type PropertyValues,
     type TemplateResult,
 } from "lit";
-import { customElement, query, property, state } from "lit/decorators.js";
+import { query, property, state } from "lit/decorators.js";
 
 import TracksCanvasRenderer from "./TracksCanvasRenderer";
 
@@ -18,7 +18,6 @@ import AudioSource from "@/lib/AudioSource";
 import { store } from "@/store/AppStore";
 import WatchController, { storeSubscriber } from "@/store/StoreLit";
 
-@customElement("tracks-view-canvas")
 export default class TracksViewCanvas extends LitElement {
     @property({ type: String })
     quantisize?: string;

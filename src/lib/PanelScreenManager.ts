@@ -1,4 +1,5 @@
 import { VSTInstrument } from "@/modules/vst/VST";
+import type { LitElement } from "lit";
 
 export enum PanelType {
     VSTI,
@@ -13,6 +14,7 @@ export type PanelCreateOptions = {
     type: PanelType;
     startPos?: [number, number];
     icon?: string; // Optional icon for the panel
+    element: CustomElementConstructor;
 };
 
 export type FocusPanelEvent = {
@@ -161,6 +163,8 @@ export default class PanelScreenManager extends EventTarget {
 
     current: Panel | undefined;
 
+    private panelRegistry = new CustomElementRegistry();
+
     constructor() {
         super();
     }
@@ -272,14 +276,30 @@ export default class PanelScreenManager extends EventTarget {
         return panel;
     }
 
+    private registerPanelElement(
+        element: CustomElementConstructor,
+        name: string,
+    ): void {
+        const get = window.customElements.get(name);
+
+        console.log(name);
+
+        if (!get) {
+            window.customElements.define(name, element);
+        }
+    }
+
     public createAndAppend({
         displayName,
         name,
         type,
         startPos,
         icon,
+        element,
     }: PanelCreateOptions) {
         let panel: Panel;
+
+        this.registerPanelElement(element, name);
 
         if (this.panels.find((p) => p.name === name)) {
             throw new Error(`Panel with name ${name} already exists.`);

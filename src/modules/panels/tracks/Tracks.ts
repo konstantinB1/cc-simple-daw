@@ -1,13 +1,13 @@
 import PanelScreenManager, { Panel } from "@/lib/PanelScreenManager";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 
-import "./TracksView";
-import "./view-canvas/TracksViewCanvas";
-import { SEQUENCER_CANVAS } from "@/features";
 import type { SelectOption } from "@/components/Select";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
+import TracksViewCanvas from "./view-canvas/TracksViewCanvas";
+import PanelCard from "@/modules/view/PanelCard";
 
-export const tracksPanelElement = "tracks-panel";
+export const tracksPanelId = "tracks-panel";
 
 export enum QuantisizeOptions {
     "1/2" = 2,
@@ -28,8 +28,7 @@ const quantisizeOptions: SelectOption[] = [
     { value: "64", label: "1/64" },
 ];
 
-@customElement(tracksPanelElement)
-export default class TracksPanel extends LitElement {
+export default class TracksPanel extends ScopedRegistryHost(LitElement) {
     @state()
     private currentQuantisize: string = quantisizeOptions[2].value;
 
@@ -41,6 +40,11 @@ export default class TracksPanel extends LitElement {
 
     @property({ type: Object })
     panel!: Panel;
+
+    static elementDefinitions = {
+        "tracks-view-canvas": TracksViewCanvas,
+        "panel-card": PanelCard,
+    };
 
     static styles = css`
         .tracks-wrapper {
@@ -59,7 +63,7 @@ export default class TracksPanel extends LitElement {
     override render() {
         return html`
             <panel-card
-                .cardId=${tracksPanelElement}
+                .cardId=${tracksPanelId}
                 card-width="1140px"
                 .isDraggable=${true}
                 .startPos=${this.startPos}
@@ -76,13 +80,11 @@ export default class TracksPanel extends LitElement {
                     </div>
                 </card-sub-header>
                 <div class="tracks-wrapper">
-                    ${SEQUENCER_CANVAS
-                        ? html`<tracks-view-canvas
-                              .screenManager=${this.screenManager}
-                              .quantisize=${this.currentQuantisize}
-                              .panel=${this.panel}
-                          ></tracks-view-canvas>`
-                        : html`<tracks-view></tracks-view>`}
+                    <tracks-view-canvas
+                        .screenManager=${this.screenManager}
+                        .quantisize=${this.currentQuantisize}
+                        .panel=${this.panel}
+                    ></tracks-view-canvas>
                 </div>
             </panel-card>
         `;

@@ -1,12 +1,11 @@
 import "./Pads";
 import { html, LitElement } from "lit";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
-import { customElement, property } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
 
-const elementName = "sampler-root";
+export const samplerPanelId = "sampler-root";
 
-@customElement(elementName)
 export default class SamplerPanel extends LitElement {
     private keyboardManager: LayeredKeyboardManager =
         new LayeredKeyboardManager();
@@ -23,7 +22,7 @@ export default class SamplerPanel extends LitElement {
                 <panel-card
                     card-height="auto"
                     card-width="500px"
-                    .cardId=${elementName}
+                    .cardId=${samplerPanelId}
                     .startPos=${this.startPos}
                     .isDraggable=${true}
                     padded
