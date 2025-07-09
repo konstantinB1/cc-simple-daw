@@ -1,5 +1,4 @@
 import { VSTInstrument } from "@/modules/vst/VST";
-import type { LitElement } from "lit";
 
 export enum PanelType {
     VSTI,
@@ -163,12 +162,6 @@ export default class PanelScreenManager extends EventTarget {
 
     current: Panel | undefined;
 
-    private panelRegistry = new CustomElementRegistry();
-
-    constructor() {
-        super();
-    }
-
     public onPanelFocused(callback: (panel?: Panel) => void): void {
         this.addEventListener("panel-focus", (event: Event) => {
             callback((event as CustomEvent).detail.panel);
@@ -276,13 +269,13 @@ export default class PanelScreenManager extends EventTarget {
         return panel;
     }
 
+    // Consider using new CustomElementRegistry API
+    // https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry
     private registerPanelElement(
         element: CustomElementConstructor,
         name: string,
     ): void {
         const get = window.customElements.get(name);
-
-        console.log(name);
 
         if (!get) {
             window.customElements.define(name, element);
@@ -309,7 +302,6 @@ export default class PanelScreenManager extends EventTarget {
 
         htmlElement.cardId = name;
         htmlElement.startPos = startPos || DEFAULT_START_POS;
-
         htmlElement.screenManager = this;
         htmlElement.icon = icon;
 

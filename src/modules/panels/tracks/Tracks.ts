@@ -6,6 +6,7 @@ import type { SelectOption } from "@/components/Select";
 import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
 import TracksViewCanvas from "./view-canvas/TracksViewCanvas";
 import PanelCard from "@/modules/view/PanelCard";
+import TracksToolbar, { tools, type Tool } from "./Tracks.Toolbar";
 
 export const tracksPanelId = "tracks-panel";
 
@@ -41,9 +42,13 @@ export default class TracksPanel extends ScopedRegistryHost(LitElement) {
     @property({ type: Object })
     panel!: Panel;
 
+    @property({ type: Object })
+    currentTool: Tool = tools.click;
+
     static elementDefinitions = {
         "tracks-view-canvas": TracksViewCanvas,
         "panel-card": PanelCard,
+        "tracks-toolbar": TracksToolbar,
     };
 
     static styles = css`
@@ -60,6 +65,10 @@ export default class TracksPanel extends ScopedRegistryHost(LitElement) {
         this.currentQuantisize = value;
     }
 
+    private onToolChange(event: CustomEvent<Tool>) {
+        this.currentTool = event.detail;
+    }
+
     override render() {
         return html`
             <panel-card
@@ -69,16 +78,10 @@ export default class TracksPanel extends ScopedRegistryHost(LitElement) {
                 .startPos=${this.startPos}
                 .screenManagerInstance=${this.screenManager as any}
             >
-                <card-sub-header>
-                    <div slot="menu-items">
-                        <daw-select
-                            .options=${quantisizeOptions}
-                            size="small"
-                            .value=${this.currentQuantisize}
-                            @select-changed=${this.setQuantisize}
-                        ></daw-select>
-                    </div>
-                </card-sub-header>
+                <tracks-toolbar
+                    .currentTool=${this.currentTool}
+                    @tool-change=${this.onToolChange}
+                ></tracks-toolbar>
                 <div class="tracks-wrapper">
                     <tracks-view-canvas
                         .screenManager=${this.screenManager}

@@ -496,6 +496,10 @@ export const litStyles = css`
         border-bottom: 1px solid var(--color-text);
     }
 
+    .border-bottom-primary-tint {
+        border-bottom: 1px solid var(--color-tint-primary);
+    }
+
     .border-bottom-background {
         border-bottom: 1px solid var(--color-background);
     }
@@ -743,6 +747,11 @@ export const litStyles = css`
     .my-6 {
         margin-top: var(--m-6);
         margin-bottom: var(--m-6);
+    }
+
+    .transition-to-box-shadow {
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+        transition: box-shadow 0.5s ease-in-out;
     }
 `;
 

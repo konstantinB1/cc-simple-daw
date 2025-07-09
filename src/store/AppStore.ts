@@ -1,6 +1,6 @@
-import { StopWatch } from "@/utils/TimeUtils";
+import { msToSeconds, StopWatch } from "@/utils/TimeUtils";
 import Store from "./Store";
-import Scheduler from "@/lib/Scheduler";
+import PlaybackScheduler from "@/lib/PlaybackScheduler";
 import AudioSource from "@/lib/AudioSource";
 import PanelScreenManager from "@/lib/PanelScreenManager";
 
@@ -17,7 +17,7 @@ export type ConfigState = {
     persistPlaybackData?: boolean; // Optional flag to persist playback data
 };
 
-type InitialState = {
+export type StoreState = {
     playback: PlaybackState; // Optional playback state
     config: ConfigState; // Optional configuration state
     screenManager: PanelScreenManager; // Screen manager for handling UI panels
@@ -31,7 +31,7 @@ export enum TimeEventChange {
     Natural,
 }
 
-const initialState: InitialState = {
+const initialState: StoreState = {
     playback: {
         isPlaying: false,
         isRecording: false,
@@ -46,14 +46,14 @@ const initialState: InitialState = {
     screenManager: new PanelScreenManager(),
 };
 
-class AppStore extends Store<InitialState> {
-    protected override state: InitialState = initialState;
+class AppStore extends Store<StoreState> {
+    protected override state: StoreState = initialState;
 
     private stopWatch: StopWatch = new StopWatch();
 
     private audioContext: AudioContext = new AudioContext();
 
-    scheduler: Scheduler = new Scheduler(this);
+    scheduler: PlaybackScheduler = new PlaybackScheduler();
     master: AudioSource; // Master audio source
     preview: AudioSource; // Preview audio source
 
@@ -98,6 +98,7 @@ class AppStore extends Store<InitialState> {
 
         if (isPlaying) {
             this.startPlayback();
+            this.scheduler.reschedule();
         }
     }
 
@@ -115,7 +116,7 @@ class AppStore extends Store<InitialState> {
                 }
             });
 
-            this.scheduler.startFrom(time);
+            this.scheduler.startFrom(msToSeconds(time));
             onTick?.(time);
         }, currentTime);
     }
@@ -153,6 +154,20 @@ class AppStore extends Store<InitialState> {
         this.setState((state) => {
             state.playback.channels = channels;
         });
+    }
+
+    movePlayheadTo(time: number): void {
+        this.stopWatch.reset();
+        this.stopWatch.start(() => {
+            this.setState((state) => {
+                state.playback.currentTime = time;
+                state.playback.timeEventChange = TimeEventChange.SeekEnd;
+            });
+        }, time);
+
+        if (this.state.playback.isPlaying) {
+            this.scheduler.reschedule();
+        }
     }
 }
 

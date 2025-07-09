@@ -18,6 +18,7 @@ import {
 import AudioSource from "@/lib/AudioSource";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
 import { store } from "@/store/AppStore";
+import type { Panel, VSTIPanel } from "@/lib/PanelScreenManager";
 
 const noop = () => {};
 
@@ -137,6 +138,9 @@ export default class Pads extends LitElement {
     @property({ type: Object })
     screenManager!: PanelScreenManager;
 
+    @property({ type: Object })
+    panel!: VSTIPanel;
+
     private samplerMaster!: AudioSource;
 
     static styles: CSSResultGroup = css`
@@ -184,7 +188,7 @@ export default class Pads extends LitElement {
         store.master.addSubChannel(this.samplerMaster);
 
         this.screenManager.onPanelFocused((p) => {
-            if (p?.name === "sampler-root") {
+            if (p?.name === this.panel.name) {
                 this.samplerKeyMgr.attachEventListeners();
             } else {
                 this.samplerKeyMgr.detachEventListeners();

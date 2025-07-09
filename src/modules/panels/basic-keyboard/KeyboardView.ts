@@ -92,7 +92,7 @@ export default class KeyboardView extends LitElement {
         css`
             :host {
                 display: block;
-                height: 170px;
+                height: 100%;
                 width: 100%;
                 overflow: hidden;
 

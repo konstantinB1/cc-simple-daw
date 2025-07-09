@@ -10,6 +10,7 @@ import "./components/AnchorElement";
 import "./components/Menu";
 import "./components/Text";
 import "./components/NestedMenu";
+import "./components/Tooltip";
 
 import "@/modules/navigation/TopNav";
 

@@ -4,6 +4,7 @@ import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import type { Panel } from "@/lib/PanelScreenManager";
 
 import { store } from "@/store/AppStore";
+import { helperStyles } from "@/styles";
 import { clampXToViewport, clampYToViewport } from "@/utils/geometry";
 
 import {
@@ -81,6 +82,7 @@ export default class PanelCard extends LitElement implements PanelCardElement {
     private panel?: Panel;
 
     static styles: CSSResult[] = [
+        helperStyles,
         css`
             :host {
                 display: block;
@@ -93,7 +95,8 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                 background-color: var(--card-color);
                 border-radius: var(--border-radius);
                 position: absolute;
-                box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 1px 15px rgba(0, 0, 0, 0.2);
+                transition: box-shadow 0.2s ease-in-out;
                 outline: none;
             }
 
@@ -105,7 +108,7 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             .card-header {
                 box-sizing: border-box;
                 width: 100%;
-                height: 55px;
+                height: 45px;
                 background-color: var(--color-secondary);
                 border-top-left-radius: inherit;
                 border-top-right-radius: inherit;
@@ -117,6 +120,7 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             }
 
             .content-wrapper {
+                height: 100%;
                 border-top: none;
                 border-bottom-left-radius: inherit;
                 border-bottom-right-radius: inherit;
@@ -142,18 +146,10 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             }
 
             .card-title {
-                font-size: 0.85em;
-                color: var(--color-text-primary);
-                padding-left: 16px;
             }
 
             .card-padded {
                 padding: 0 16px;
-            }
-
-            .card.card.is-focused {
-                outline: 2px solid var(--color-tint-primary);
-                outline-offset: -2px;
             }
 
             .icon-wrapper {
@@ -163,6 +159,18 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             .header-title {
                 display: flex;
                 align-items: center;
+            }
+
+            .indicator {
+                border-radius: 50%;
+                width: 8px;
+                height: 8px;
+                background-color: var(--color-warning);
+                margin: auto;
+            }
+
+            .indicator-focused {
+                background-color: var(--color-success);
             }
         `,
     ];
@@ -347,6 +355,11 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             top: !this.isFullscreen ? "0" : `${80}px`,
         });
 
+        const activeIndicatorClasses = classMap({
+            "indicator-focused": this.isFocused,
+            indicator: true,
+        });
+
         return html`<div
             tabindex="0"
             @focus=${this.handleFocus}
@@ -361,9 +374,10 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                 class=${headerClasses}
                 @dblclick="${this.handleDoubleClick.bind(this)}"
             >
-                <div class="header-title">
-                    ${this.renderIcon}
-                    <text-element variant="tiny" class="card-title">
+                <div class="flex flex-start gap-1 pl-4">
+                    <div class=${activeIndicatorClasses}></div>
+                    <!-- ${this.renderIcon} -->
+                    <text-element variant="body1" class="pl-2">
                         ${this.panelName}
                     </text-element>
                 </div>

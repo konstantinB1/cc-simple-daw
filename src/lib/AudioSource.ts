@@ -160,6 +160,7 @@ export default class AudioSource extends EventTarget {
         }
 
         source.connect(this.ctx.destination);
+
         source.start(when, offset, duration);
 
         const eventData: PlayEvent = {

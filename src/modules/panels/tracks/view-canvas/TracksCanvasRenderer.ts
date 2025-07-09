@@ -169,6 +169,7 @@ export default class TracksCanvasRenderer {
         this.element.addEventListener("mousemove", this.handleMouseMove);
         this.element.addEventListener("mouseup", this.handleMouseUp);
         this.element.addEventListener("mouseleave", this.handleMouseLeave);
+        this.element.addEventListener("click", this.handleClick);
 
         // Also add wheel event to container if available for fullscreen support
         if (this.container) {
@@ -184,6 +185,7 @@ export default class TracksCanvasRenderer {
         this.element.removeEventListener("mousemove", this.handleMouseMove);
         this.element.removeEventListener("mouseup", this.handleMouseUp);
         this.element.removeEventListener("mouseleave", this.handleMouseLeave);
+        this.element.removeEventListener("click", this.handleClick);
 
         if (this.container) {
             this.container.removeEventListener("wheel", this.handleWheel);
@@ -432,7 +434,7 @@ export default class TracksCanvasRenderer {
             // Only draw if there's something visible and beat is positive
             if (actualBeatWidth > 0 && beat > 0) {
                 // Draw beat background (clipped)
-                ctx.fillStyle = themeVars.cardColor;
+                ctx.fillStyle = themeVars.colorPrimary;
                 ctx.fillRect(
                     clippedBeatStart,
                     0,
@@ -696,10 +698,10 @@ export default class TracksCanvasRenderer {
 
             // Set colors based on playing state
             if (isPlaying) {
-                ctx.fillStyle = themeVars.colorTintPrimary;
+                ctx.fillStyle = themeVars.colorSuccess;
                 ctx.globalAlpha = 0.8;
             } else {
-                ctx.fillStyle = themeVars.colorBorder;
+                ctx.fillStyle = themeVars.colorTintPrimary;
                 ctx.globalAlpha = 0.6;
             }
 
@@ -999,5 +1001,48 @@ export default class TracksCanvasRenderer {
             cancelAnimationFrame(this.momentumAnimationId);
             this.momentumAnimationId = null;
         }
+    }
+
+    private handleClick = (e: MouseEvent) => {
+        // Only handle clicks in the timeline area (not in the legend)
+        if (e.offsetX < TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE) {
+            return;
+        }
+
+        // Only handle clicks in the timeline header area
+        if (e.offsetY > TIME_LEGEND_CELL_HEIGHT) {
+            return;
+        }
+
+        // Don't handle clicks if we were dragging
+        if (this.dragState.isDragging) {
+            return;
+        }
+
+        const clickedTime = this.getTimeFromMousePosition(e.offsetX);
+
+        store.movePlayheadTo(clickedTime);
+    };
+
+    private getTimeFromMousePosition(mouseX: number): number {
+        // Calculate the position within the scrollable timeline area
+        const timelineAreaX =
+            mouseX - (TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE);
+
+        // Account for viewport offset
+        const totalTimelineX = timelineAreaX + this.viewportOffsetX;
+
+        // Convert to beat position
+        const currentBeatWidth =
+            BASE_CELL_WIDTH * this.zoomState.current!.level;
+        const beatPosition = totalTimelineX / currentBeatWidth;
+
+        // Convert beat position to time in milliseconds
+        // Formula: time = (beat position / (BPM / 60)) * 1000
+        const timeInSeconds = beatPosition / (this.bpm! / 60);
+        const timeInMs = timeInSeconds * 1000;
+
+        // Ensure we don't return negative time
+        return Math.max(0, timeInMs);
     }
 }

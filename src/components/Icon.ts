@@ -19,6 +19,8 @@ import "./icons/IconFullscreen";
 import "./icons/PanelsIcon";
 import "./icons/KeyboardIcon";
 import "./icons/CheckedIcon";
+import "./icons/SelectIcon";
+import "./icons/ClickIcon";
 
 export interface SVGIconInterface {
     name: string;
