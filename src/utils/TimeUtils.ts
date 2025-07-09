@@ -86,6 +86,21 @@ export class StopWatch {
     }
 }
 
+export const generateBeatsTimers = (
+    bpm: number,
+    [start, end]: [number, number] = [4, 4],
+) => {
+    const beatDuration = 60 / bpm;
+    const totalBeats = start * end;
+    const timers: number[] = [];
+
+    for (let i = 0; i < totalBeats; i++) {
+        timers.push(i * beatDuration);
+    }
+
+    return timers;
+};
+
 export const msToSeconds = (ms: number, fixed = 4): number =>
     Number((ms / 1000).toFixed(fixed));
 

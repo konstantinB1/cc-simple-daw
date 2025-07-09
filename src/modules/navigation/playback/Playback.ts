@@ -1,4 +1,10 @@
-import { css, html, LitElement, type PropertyValues, type TemplateResult } from "lit";
+import {
+    css,
+    html,
+    LitElement,
+    type PropertyValues,
+    type TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import "./BpmPicker";
@@ -9,6 +15,7 @@ import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 import { store } from "@/store/AppStore";
 import WatchController, { storeSubscriber } from "@/store/StoreLit";
+import { generateBeatsTimers } from "@/utils/TimeUtils";
 
 @customElement("playback-element")
 export default class PlaybackElement extends LitElement {
@@ -117,6 +124,12 @@ export default class PlaybackElement extends LitElement {
     }
 
     private async handlePlay(): Promise<void> {
+        console.log(
+            this.metronome.getCountsForTime(
+                this.state.currentTime,
+                this.state.bpm,
+            ),
+        );
         const isPlaying = this.state.isPlaying;
 
         if (isPlaying) {
@@ -139,20 +152,6 @@ export default class PlaybackElement extends LitElement {
         this.metronomeRafId = requestAnimationFrame(
             this.metronomeLoop.bind(this),
         );
-    }
-
-    protected updated(_changedProperties: PropertyValues) {
-        super.updated?.(_changedProperties);
-
-        if (this.state.isPlaying && this.isMetronomeOn) {
-            if (!this.metronomeRafId) {
-                this.metronomeLoop();
-            }
-        } else if (this.metronomeRafId) {
-            cancelAnimationFrame(this.metronomeRafId);
-            this.metronome.stop();
-            this.metronomeRafId = undefined;
-        }
     }
 
     private handleRewind(): void {
@@ -184,6 +183,7 @@ export default class PlaybackElement extends LitElement {
     }
 
     render() {
+        console.log(generateBeatsTimers(this.state.bpm, [4, 4]));
         return html`
             <div class="container">
                 <div class="button-wrapper">
