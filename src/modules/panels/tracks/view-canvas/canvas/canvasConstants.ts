@@ -21,9 +21,11 @@ export const DEFAULT_ZOOM_LEVEL = 0.75;
 
 export const TRACK_LINE_BASE_HEIGHT_PX = 35;
 export const TRACK_LEGEND_CONTAINER_PX = 170;
+export const TRACK_LEGEND_TITLE_Y_PADDING_PX = 15;
+export const TRACK_LEGEND_TITLE_X_PADDING_PX = 10;
 export const TIME_LEGEND_CELL_HEIGHT = 30;
 
-function createZoomLevels(
+export function createZoomLevels(
     min: number,
     max: number,
     step: number,

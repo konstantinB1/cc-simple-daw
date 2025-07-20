@@ -3,4 +3,6 @@ export default class Config {
     static maxTracks: number = 50;
     static maxBars: number = 100;
     static maxBpm: number = 300;
+
+    static sampleRates = [44100, 48000];
 }

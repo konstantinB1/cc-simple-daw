@@ -30,8 +30,8 @@ export function clampYToViewport(
         return containerRect.top + padding;
     }
 
-    if (pos + elHeight > containerBottom - padding) {
-        return containerBottom - elHeight - padding;
+    if (pos + elHeight >= containerBottom - padding) {
+        return containerBottom - elHeight;
     }
 
     // Then clamp to viewport bounds
@@ -44,4 +44,31 @@ export function clampYToViewport(
     }
 
     return pos;
+}
+
+export function getElementOveflowContainerDiff(
+    container: HTMLElement,
+    element: HTMLElement,
+): [number, number] {
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+
+    if (!containerRect || !elementRect) {
+        throw new Error(
+            "Container or element does not have a valid bounding rectangle",
+        );
+    }
+
+    const isOverflowing =
+        elementRect.left < containerRect.left ||
+        elementRect.right > containerRect.right ||
+        elementRect.top < containerRect.top ||
+        elementRect.bottom > containerRect.bottom;
+
+    return isOverflowing
+        ? [
+              elementRect.left - containerRect.left,
+              elementRect.top - containerRect.top,
+          ]
+        : [0, 0];
 }

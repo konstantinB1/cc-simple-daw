@@ -1,6 +1,5 @@
 import type AudioSource from "./AudioSource";
-import type { PlaybackTime } from "@/types";
-import { store } from "@/store/AppStore";
+import type { GlobalAudioContext, PlaybackTime } from "@/types";
 
 export type QueueItemParams = {
     startTime: number;
@@ -21,6 +20,7 @@ export type QueueItem = {
 // This way we keep the clock separate from the scheduling logic
 // because the clock need to be used by Lit context consumers
 export default class PlaybackScheduler {
+    private audioContext: GlobalAudioContext;
     private playbackQueue: QueueItem[] = [];
     private stopQueue: QueueItem[] = [];
 
@@ -28,7 +28,8 @@ export default class PlaybackScheduler {
 
     private prevTimeWindow: PlaybackTime = 0;
 
-    constructor(lookahead: number = 0.1) {
+    constructor(ctx: AudioContext, lookahead: number = 0.1) {
+        this.audioContext = ctx;
         this.lookahead = lookahead;
     }
 
@@ -86,13 +87,18 @@ export default class PlaybackScheduler {
     ): void {
         const { audioSource, params } = next;
 
-        const ctxTime = store.ctx.currentTime;
+        const ctxTime = this.audioContext.currentTime;
 
         // Schedule at the correct offset relative to AudioContext
         const when = ctxTime + (params.startTime - currentTime);
         const endTime = params.endTime;
 
-        audioSource.play(when, 0, endTime, false);
+        audioSource.play({
+            when,
+            offset: 0,
+            duration: endTime,
+            emitEvents: false,
+        });
 
         if (params?.endTime && currentTime > params.endTime) {
             audioSource.stop(0);

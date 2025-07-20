@@ -3,6 +3,7 @@ import Store from "./Store";
 import PlaybackScheduler from "@/lib/PlaybackScheduler";
 import AudioSource from "@/lib/AudioSource";
 import PanelScreenManager from "@/lib/PanelScreenManager";
+import DragPanelRoot from "@/lib/DragPanelRoot";
 
 export type PlaybackState = {
     isPlaying: boolean; // Indicates if playback is currently active
@@ -43,7 +44,7 @@ const initialState: StoreState = {
     config: {
         persistPlaybackData: true,
     },
-    screenManager: new PanelScreenManager(),
+    screenManager: new PanelScreenManager(new DragPanelRoot()),
 };
 
 class AppStore extends Store<StoreState> {
@@ -53,7 +54,7 @@ class AppStore extends Store<StoreState> {
 
     private audioContext: AudioContext = new AudioContext();
 
-    scheduler: PlaybackScheduler = new PlaybackScheduler();
+    scheduler: PlaybackScheduler;
     master: AudioSource; // Master audio source
     preview: AudioSource; // Preview audio source
 
@@ -61,6 +62,7 @@ class AppStore extends Store<StoreState> {
         super(initialState);
 
         this.audioContext = new AudioContext();
+        this.scheduler = new PlaybackScheduler(this.audioContext);
 
         this.master = new AudioSource(
             "master",
@@ -77,6 +79,8 @@ class AppStore extends Store<StoreState> {
             this.master,
             true,
         );
+
+        console.log(this.ctx.baseLatency);
     }
 
     get ctx(): AudioContext {
@@ -105,6 +109,10 @@ class AppStore extends Store<StoreState> {
     startPlayback(onTick?: (currentTime: number) => void): void {
         const currentTime = this.state.playback.currentTime;
 
+        this.ctx.resume().catch((error) => {
+            console.error("Failed to resume audio context:", error);
+        });
+
         this.stopWatch.start(() => {
             const time = this.stopWatch.getElapsedTime();
             this.setState((state) => {
@@ -130,6 +138,10 @@ class AppStore extends Store<StoreState> {
         });
 
         this.scheduler.stop();
+
+        this.ctx.suspend().catch((error) => {
+            console.error("Failed to suspend audio context:", error);
+        });
     }
 
     toggleRecording(): void {
@@ -156,14 +168,8 @@ class AppStore extends Store<StoreState> {
         });
     }
 
-    movePlayheadTo(time: number): void {
-        this.stopWatch.reset();
-        this.stopWatch.start(() => {
-            this.setState((state) => {
-                state.playback.currentTime = time;
-                state.playback.timeEventChange = TimeEventChange.SeekEnd;
-            });
-        }, time);
+    setCurrentTime(time: number): void {
+        this.stopWatch.setElapsedTime(time);
 
         if (this.state.playback.isPlaying) {
             this.scheduler.reschedule();

@@ -26,6 +26,7 @@ export default class SamplerPanel extends LitElement {
                 <panel-card
                     card-height="auto"
                     card-width="500px"
+                    .canFullscreen=${false}
                     .cardId=${samplerPanelId}
                     .startPos=${this.startPos}
                     .isDraggable=${true}

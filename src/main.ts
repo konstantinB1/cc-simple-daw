@@ -26,10 +26,6 @@ function main() {
     });
 
     document.body.appendChild(element);
-
-    console.log(
-        "App initialized. If you see this, the app is running correctly.",
-    );
 }
 
 import type { App } from "./App";

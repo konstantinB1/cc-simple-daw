@@ -1,4 +1,6 @@
-const HOLD_TIMEOUT_MS = 100;
+import type PanelPosition from "@/modules/view/PanelPosition";
+
+const HOLD_TIMEOUT_MS = 15;
 
 export enum DragEvent {
     Start,
@@ -11,49 +13,40 @@ export type DragControllerData = {
     coords: [number, number];
 };
 
-const Y_BOTTOM_PADDING = 5;
-const X_PADDING = 5;
-
-export default class DragElement extends EventTarget {
+export default class DragController extends EventTarget {
     private holdTimeout: NodeJS.Timeout | null = null;
     private dragOffset: [number, number] = [0, 0];
     private pos: [number, number] = [0, 0];
 
     public isDragging: boolean = false;
 
-    private element?: HTMLElement;
-    private readonly containerRect: DOMRect;
-
-    private get rect(): DOMRect | undefined {
-        return this.element?.getBoundingClientRect();
-    }
+    private position: PanelPosition;
 
     enabled: boolean = true;
 
-    constructor(startPos: [number, number] = [0, 0], containerRect: DOMRect) {
-        super();
-        this.containerRect = containerRect;
+    private dragBoundary?: (e: MouseEvent) => boolean;
 
-        this.setStartPos(startPos);
+    constructor(
+        position: PanelPosition,
+        dragBoundary?: (e: MouseEvent) => boolean,
+        startPos: [number, number] = [0, 0],
+    ) {
+        super();
+
+        this.position = position;
+        this.dragBoundary = dragBoundary;
         this.handleWindowMouseMove = this.handleWindowMouseMove.bind(this);
         this.handleWindowMouseUp = this.handleWindowMouseUp.bind(this);
+
+        this.setStartPos(startPos);
     }
 
-    public setElement(element: HTMLElement): void {
-        this.element = element;
-    }
-
-    public setStartPos([x, y]: [number, number]): void {
-        this.pos = [this.getX(x), this.getY(y)];
+    public async setStartPos([x, y]: [number, number]): Promise<void> {
+        this.pos = await this.position.computePosition(x, y);
     }
 
     public handleMouseDown(event: MouseEvent): void {
-        if (
-            !(event.target as HTMLElement).classList.contains(
-                "card-draggable",
-            ) ||
-            !this.enabled
-        ) {
+        if (!this.dragBoundary?.(event) || !this.enabled) {
             return;
         }
 
@@ -75,7 +68,7 @@ export default class DragElement extends EventTarget {
         window.addEventListener("mouseup", this.handleWindowMouseUp);
     }
 
-    private handleWindowMouseMove = (event: MouseEvent) => {
+    private async handleWindowMouseMove(event: MouseEvent) {
         if (!this.isDragging || !this.enabled) {
             return;
         }
@@ -84,46 +77,12 @@ export default class DragElement extends EventTarget {
         const newX = event.clientX - offsetX;
         const newY = event.clientY - offsetY;
 
-        this.pos = [this.getX(newX), this.getY(newY)];
+        this.pos = await this.position.computePosition(newX, newY);
 
         this.triggerDragEvent({
             event: DragEvent.Dragging,
             coords: this.pos,
         });
-    };
-
-    private get height(): number {
-        return this.rect?.height ?? 0;
-    }
-
-    private getY(pos: number): number {
-        const viewportHeight = this.containerRect.height;
-        const top = this.containerRect.top;
-
-        if (pos < top) {
-            return top + Y_BOTTOM_PADDING;
-        }
-
-        if (pos + this.height > viewportHeight) {
-            return viewportHeight - this.height - top;
-        }
-
-        return pos;
-    }
-
-    private getX(pos: number): number {
-        const width = this.element?.getBoundingClientRect().width!;
-        const viewportWidth = document.documentElement.clientWidth;
-
-        if (pos + width > viewportWidth) {
-            return viewportWidth - width - X_PADDING;
-        }
-
-        if (pos < X_PADDING) {
-            return X_PADDING;
-        }
-
-        return pos;
     }
 
     private triggerDragEvent(event: DragControllerData): void {

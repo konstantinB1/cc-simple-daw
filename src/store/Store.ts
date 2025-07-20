@@ -23,6 +23,10 @@ export default class Store<T extends object> {
         };
     }
 
+    /// We should not use this method directly in components.
+    /// Should rely on the class that extends this Store class to provide
+    /// a more specific method for setting state.
+    /// Change this method to `protected` when we define better structure for the store.
     setState(setter: (state: T) => void, patches?: PatchListener): void {
         const nextState = produce(this.state, setter, patches);
 

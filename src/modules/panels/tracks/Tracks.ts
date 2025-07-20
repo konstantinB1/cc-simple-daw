@@ -5,7 +5,7 @@ import { property, state } from "lit/decorators.js";
 import type { SelectOption } from "@/components/Select";
 import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
 import TracksViewCanvas from "./view-canvas/TracksViewCanvas";
-import PanelCard from "@/modules/view/PanelCard";
+import PanelCard from "@/modules/view/panel-card/PanelCard";
 import TracksToolbar, { tools, type Tool } from "./Tracks.Toolbar";
 
 export const tracksPanelId = "tracks-panel";

@@ -1,16 +1,10 @@
-import {
-    css,
-    html,
-    LitElement,
-    nothing,
-    type CSSResultGroup,
-    type PropertyValues,
-    type TemplateResult,
-} from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { portal } from "lit-modal-portal";
-import type { AnchorElementProps, AnchorPosition } from "./AnchorElement";
-import type { DirectiveResult } from "lit/async-directive.js";
+import { css, html, LitElement, type PropertyValues } from "lit";
+import { property, query, state } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
+import Backdrop from "./Backdrop";
+import { helperStyles } from "@/styles";
+import { computePosition, offset, type Placement } from "@floating-ui/dom";
+import { styleMap } from "lit/directives/style-map.js";
 
 export type SelectOption = {
     value: string;
@@ -27,19 +21,15 @@ export enum SelectSize {
     Large = "large",
 }
 
-@customElement("menu-list")
-export default class MenuList extends LitElement implements AnchorElementProps {
+export default class MenuList extends LitElement {
     @property({ type: String })
-    anchor: AnchorPosition = "bottom-left";
+    placement: Placement = "bottom-start";
+
+    @property({ type: Object })
+    container: HTMLElement | null = null;
 
     @property({ type: String })
     size: SelectSize = SelectSize.Medium;
-
-    @property({ type: Object })
-    targetElement!: HTMLElement | Promise<HTMLElement>;
-
-    @property({ type: Boolean })
-    private isOpen: boolean = false;
 
     @state()
     selectedIndex: number = 0;
@@ -47,58 +37,45 @@ export default class MenuList extends LitElement implements AnchorElementProps {
     @property({ type: Boolean, reflect: true })
     visible: boolean = false;
 
-    @property({ type: Number })
-    width?: number | undefined;
-
-    @property({ type: Object })
-    content!: TemplateResult<1>;
-
-    @property({ type: Number })
-    height?: number | undefined;
-
-    @property({ type: Object })
-    root: HTMLElement = document.body;
-
-    @property({ type: Object })
-    override?: CSSResultGroup;
-
     @property({ type: Boolean })
     backdrop: boolean = true;
 
+    @property({ attribute: "initial-value", type: String })
+    initialValue: string = "";
+
+    @query(".root")
+    private rootElement!: HTMLElement;
+
     @state()
-    backdropElement: HTMLElement | null = null;
+    private pos: [number, number] = [0, 0];
 
     constructor() {
         super();
-
-        this.backdropClick = this.backdropClick.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     static styles = [
+        helperStyles,
         css`
-            .select-container {
-                box-sizing: border-box;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                font-size: 0.9em;
-                border-radius: 5px;
-                cursor: pointer;
-                min-width: 100px;
-                width: fit-content;
-                border-radius: var(--border-radius);
-
-                > p {
-                    margin: 0;
-                }
+            .root {
+                position: fixed;
+                background-color: var(--color-primary);
+                box-shadow: var(--box-shadow-menu);
+                z-index: var(--backdrop);
+                top: 0;
+                left: 0;
             }
 
-            .select {
-                border-radius: var(--border-radius);
+            .items {
+                background-color: var(--color-primary);
+                width: 100%;
+                height: 100%;
                 display: flex;
-                align-items: center;
-                justify-content: space-between;
+                flex-direction: column;
+                background-color: var(--color-bg);
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
             }
 
             .size-small {
@@ -117,95 +94,20 @@ export default class MenuList extends LitElement implements AnchorElementProps {
                 font-size: 1em;
                 padding: 15px 20px;
             }
-
-            .select {
-                width: 100%;
-                border: 1px solid var(--color-accent);
-                background-color: var(--color-secondary);
-                color: var(--color-text);
-            }
-
-            .open {
-                display: block; /* Show when open */
-            }
-
-            .value-text {
-                margin: 0;
-            }
         `,
     ];
 
     protected firstUpdated(_changedProperties: PropertyValues): void {
-        if (this.override) {
-            const stylesheet = new CSSStyleSheet();
-            stylesheet.replaceSync(this.override?.toString() || "");
-            this.shadowRoot?.adoptedStyleSheets.push(stylesheet);
+        super.firstUpdated(_changedProperties);
+
+        const slot = this.shadowRoot?.querySelector("slot");
+
+        if (!slot) {
+            throw new Error("Slot element not found in MenuList.");
         }
     }
 
-    private get dropdownStyles() {
-        return [
-            css`
-                .select-backdrop {
-                    background-color: red;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    z-index: 1000;
-
-                    cursor: pointer;
-                }
-
-                .select-menu {
-                    width: 100%;
-                    background-color: var(--color-secondary);
-                    border: 1px solid var(--color-border);
-                    border-radius: 10px;
-                    overflow-y: auto;
-                }
-
-                .select-option {
-                    padding: 10px;
-                    cursor: pointer;
-                    background-color: var(--color-secondary);
-                    border-bottom: 1px solid var(--color-accent);
-                    transition: background-color 0.2s ease;
-                    color: var(--color-text);
-                    font-size: 0.9em;
-                    box-sizing: border-box;
-                    width: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-
-                    &:hover {
-                        background-color: var(--color-tint-primary);
-                    }
-
-                    > span {
-                        font-size: 0.95em;
-                    }
-                }
-
-                .select-option + .selected-item {
-                    color: var(--color-text);
-                    font-weight: bold;
-
-                    &:hover {
-                        background-color: var(--color-tint-primary);
-                    }
-                }
-
-                .open {
-                    display: block;
-                }
-            `,
-        ];
-    }
-
-    private backdropClick(_: Event) {
+    private dispatchClose() {
         this.dispatchEvent(
             new CustomEvent("close", {
                 bubbles: true,
@@ -214,79 +116,115 @@ export default class MenuList extends LitElement implements AnchorElementProps {
         );
     }
 
-    private handleKeyDown(event: KeyboardEvent) {
-        const key = event.key;
-
-        if (key === "ArrowUp") {
+    private async resolvePosition(): Promise<void> {
+        if (!this.container || !this.rootElement) {
+            throw new Error("Container or root element is not defined.");
         }
-    }
 
-    private async openDropdown() {
-        this.isOpen = !this.isOpen;
-
-        if (this.isOpen && this.backdropElement) {
-            this.backdropElement!.classList.add("visible");
-            window.addEventListener("keydown", this.handleKeyDown);
-        } else {
-            window.removeEventListener("keydown", this.handleKeyDown);
-        }
-    }
-
-    protected updated(_changedProperties: PropertyValues): void {
-        super.updated(_changedProperties);
-
-        if (_changedProperties.has("visible") && this.backdropElement) {
-            this.backdropElement!.classList.toggle("hidden", !this.visible);
-            this.backdropElement!.classList.toggle("visible", this.visible);
-        }
-    }
-
-    private backdropAndDropdownElement(container: HTMLElement) {
-        this.backdropElement = container;
-
-        container.classList.add(
-            "full-space",
-            "fixed",
-            "cursor-pointer",
-            "top",
-            "left",
-            "z-backdrop",
-            "hidden",
+        const { x, y } = await computePosition(
+            this.container,
+            this.rootElement,
+            {
+                placement: this.placement,
+                middleware: [offset(2)],
+            },
         );
 
-        container.addEventListener("click", this.backdropClick);
+        this.pos = [Math.round(x), Math.round(y)];
     }
 
-    private get renderBackdrop(): DirectiveResult | typeof nothing {
-        if (!this.backdrop) {
-            return nothing;
-        }
+    connectedCallback(): void {
+        super.connectedCallback();
 
-        return portal(nothing, this.root, {
-            modifyContainer: this.backdropAndDropdownElement.bind(this),
+        Backdrop.onClick(() => {
+            if (!Backdrop.isVisible) {
+                return;
+            }
+
+            Backdrop.hide();
+            this.dispatchClose();
         });
     }
 
-    render() {
+    update(changedProperties: PropertyValues): void {
+        if (changedProperties.has("visible") && this.backdrop) {
+            if (this.visible) {
+                Backdrop.show();
+                document.addEventListener("keydown", this.handleKeyDown);
+
+                this.resolvePosition().catch((error) => {
+                    throw new Error(
+                        `Failed to resolve position: ${error.message}`,
+                    );
+                });
+            } else {
+                Backdrop.hide();
+                document.removeEventListener("keydown", this.handleKeyDown);
+            }
+        }
+
+        super.update(changedProperties);
+    }
+
+    private get widthPx(): string {
+        if (!this.container) {
+            return "auto";
+        }
+
+        return `${this.container.offsetWidth}px`;
+    }
+
+    private handleKeyDown(event: KeyboardEvent) {
+        const key = event.key;
+
+        if (!this.visible) {
+            return;
+        }
+
+        if (key === "ArrowUp") {
+            this.dispatchEvent(
+                new CustomEvent("navigate-up", {
+                    bubbles: true,
+                    composed: true,
+                }),
+            );
+        } else if (key === "Escape") {
+            this.dispatchClose();
+        }
+    }
+
+    private dispatchClick() {
+        this.dispatchEvent(
+            new CustomEvent("click", {
+                bubbles: true,
+                composed: true,
+            }),
+        );
+    }
+
+    private handleItemClick(event: CustomEvent<SelectData>) {
+        const { value } = event.detail;
+        console.log("Menu item clicked:", value);
+    }
+
+    protected override render() {
+        const classes = classMap({
+            root: true,
+            hidden: !this.visible,
+        });
+
+        const [x, y] = this.pos;
+
+        const styles = styleMap({
+            transform: `translate(${x}px, ${y}px)`,
+            width: this.widthPx,
+        });
+
         return html`
-            <div
-                @focus=${this.openDropdown}
-                @blur=${this.backdropClick}
-                class="select-container"
-                tabindex="0"
-            >
-                ${this.renderBackdrop}
-                <anchor-element
-                    .visible=${this.visible}
-                    anchor="bottom-left"
-                    .targetElement=${this.targetElement}
-                    .styles=${this.dropdownStyles}
-                    width=${this.width || 200}
-                    height=${this.height || 200}
-                    .content=${this.content}
-                    @close=${this.backdropClick}
-                >
-                </anchor-element>
+            <div class=${classes} tabindex="1" @click=${this.dispatchClick} style=${styles}>
+                <div class="items"></div>
+                    <slot @click-item=${this.handleItemClick}></slot>
+                </div>
             </div>
         `;
     }

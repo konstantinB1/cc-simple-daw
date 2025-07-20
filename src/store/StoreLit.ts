@@ -2,6 +2,7 @@ import type {
     ReactiveElement,
     ReactiveController,
     ReactiveControllerHost,
+    LitElement,
 } from "lit";
 import type Store from "./Store";
 import type { WatcherCallback } from "./Watcher";
@@ -14,7 +15,7 @@ export function storeSubscriber<T extends object, R = any>(
     store: Store<T>,
     selector?: (state: T) => R,
 ) {
-    return function (target: any, propertyKey: string | symbol) {
+    return function (target: LitElement, propertyKey: string | symbol) {
         (target.constructor as typeof ReactiveElement).addInitializer(
             (element) => {
                 let prevValue: any;

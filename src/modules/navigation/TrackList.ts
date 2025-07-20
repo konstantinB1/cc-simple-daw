@@ -2,9 +2,7 @@ import type AudioSource from "@/lib/AudioSource";
 import { css, html, LitElement } from "lit";
 
 import { queryAsync, state } from "lit/decorators.js";
-import { customElement } from "lit/decorators/custom-element.js";
 
-@customElement("nav-track-list")
 export default class TrackList extends LitElement {
     master!: AudioSource;
 

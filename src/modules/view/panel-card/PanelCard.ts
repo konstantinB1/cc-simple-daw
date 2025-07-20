@@ -1,11 +1,12 @@
-import DragController, { DragEvent } from "@/controllers/DragController";
+import DragController, {
+    DragEvent,
+} from "@/components/drag-system/DragController";
 
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import type { Panel } from "@/lib/PanelScreenManager";
 
 import { store } from "@/store/AppStore";
-import { helperStyles } from "@/styles";
-import { clampXToViewport, clampYToViewport } from "@/utils/geometry";
+import { helperStyles, zIndex } from "@/styles";
 
 import {
     CSSResult,
@@ -17,14 +18,16 @@ import {
     type TemplateResult,
 } from "lit";
 
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
-import { createRef, ref, type Ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-
-const ELEVATED_Z_INDEX = 100;
-const DEFAULT_Z_INDEX = 50;
+import PanelPosition from "../PanelPosition";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
+import Text from "@/components/Text";
+import { PanelDragEvent } from "./PanelEvents";
+import IconButton from "@/components/IconButton";
+import FullscreenIcon from "@/components/icons/IconFullscreen";
 
 export interface PanelCardElement extends HTMLElement {
     startPos?: [number, number];
@@ -35,7 +38,10 @@ export interface PanelCardElement extends HTMLElement {
 }
 
 @customElement("panel-card")
-export default class PanelCard extends LitElement implements PanelCardElement {
+export default class PanelCard
+    extends ScopedRegistryHost(LitElement)
+    implements PanelCardElement
+{
     @property({ type: Array })
     startPos?: [number, number];
 
@@ -60,15 +66,14 @@ export default class PanelCard extends LitElement implements PanelCardElement {
     @property({ type: String })
     icon?: string;
 
+    @property({ type: Boolean })
+    canFullscreen: boolean = true;
+
     @state()
     private isDragging: boolean = false;
 
     @state()
     private pos: [number, number] = [0, 0];
-
-    private dragController!: DragController;
-
-    private cardRef: Ref<HTMLElement> = createRef<HTMLElement>();
 
     @state()
     private elementZIndex: number = 0;
@@ -79,7 +84,23 @@ export default class PanelCard extends LitElement implements PanelCardElement {
     @state()
     isFullscreen: boolean = false;
 
+    @state()
+    private prevPos?: [number, number];
+
+    @query(".card", true)
+    private cardRefElement!: HTMLElement;
+
     private panel?: Panel;
+    private dragController!: DragController;
+
+    @property({ type: String })
+    a: string = "normal";
+
+    static elementDefinitions = {
+        "text-element": Text,
+        "icon-button": IconButton,
+        "fullscreen-icon": FullscreenIcon,
+    };
 
     static styles: CSSResult[] = [
         helperStyles,
@@ -95,9 +116,11 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                 background-color: var(--card-color);
                 border-radius: var(--border-radius);
                 position: absolute;
-                box-shadow: 0 1px 15px rgba(0, 0, 0, 0.2);
-                transition: box-shadow 0.2s ease-in-out;
+                box-shadow: 0 0px 2px rgba(1, 1, 1, 0.5);
                 outline: none;
+                transition: opacity 0.15s ease-in-out;
+
+                opacity: 0.92;
             }
 
             .card.is-dragging {
@@ -112,7 +135,6 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                 background-color: var(--color-secondary);
                 border-top-left-radius: inherit;
                 border-top-right-radius: inherit;
-                border: 1px solid var(--color-secondary);
                 border-bottom: 0;
                 display: flex;
                 align-items: center;
@@ -129,13 +151,13 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                 border-top: 0;
             }
 
-            .fullscreen-card {
-                position: fixed;
+            .card.fullscreen-card {
                 top: 0;
                 left: 0;
                 width: 100vw;
                 height: 100vh;
-                border: none !important;
+                position: relative;
+                border-radius: 0;
             }
 
             .buttons-wrapper {
@@ -143,9 +165,6 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                 align-items: center;
                 gap: 10px;
                 padding-right: 10px;
-            }
-
-            .card-title {
             }
 
             .card-padded {
@@ -172,6 +191,18 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             .indicator-focused {
                 background-color: var(--color-success);
             }
+
+            .card.indicator-focused {
+                background-color: var(--color-success);
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            .card.is-focused {
+                background-color: var(--color-success);
+                transform: scale(1);
+                opacity: 1;
+            }
         `,
     ];
 
@@ -184,47 +215,48 @@ export default class PanelCard extends LitElement implements PanelCardElement {
 
         this.panel = this.screenManager.getPanel(this.cardId);
 
+        if (!this.panel) {
+            throw new Error(`Panel with ID ${this.cardId} not found`);
+        }
+
         if (this.startPos) {
             this.pos = this.startPos;
         }
     }
 
-    protected firstUpdated(_changedProperties: PropertyValues): void {
-        this.dispatchEvent(
-            new CustomEvent("state-change", {
-                bubbles: true,
-                composed: true,
-                detail: {
-                    cardId: this.cardId,
-                    cardWidth: this.cardWidth,
-                    cardHeight: this.cardHeight,
-                    isDraggable: this.isDraggable,
-                },
-            }),
+    protected updated(_changedProperties: PropertyValues): void {}
+
+    protected async firstUpdated(
+        _changedProperties: PropertyValues,
+    ): Promise<void> {
+        await this.updateComplete;
+
+        const position = new PanelPosition(
+            this.cardRefElement,
+            this.screenManager.rootContainer,
         );
-        const containerRect =
-            this.screenManager.container!.getBoundingClientRect();
 
-        const [x, y] = this.pos;
+        const startPos = await position.computePosition(
+            ...(this.startPos ?? [0, 0]),
+        );
 
-        this.pos = [x, y];
+        this.pos = startPos;
+
         this.dragController = new DragController(
-            this.computedPos,
-            containerRect,
+            position,
             (e: MouseEvent) =>
                 (e.target as HTMLElement).classList.contains("card-draggable"),
+            startPos,
         );
-
-        this.dragController.setElement(this.cardRef.value!);
 
         this.screenManager.onPanelFocused((panel) => {
             if (panel?.name === this.cardId) {
                 this.keyboardManager?.attachEventListeners();
-                this.elementZIndex = ELEVATED_Z_INDEX;
+                this.elementZIndex = zIndex.panelFocused;
                 this.isFocused = true;
             } else {
                 this.keyboardManager?.detachEventListeners();
-                this.elementZIndex = DEFAULT_Z_INDEX;
+                this.elementZIndex = zIndex.panelNormal;
                 this.isFocused = false;
                 this.screenManager.quetlyUnfocus();
             }
@@ -237,12 +269,22 @@ export default class PanelCard extends LitElement implements PanelCardElement {
                     case DragEvent.Start:
                         this.screenManager.focus(this.cardId);
                         this.isDragging = true;
+
+                        this.dispatchEvent(
+                            new PanelDragEvent(this.cardId, this.pos, true),
+                        );
                         break;
                     case DragEvent.Dragging:
                         this.pos = [x, y];
+                        this.dispatchEvent(
+                            new PanelDragEvent(this.cardId, [x, y], true),
+                        );
                         break;
                     case DragEvent.End:
                         this.isDragging = false;
+                        this.dispatchEvent(
+                            new PanelDragEvent(this.cardId, this.pos, false),
+                        );
                         break;
                 }
             },
@@ -256,14 +298,24 @@ export default class PanelCard extends LitElement implements PanelCardElement {
     }
 
     private handleDoubleClick(): void {
-        this.panel?.toggleFullscreen();
-
-        if (this.isFullscreen) {
-            this.elementZIndex = ELEVATED_Z_INDEX;
+        if (!this.canFullscreen) {
+            return;
         }
 
-        this.isFullscreen = this.panel?.isFullscreen ?? false;
+        this.panel?.toggleFullscreen();
+        this.isFullscreen = !!this.panel?.isFullscreen;
         this.dragController.enabled = !this.isFullscreen;
+
+        if (this.isFullscreen) {
+            this.prevPos = this.pos;
+            this.elementZIndex = zIndex.panelFullScreen;
+        } else {
+            if (this.prevPos) {
+                this.pos = this.prevPos;
+            }
+
+            this.elementZIndex = zIndex.panelFocused;
+        }
     }
 
     private get renderFullscreenButton(): TemplateResult | symbol {
@@ -272,27 +324,11 @@ export default class PanelCard extends LitElement implements PanelCardElement {
         }
 
         return html` <icon-button
-            variant="basic"
             size=${30}
             @handle-click=${this.handleDoubleClick.bind(this)}
         >
-            <fullscreen-icon .size=${18}></fullscreen-icon>
+            <fullscreen-icon .size=${16}></fullscreen-icon>
         </icon-button>`;
-    }
-
-    private get computedPos(): [number, number] {
-        const [x, y] = this.pos;
-        const containerRect =
-            this.screenManager.container!.getBoundingClientRect();
-        const width = this.cardRef.value?.offsetWidth ?? 0;
-        const height = this.cardRef.value?.offsetHeight ?? 0;
-
-        containerRect.height = containerRect.height - 70; // Adjust for header height
-
-        return [
-            clampXToViewport(x, width),
-            clampYToViewport(containerRect, y, height),
-        ];
     }
 
     private get panelName(): string {
@@ -320,7 +356,10 @@ export default class PanelCard extends LitElement implements PanelCardElement {
     }
 
     override render(): TemplateResult {
-        const [x, y] = this.computedPos;
+        let [x, y] = this.pos;
+
+        x = this.isFullscreen ? 0 : x;
+        y = this.isFullscreen ? 0 : y;
 
         let handleMouseDown = (_: MouseEvent) => {};
 
@@ -335,6 +374,7 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             "is-dragging": this.isDragging,
             "is-focused": this.isFocused,
             "fullscreen-card": this.isFullscreen,
+            relative: true,
         });
 
         const headerClasses = classMap({
@@ -348,11 +388,11 @@ export default class PanelCard extends LitElement implements PanelCardElement {
         });
 
         const styles = styleMap({
-            transform: `translate(${this.isFullscreen ? 0 : x}px, ${this.isFullscreen ? 0 : y}px)`,
+            transform: `translate(${x}px, ${y}px)`,
             width: this.isFullscreen ? "100%" : this.cardWidth,
             height: !this.isFullscreen ? this.cardHeight : "100%",
             zIndex: this.elementZIndex,
-            top: !this.isFullscreen ? "0" : `${80}px`,
+            top: 0,
         });
 
         const activeIndicatorClasses = classMap({
@@ -363,7 +403,6 @@ export default class PanelCard extends LitElement implements PanelCardElement {
         return html`<div
             tabindex="0"
             @focus=${this.handleFocus}
-            ${ref(this.cardRef)}
             id=${this.cardId}
             class=${classes}
             style=${styles}
@@ -388,6 +427,6 @@ export default class PanelCard extends LitElement implements PanelCardElement {
             <div class=${contentClasses}>
                 <slot></slot>
             </div>
-        </div> `;
+        </div>`;
     }
 }

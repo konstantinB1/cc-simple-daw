@@ -17,7 +17,7 @@ export type TextVariant =
     | "mono";
 
 @customElement("text-element")
-export default class Text extends LitElement {
+export default class TextElement extends LitElement {
     @property({ type: String })
     weight: "100" | "200" | "300" | "400" | "500" = "300";
 

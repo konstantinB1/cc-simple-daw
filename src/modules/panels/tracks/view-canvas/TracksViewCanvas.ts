@@ -7,7 +7,7 @@ import {
 } from "lit";
 import { query, property, state } from "lit/decorators.js";
 
-import TracksCanvasRenderer from "./TracksCanvasRenderer";
+import TracksCanvasRenderer from "./canvas/TracksCanvasRenderer";
 
 import { classMap } from "lit/directives/class-map.js";
 import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
@@ -106,7 +106,7 @@ export default class TracksViewCanvas extends LitElement {
                 display: block;
                 cursor: grab;
                 background-color: var(--color-primary);
-                touch-action: none; /* Prevent touch scrolling interference */
+                touch-action: none;
             }
 
             #tracks-view-canvas:active {
@@ -174,7 +174,6 @@ export default class TracksViewCanvas extends LitElement {
 
     disconnectedCallback(): void {
         super.disconnectedCallback();
-
         this.renderHelper?.destroy();
     }
 

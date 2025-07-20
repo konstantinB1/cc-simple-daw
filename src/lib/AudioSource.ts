@@ -2,6 +2,7 @@ import { generateUUID } from "@/utils/uuid";
 import type AudioEffect from "./AudioEffect";
 import AudioSample from "./AudioSample";
 import Logger from "./Logger";
+import type { GlobalAudioContext } from "@/types";
 
 export type AudioEvent = {
     data: PlayEvent;
@@ -18,13 +19,25 @@ export type PlayEvent = {
     isPlaying?: boolean;
 };
 
+export type PlayParameters = {
+    when?: number; // When to start playback, defaults to current time
+    offset?: number; // Offset in seconds to start playback from
+    duration?: number; // Duration in seconds to play, if not specified, plays the whole sample
+    emitEvents?: boolean; // Whether to emit play events, defaults to true
+    loopStart?: number; // Start of the loop in seconds
+    loopEnd?: number; // End of the loop in seconds
+    onStart?: () => void; // Callback when playback starts
+    onEnd?: () => void; // Callback when playback ends
+    playbackRate?: number; // Playback rate, defaults to 1.0
+};
+
 // AudioSource is responsible for separation of audio channels
 // from WebAudio API into more coherent structure, so it can be used
 // with pub/sub system for communication between different parts of the application.
 // AudioSource is a base class for multiple parts of the app such as
 // mixer, tracks sequencer, and all VSTs that need to handle audio data.
 export default class AudioSource extends EventTarget {
-    private ctx: AudioContext;
+    private ctx: GlobalAudioContext;
 
     logger = Logger.getInstance();
 
@@ -34,7 +47,8 @@ export default class AudioSource extends EventTarget {
 
     effects: AudioEffect[] = [];
 
-    buffer?: AudioBuffer;
+    // Exposed for testing purposes
+    public buffer?: AudioBuffer;
 
     muted: boolean = false;
 
@@ -87,8 +101,8 @@ export default class AudioSource extends EventTarget {
         return this.gainNode;
     }
 
-    get isLoaded(): boolean {
-        return this.buffer !== undefined;
+    isLoaded(): boolean {
+        return !!this.buffer;
     }
 
     setVolume(volume: number): void {
@@ -128,28 +142,31 @@ export default class AudioSource extends EventTarget {
         this.buffer = audioBuffer;
 
         this.dispatchEvent(
-            new CustomEvent("sampleLoaded", {
+            new CustomEvent("sample-loaded", {
                 detail: { sample: audioBuffer },
             }),
         );
     }
 
-    async play(
-        when: number = this.ctx.currentTime,
-        offset: number = 0,
-        duration?: number,
-        emitEvents: boolean = true,
-        loopStart?: number,
-        loopEnd?: number,
-        onStart?: () => void,
-        onEnd?: () => void,
-    ): Promise<void> {
+    async play({
+        when = 0,
+        offset = 0,
+        duration,
+        emitEvents = true,
+        loopStart,
+        loopEnd,
+        onStart,
+        onEnd,
+        playbackRate = 1.0,
+    }: PlayParameters = {}): Promise<void> {
         if (!this.buffer) throw new Error("No sample loaded to play");
         if (this.muted) return Promise.resolve();
 
         const source = this.ctx.createBufferSource();
         source.buffer = this.buffer;
         const uuid = generateUUID();
+
+        source.playbackRate.setValueAtTime(playbackRate, this.ctx.currentTime);
 
         if (loopStart !== undefined && loopEnd !== undefined) {
             source.loop = true;

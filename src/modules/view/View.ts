@@ -5,7 +5,7 @@ import { query } from "lit/decorators.js";
 import { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import { store } from "@/store/AppStore";
 import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
-import PanelCard from "./PanelCard";
+import PanelCard from "./panel-card/PanelCard";
 import TopNav from "../navigation/TopNav";
 import TracksPanel, { tracksPanelId } from "../panels/tracks/Tracks";
 import SamplerPanel, { samplerPanelId } from "../panels/sampler/Sampler";
@@ -50,11 +50,19 @@ export default class AppView extends ScopedRegistryHost(LitElement) {
     private container!: HTMLElement;
 
     static styles = css`
+        :host {
+            display: block;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+
+            --navbar-padding: 10px;
+        }
+
         .container {
             position: relative;
-            height: calc(100vh - var(--container-top-offset));
-            top: 35px;
-            overflow: hidden;
+            height: calc(100vh - var(--navbar-height));
         }
     `;
 
@@ -65,7 +73,7 @@ export default class AppView extends ScopedRegistryHost(LitElement) {
     firstUpdated(): void {
         super.connectedCallback();
 
-        this.screenManager.container = this.container;
+        this.screenManager.setRootContainer(this.container);
 
         this.keyboardManager.attachEventListeners();
 

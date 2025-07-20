@@ -1,6 +1,6 @@
 import { helperStyles } from "@/styles";
 import { css, html, LitElement, type TemplateResult } from "lit";
-import { property, state } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 
 export type Tool = {
     name: string;
@@ -34,7 +34,6 @@ export default class TracksToolbar extends LitElement {
     private currentTool = tools.click;
 
     private onToolChange(tool: Tool): void {
-        console.log("Tool changed to:", tool.name);
         this.dispatchEvent(
             new CustomEvent("tool-change", {
                 detail: tool,
@@ -45,8 +44,10 @@ export default class TracksToolbar extends LitElement {
     }
 
     override render() {
-        return html` <div class="root full-width p-2 bg-card bbox">
-            <div class="flex flex-start gap-1">
+        return html` <div
+            class="root full-space p-2 bg-card bbox border-bottom-accent"
+        >
+            <div class="flex flex-start gap-1 px-2">
                 ${Object.values(tools).map(
                     (tool) => html`
                         <tooltip-element text=${tool.description}>

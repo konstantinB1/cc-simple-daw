@@ -3,17 +3,17 @@ import Color from "color";
 
 const globalStyles = new CSSStyleSheet();
 
-const basePrimary = Color("#aac7d2");
-
 export const boxShadows = {
     elevated1: "0 1px 5px rgba(0, 0, 0, 0.4)",
     elevated2: "0 2px 10px rgba(0, 0, 0, 0.4)",
     elevated3: "0 4px 15px rgba(0, 0, 0, 0.4)",
     navbar: "0 1px 5px rgba(0, 0, 0, 0.5)",
+    boxShadowMenu: "0 2px 4px rgba(25, 25, 25, 0.7)",
 };
 
 export const layoutVars = {
     containerTopOffset: "15px",
+    navbarHeight: "65px",
     xMargin: "16px",
     p1: "4px",
     p2: "8px",
@@ -77,26 +77,39 @@ export const layoutVars = {
     mb6: "24px",
 };
 
+const basePrimary = Color("#91abff");
+const bgPrimary = Color("#444444");
+
+export const zIndex = {
+    backdrop: 1000,
+    modal: 1100,
+    tooltip: 1200,
+    panelNormal: 100,
+    panelFullScreen: 200,
+    panelFocused: 300,
+};
+
 export const themeVars = {
-    colorPrimary: "#1d1d1d",
-    colorSecondary: "#181818",
-    colorAccent: "#363636",
+    colorPrimary: "#252525",
+    colorSecondary: "#212121",
+    colorDarkContrast: "#1a1a1a",
+    colorAccent: "#414141",
     colorText: "#ffffff",
-    colorBackground: "#222222",
+    colorBackground: bgPrimary.hex(),
     containerWidth: "1200px",
-    cardColor: "#2c2c2c",
+    cardColor: bgPrimary.darken(0.3).hex(),
     colorTintPrimary: basePrimary.hex(),
     colorTintPrimaryActive: basePrimary.darken(1.1).hex(),
     colorTintDark: basePrimary.darken(0.2).hex(),
-    borderRadius: "7px",
-    navBgColor: "#595959",
+    borderRadius: "10px",
     colorSuccess: "#5ace5e",
     colorError: "#f44336",
     colorWarning: "#ff9800",
     colorInfo: "#2196f3",
-    colorBorder: "#333333",
+    colorBorder: "#373737",
     ...boxShadows,
     ...layoutVars,
+    ...zIndex,
 };
 
 export const colorClasses = css`
@@ -270,6 +283,10 @@ export const litStyles = css`
 
     .cursor-default {
         cursor: default;
+    }
+
+    .cursor-grab {
+        cursor: grab;
     }
 
     .fixed {
@@ -610,6 +627,37 @@ export const litStyles = css`
     .pb-6 {
         padding-bottom: var(--p-6);
     }
+
+    .px-1 {
+        padding-left: var(--p-1);
+        padding-right: var(--p-1);
+    }
+
+    .px-2 {
+        padding-left: var(--p-2);
+        padding-right: var(--p-2);
+    }
+
+    .px-3 {
+        padding-left: var(--p-3);
+        padding-right: var(--p-3);
+    }
+
+    .px-4 {
+        padding-left: var(--p-4);
+        padding-right: var(--p-4);
+    }
+
+    .px-5 {
+        padding-left: var(--p-5);
+        padding-right: var(--p-5);
+    }
+
+    .px-6 {
+        padding-left: var(--p-6);
+        padding-right: var(--p-6);
+    }
+
     .m-1 {
         margin: var(--m-1);
     }

@@ -5,20 +5,38 @@ import {
     type PropertyValues,
     type TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 
 import "./BpmPicker";
 import "./TimeIndicator";
-import Metronome from "./Metronome";
 
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 
 import { store } from "@/store/AppStore";
 import WatchController, { storeSubscriber } from "@/store/StoreLit";
-import { generateBeatsTimers } from "@/utils/TimeUtils";
+import Metronome from "@/lib/Metronome";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
+import IconButton from "@/components/IconButton";
+import RecordIcon from "@/components/icons/RecordIcon";
+import RewindIcon from "@/components/icons/RewindIcon";
+import BpmPicker from "./BpmPicker";
+import MetronomeIcon from "@/components/icons/MetronomeIcon";
+import ClockIcon from "@/components/icons/ClockIcon";
+import PlayIcon from "@/components/icons/PlayIcon";
+import StopIcon from "@/components/icons/StopIcon";
 
-@customElement("playback-element")
-export default class PlaybackElement extends LitElement {
+export default class PlaybackElement extends ScopedRegistryHost(LitElement) {
+    static elementDefinitions = {
+        "icon-button": IconButton,
+        "record-icon": RecordIcon,
+        "rewind-icon": RewindIcon,
+        "metronome-icon": MetronomeIcon,
+        "clock-icon": ClockIcon,
+        "play-icon": PlayIcon,
+        "stop-icon": StopIcon,
+        "bpm-picker": BpmPicker,
+    };
+
     @property({ type: Object })
     keyboardManager!: LayeredKeyboardManager;
 
@@ -29,6 +47,9 @@ export default class PlaybackElement extends LitElement {
 
     @state()
     private countdown: boolean = false;
+
+    @state()
+    private beatsPerBar: number = 4;
 
     @storeSubscriber(store, (state) => ({
         currentTime: state.playback.currentTime,
@@ -48,14 +69,19 @@ export default class PlaybackElement extends LitElement {
             store.scheduler.stop();
         },
         "playback.isPlaying": (isPlaying: boolean) => {
+            if (!this.metronome) {
+                return;
+            }
+
             if (isPlaying && this.isMetronomeOn) {
-                if (!this.metronomeRafId) {
-                    this.metronomeLoop();
-                }
-            } else if (this.metronomeRafId) {
-                cancelAnimationFrame(this.metronomeRafId);
+                this.metronome.start(this.state.bpm, this.beatsPerBar);
+            } else {
                 this.metronome.stop();
-                this.metronomeRafId = undefined;
+            }
+        },
+        "playback.bpm": (bpm: number) => {
+            if (this.isMetronomeOn) {
+                this.metronome.restart(bpm, this.beatsPerBar);
             }
         },
     });
@@ -76,14 +102,17 @@ export default class PlaybackElement extends LitElement {
         `,
     ];
 
-    private metronomeRafId: number | undefined = undefined;
-
-    connectedCallback(): void {
+    async connectedCallback(): Promise<void> {
         super.connectedCallback();
 
-        this.metronome = new Metronome(store.preview, store.ctx);
+        this.metronome = new Metronome({
+            channel: store.master,
+            ctx: store.ctx,
+        });
 
-        this.metronome.preloadTickSound();
+        this.metronome.loadMetronomeSound(
+            "/cc-simple-daw/assets/sounds/metronome-tick.wav",
+        );
 
         this.keyboardManager.addKeys([
             {
@@ -119,39 +148,33 @@ export default class PlaybackElement extends LitElement {
         ]);
     }
 
+    protected updated(_changedProperties: PropertyValues): void {
+        super.updated(_changedProperties);
+
+        if (_changedProperties.has("isMetronomeOn")) {
+            if (this.isMetronomeOn) {
+                this.metronome.unmute();
+            } else {
+                this.metronome.mute();
+            }
+        }
+    }
+
     private toggleMetronome(): void {
         this.isMetronomeOn = !this.isMetronomeOn;
     }
 
     private async handlePlay(): Promise<void> {
-        console.log(
-            this.metronome.getCountsForTime(
-                this.state.currentTime,
-                this.state.bpm,
-            ),
-        );
         const isPlaying = this.state.isPlaying;
 
         if (isPlaying) {
-            this.metronome.cancelCountdown();
+            this.metronome.stop();
             store.stopPlayback();
         } else {
-            if (this.countdown) {
-                await this.metronome.fixedCountdown(this.state.bpm);
-            }
+            this.metronome.start(this.state.bpm, this.beatsPerBar);
 
             store.startPlayback();
         }
-    }
-
-    private metronomeLoop() {
-        if (this.isMetronomeOn && this.state.isPlaying) {
-            this.metronome.tick(this.state.currentTime, this.state.bpm);
-        }
-
-        this.metronomeRafId = requestAnimationFrame(
-            this.metronomeLoop.bind(this),
-        );
     }
 
     private handleRewind(): void {
@@ -161,7 +184,9 @@ export default class PlaybackElement extends LitElement {
             store.scheduler.reschedule();
 
             if (this.isMetronomeOn) {
-                this.metronome.rewind();
+                console.log("Rewinding metronome", this.state.bpm);
+                this.metronome.stop();
+                this.metronome.start(this.state.bpm, this.beatsPerBar);
             }
         }
     }
@@ -183,7 +208,6 @@ export default class PlaybackElement extends LitElement {
     }
 
     render() {
-        console.log(generateBeatsTimers(this.state.bpm, [4, 4]));
         return html`
             <div class="container">
                 <div class="button-wrapper">

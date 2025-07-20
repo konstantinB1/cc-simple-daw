@@ -1,22 +1,30 @@
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "./playback/Playback";
-import "./TrackList";
-import "./PanelIndicator";
 import type { LayeredKeyboardManager } from "@/lib/KeyboardManager";
 import type PanelScreenManager from "@/lib/PanelScreenManager";
 
 import { helperStyles } from "@/styles";
-import {
+import NestedMenu, {
     NestedMenuItemType,
     type NestedMenuItem,
 } from "@/components/NestedMenu";
 import { storeSubscriber } from "@/store/StoreLit";
 import { store } from "@/store/AppStore";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
+import PlaybackElement from "./playback/Playback";
+import PanelIndicator from "./PanelIndicator";
+import TimeIndicator from "./playback/TimeIndicator";
 
 @customElement("top-nav")
-export default class TopNav extends LitElement {
+export default class TopNav extends ScopedRegistryHost(LitElement) {
+    static elementDefinitions = {
+        "playback-element": PlaybackElement,
+        "panel-indicator": PanelIndicator,
+        "nested-menu": NestedMenu,
+        "time-indicator": TimeIndicator,
+    };
+
     @property({ type: Object })
     keyboardManager!: LayeredKeyboardManager;
 
@@ -37,7 +45,7 @@ export default class TopNav extends LitElement {
         helperStyles,
         css`
             header {
-                height: 60px;
+                height: var(--navbar-height);
             }
 
             .panel-indicator {
@@ -67,7 +75,7 @@ export default class TopNav extends LitElement {
     render(): TemplateResult {
         return html`
             <header
-                class="fixed full-width top left flex bg-card elevated-navbar"
+                class="relative full-width top left flex bg-card elevated-navbar"
             >
                 <div class="x-margin full-width">
                     <div class="flex flex-start gap-5 full-height">

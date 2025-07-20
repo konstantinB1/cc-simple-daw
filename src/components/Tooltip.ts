@@ -37,7 +37,7 @@ export default class Tooltip extends LitElement {
                 transition:
                     opacity 0.15s ease-in-out,
                     visibility 0.2s ease-in-out;
-                background-color: var(--color-secondary);
+                background-color: var(--color-tint-primary-active);
                 color: var(--color-text-primary);
                 padding: 8px;
                 border-radius: 4px;

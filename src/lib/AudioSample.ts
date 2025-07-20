@@ -1,5 +1,7 @@
+import type { GlobalAudioContext } from "@/types";
+
 export default class AudioSample {
-    private ctx: AudioContext;
+    private ctx: GlobalAudioContext;
 
     rawBuffer!: ArrayBuffer;
 
@@ -25,16 +27,14 @@ export default class AudioSample {
         }
 
         try {
-            const buffer = await this.ctx.decodeAudioData(
-                this.rawBuffer as ArrayBuffer,
-            );
+            const buffer = await this.ctx.decodeAudioData(this.rawBuffer);
 
             this.audioBuffer = buffer;
             this.duration = buffer.duration;
 
             return this.audioBuffer;
         } catch (error) {
-            throw new Error("Failed to decode audio data");
+            throw new Error(`Failed to decode audio data: ${error}`);
         }
     }
 }

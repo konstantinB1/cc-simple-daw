@@ -7,6 +7,7 @@ import StyleManager, { Theme } from "./utils/stylesheets";
 import { html } from "lit";
 import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
 import AppView from "@modules/view/View";
+import Backdrop from "./components/Backdrop";
 
 export function createTheme() {
     const theme = new Theme(themeVars);
@@ -26,6 +27,7 @@ export class App extends ScopedRegistryHost(LitElement) {
         super.connectedCallback();
         createTheme();
         createGlobalStylesheet();
+        Backdrop.create();
     }
 
     static styles = [
@@ -34,7 +36,6 @@ export class App extends ScopedRegistryHost(LitElement) {
                 display: block;
                 height: 100%;
                 width: 100%;
-                overflow: hidden;
             }
         `,
     ];

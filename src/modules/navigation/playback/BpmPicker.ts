@@ -1,39 +1,38 @@
+import UpAndDownIcon from "@/components/icons/UpAndDownIcon";
+import TextElement from "@/components/Text";
 import { store } from "@/store/AppStore";
 import { storeSubscriber } from "@/store/StoreLit";
+import { helperStyles } from "@/styles";
+import { ScopedRegistryHost } from "@lit-labs/scoped-registry-mixin";
 
 import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement } from "lit/decorators.js";
+import { queryAsync } from "lit/decorators.js";
 
-@customElement("bpm-picker")
-export default class BpmPicker extends LitElement {
+export const MAX_BPM = 200;
+export const MIN_BPM = 10;
+
+export default class BpmPicker extends ScopedRegistryHost(LitElement) {
     private isDragging: boolean = false;
     private iconBounds: DOMRect | null = null;
     private clickedPixel: number = 0;
 
+    @queryAsync("#bpm-drag-icon")
+    private icon!: Promise<HTMLElement>;
+
     @storeSubscriber(store, (state) => state.playback.bpm)
     private bpm!: number;
 
-    static styles = [
-        css`
-            .bpm-picker {
-                gap: 5px;
-            }
+    static elementDefinitions = {
+        "text-element": TextElement,
+        "up-down-icon": UpAndDownIcon,
+    };
 
+    static styles = [
+        helperStyles,
+        css`
             .bpm-input {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
                 height: 40px;
                 width: 70px;
-                gap: 20px;
-                border-radius: var(--border-radius);
-                background-color: var(--color-primary);
-                color: var(--color-text);
-                padding: 0 16px;
-            }
-
-            .bpm-input-icon-wrapper {
-                cursor: grab;
             }
         `,
     ];
@@ -46,18 +45,11 @@ export default class BpmPicker extends LitElement {
         return this.iconBounds;
     }
 
-    protected firstUpdated(_: PropertyValues): void {
-        if (!this.iconBounds) {
-            const bounds = this.shadowRoot
-                ?.querySelector(".bpm-input-icon-wrapper")
-                ?.getBoundingClientRect();
+    protected async firstUpdated(_: PropertyValues): Promise<void> {
+        super.firstUpdated(_);
 
-            if (!bounds) {
-                throw new Error("Icon bounds not found");
-            }
-
-            this.iconBounds = bounds;
-        }
+        const icon = await this.icon;
+        this.iconBounds = icon.getBoundingClientRect();
     }
 
     private onMouseDown = (e: MouseEvent) => {
@@ -87,8 +79,8 @@ export default class BpmPicker extends LitElement {
 
         const bpm =
             diffBpm > 0
-                ? Math.max(0, currentBpm - diffBpm)
-                : Math.min(999, currentBpm - diffBpm);
+                ? Math.max(MIN_BPM, currentBpm - diffBpm)
+                : Math.min(MAX_BPM, currentBpm - diffBpm);
 
         store.setState((state) => {
             state.playback.bpm = bpm;
@@ -136,12 +128,15 @@ export default class BpmPicker extends LitElement {
             @focus=${this.handleFocus}
             @blur=${this.handleBlur}
         >
-            <div class="bpm-input">
+            <div
+                class="bpm-input flex flex-space-between px-3 bg-primary radius-normal"
+            >
                 <text-element size="sm" variant="h1" color="text" weight="400">
                     ${this.bpm}
                 </text-element>
                 <div
-                    class="bpm-input-icon-wrapper"
+                    class="cursor-grab"
+                    id="bpm-drag-icon"
                     @mousedown=${this.onMouseDown}
                 >
                     <up-down-icon></up-down-icon>

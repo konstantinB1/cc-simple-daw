@@ -1,4 +1,3 @@
-import { helperStyles } from "@/styles";
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, queryAsync, state } from "lit/decorators.js";
 import "@/components/Menu";
@@ -30,9 +29,6 @@ export default class NestedMenu extends LitElement {
     @state()
     private isOpen: boolean = false;
 
-    @state()
-    private currentSubMenu?: NestedMenuItem[];
-
     private tempStylesheet: TempStylesheet = new TempStylesheet(
         "nested-menu-styles",
         css`
@@ -45,19 +41,14 @@ export default class NestedMenu extends LitElement {
                 width: var(--menu-list-width);
                 height: var(--menu-list-height);
             }
-
-            ${helperStyles},
         `,
     );
-
-    private renderItems(items: NestedMenuItem[]) {}
 
     @queryAsync(".menu-list")
     private menuListAsync!: Promise<HTMLDivElement>;
 
     connectedCallback(): void {
         super.connectedCallback();
-        // this.tempStylesheet.attachToHost();
     }
 
     disconnectedCallback(): void {
@@ -125,7 +116,7 @@ export default class NestedMenu extends LitElement {
                 }}
                 .content=${this.renderDropdownContent}
                 .targetElement=${this.menuListAsync}
-                .visible=${this.isOpen}
+                .visible=${true}
             >
             </menu-list>
         </div>`;

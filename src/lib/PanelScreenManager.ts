@@ -1,4 +1,7 @@
 import { VSTInstrument } from "@/modules/vst/VST";
+import DragPanelRoot from "./DragPanelRoot";
+import type { PanelDragEvent } from "@/modules/view/panel-card/PanelEvents";
+import type { LitElement } from "lit";
 
 export enum PanelType {
     VSTI,
@@ -20,7 +23,7 @@ export type FocusPanelEvent = {
     panel?: Panel;
 };
 
-export type PanelElement = HTMLElement &
+export type PanelElement = LitElement &
     RenderCardOptions & {
         screenManager: PanelScreenManager;
         panel: Panel;
@@ -42,11 +45,12 @@ export interface PanelRenderer {
 const DEFAULT_START_POS: [number, number] = [0, 0];
 
 export abstract class Panel extends EventTarget {
-    name: string;
-    element: HTMLElement;
+    readonly name: string;
+    element: PanelElement;
     isVisible: boolean;
     isFullscreen: boolean = false;
     isMinimized: boolean = false;
+    attached: boolean = false;
 
     readonly displayName: string;
 
@@ -61,7 +65,7 @@ export abstract class Panel extends EventTarget {
         screenManagerInstance: PanelScreenManager,
         displayName: string,
         name: string,
-        element: HTMLElement,
+        element: PanelElement,
         type: PanelType,
         isVisible: boolean = false,
         canFullscreen: boolean = false,
@@ -139,7 +143,7 @@ export class CustomPanel extends Panel {
         screenManagerInstance: PanelScreenManager,
         displayName: string,
         name: string,
-        element: HTMLElement,
+        element: PanelElement,
         isVisible: boolean = false,
         canFullscreen: boolean = false,
     ) {
@@ -158,14 +162,49 @@ export class CustomPanel extends Panel {
 export default class PanelScreenManager extends EventTarget {
     readonly panels: Panel[] = [];
 
-    container: HTMLElement | null = null;
-
     current: Panel | undefined;
+
+    private dragPanelRoot: DragPanelRoot;
+
+    constructor(dragRoot?: DragPanelRoot) {
+        super();
+        this.dragPanelRoot = dragRoot ?? new DragPanelRoot();
+    }
 
     public onPanelFocused(callback: (panel?: Panel) => void): void {
         this.addEventListener("panel-focus", (event: Event) => {
             callback((event as CustomEvent).detail.panel);
         });
+    }
+
+    public setRootContainer(container: HTMLElement): void {
+        this.dragPanelRoot.container = container;
+
+        // If the container is already set, we can append existing panels
+        for (const panel of this.panels) {
+            if (panel.attached) {
+                continue;
+            }
+
+            const htmlElement = panel.element;
+            htmlElement.screenManager = this;
+            htmlElement.panel = panel;
+
+            if (container) {
+                container.appendChild(htmlElement);
+                panel.attached = true;
+            }
+        }
+    }
+
+    get rootContainer(): HTMLElement {
+        if (!this.dragPanelRoot.container) {
+            throw new Error(
+                "Root container is not set. Please call setRootContainer first.",
+            );
+        }
+
+        return this.dragPanelRoot.container;
     }
 
     getPanel(name: string): Panel | undefined {
@@ -263,6 +302,8 @@ export default class PanelScreenManager extends EventTarget {
             return panel;
         }
 
+        panel.element.focus();
+
         this.current = panel;
         this.dispatchFocusEvent(panel);
 
@@ -334,9 +375,18 @@ export default class PanelScreenManager extends EventTarget {
 
         htmlElement.panel = panel;
 
-        if (this.container) {
-            this.container.appendChild(htmlElement);
+        const container = this.dragPanelRoot.container;
+
+        if (container) {
+            container.appendChild(htmlElement);
         }
+
+        this.dragPanelRoot.addPanel(panel, htmlElement);
+
+        htmlElement.addEventListener("panel-drag", (ev) => {
+            const { position, isDragging } = ev as unknown as PanelDragEvent;
+            this.dragPanelRoot.setPanelState(panel, position, isDragging);
+        });
 
         this.panels.push(panel);
 

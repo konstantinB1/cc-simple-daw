@@ -15,6 +15,9 @@
         "moduleDetection": "force",
         "noEmit": true,
 
+        "jsx": "preserve",
+        "jsxFactory": "React.createElement",
+
         /* Linting */
         "strict": true,
         "noUnusedLocals": true,
@@ -29,8 +32,9 @@
             "@modules/*": ["./src/modules/*"],
             "@lib/*": ["./src/lib/*"],
             "@gen/*": ["./src/generated/*"],
-            "@core/*": ["./packages/core"]
+            "@core/*": ["./packages/core"],
+            "@mocks/*": ["./test/mocks/*"]
         }
     },
-    "include": ["src", "packages/core"]
+    "include": ["src", "packages/core", "test"]
 }

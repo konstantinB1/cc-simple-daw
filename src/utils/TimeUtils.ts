@@ -11,8 +11,10 @@ export type TempoClockTickCallback = (
 export class StopWatch {
     private startTime: PlaybackTime = 0;
     private elapsedTime: PlaybackTime = 0;
-    private running: boolean = false;
     private requestId: number | null = null;
+
+    // Exposed for testing
+    public running: boolean = false;
 
     start(
         onTick?: StopWatchTickCallback,
@@ -32,11 +34,24 @@ export class StopWatch {
     }
 
     stop() {
-        console.log(this);
         if (this.running) {
             this.running = false;
             this.elapsedTime += performance.now() - this.startTime;
         }
+
+        if (this.requestId !== null) {
+            window.cancelAnimationFrame(this.requestId);
+            this.requestId = null;
+        }
+    }
+
+    pause() {
+        if (!this.running) {
+            return;
+        }
+
+        this.running = false;
+        this.elapsedTime += performance.now() - this.startTime;
 
         if (this.requestId !== null) {
             window.cancelAnimationFrame(this.requestId);
@@ -56,6 +71,12 @@ export class StopWatch {
         }
 
         return this.elapsedTime;
+    }
+
+    setElapsedTime(time: PlaybackTime): void {
+        this.elapsedTime = time;
+        this.startTime = performance.now();
+        this.running = true;
     }
 
     private tick(cb: StopWatchTickCallback): void {

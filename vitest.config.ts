@@ -1,6 +1,8 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+    root: process.cwd(),
+    base: "/",
     test: {
         globals: true,
         environment: "jsdom",
@@ -14,6 +16,8 @@ export default defineConfig({
             "@lib": "/src/lib",
             "@gen": "/src/generated",
             "@packages/": "/src/packages",
+            "@mocks": "/test/mocks",
         },
+        extensions: [".ts", ".json"],
     },
 });

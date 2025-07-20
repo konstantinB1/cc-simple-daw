@@ -5,6 +5,7 @@ import {
 } from "@/components/Select";
 import { typography } from "@/global-styles";
 import ProgramManager from "@/lib/ProgramManager";
+import type { PanelCardElement } from "@/modules/view/panel-card/PanelCard";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 

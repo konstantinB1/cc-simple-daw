@@ -23,7 +23,7 @@ export default class ZoomState {
         new ZoomStateEntry(DEFAULT_ZOOM_LEVEL, -1, -1),
     ];
 
-    get current(): ZoomStateEntry | undefined {
+    get current(): ZoomStateEntry {
         return this.entries?.[0];
     }
 
