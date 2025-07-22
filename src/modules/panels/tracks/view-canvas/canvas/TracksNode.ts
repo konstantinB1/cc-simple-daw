@@ -11,9 +11,12 @@ import {
 import type AudioSource from "@/lib/AudioSource";
 import TrackCanvasStoreState from "../TrackCanvasStoreState";
 import type TracksCanvasRenderer from "./TracksCanvasRenderer";
-import type { RootRenderer } from "./NodeInterface";
+import type { RootRenderer, TrackCanvasNode } from "./NodeInterface";
 
-export default class TracksNode extends TrackCanvasStoreState {
+export default class TracksNode
+    extends TrackCanvasStoreState
+    implements TrackCanvasNode
+{
     private rootRenderer: TracksCanvasRenderer;
 
     constructor(rootRenderer: RootRenderer) {

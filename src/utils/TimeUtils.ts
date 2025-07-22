@@ -76,7 +76,6 @@ export class StopWatch {
     setElapsedTime(time: PlaybackTime): void {
         this.elapsedTime = time;
         this.startTime = performance.now();
-        this.running = true;
     }
 
     private tick(cb: StopWatchTickCallback): void {

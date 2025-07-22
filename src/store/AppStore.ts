@@ -109,10 +109,6 @@ class AppStore extends Store<StoreState> {
     startPlayback(onTick?: (currentTime: number) => void): void {
         const currentTime = this.state.playback.currentTime;
 
-        this.ctx.resume().catch((error) => {
-            console.error("Failed to resume audio context:", error);
-        });
-
         this.stopWatch.start(() => {
             const time = this.stopWatch.getElapsedTime();
             this.setState((state) => {
@@ -138,10 +134,6 @@ class AppStore extends Store<StoreState> {
         });
 
         this.scheduler.stop();
-
-        this.ctx.suspend().catch((error) => {
-            console.error("Failed to suspend audio context:", error);
-        });
     }
 
     toggleRecording(): void {
@@ -171,7 +163,12 @@ class AppStore extends Store<StoreState> {
     setCurrentTime(time: number): void {
         this.stopWatch.setElapsedTime(time);
 
-        if (this.state.playback.isPlaying) {
+        if (!this.state.playback.isPlaying) {
+            this.setState((state) => {
+                state.playback.currentTime = time;
+                state.playback.timeEventChange = TimeEventChange.SeekStart;
+            });
+        } else {
             this.scheduler.reschedule();
         }
     }

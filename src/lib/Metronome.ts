@@ -1,7 +1,10 @@
 import type { GlobalAudioContext } from "@/types";
 import AudioSource from "./AudioSource";
 
-export type NextBeatCallback = (nextBeatTime: number) => void;
+export type NextBeatCallback = (
+    nextBeatTime: number,
+    currentBeat: number,
+) => void;
 
 export type MetronomeConfig = {
     ctx: GlobalAudioContext;
@@ -71,14 +74,13 @@ export default class Metronome {
                 // Keep the metronome on the beat, and only
 
                 if (!this.source.muted) {
-                    // Play the sound with a slight variation for the first beat
                     this.source.play({
                         when: 0,
                         playbackRate: this.currentBeat === 0 ? 1.1 : 1.0,
                     });
                 }
 
-                callback?.(this.nextBeatTime);
+                callback?.(this.nextBeatTime, this.currentBeat);
                 this.currentBeat = (this.currentBeat + 1) % beatsPerBar;
                 this.nextBeatTime += this.beatInterval;
             }
@@ -104,6 +106,8 @@ export default class Metronome {
             cancelAnimationFrame(this.rafId);
             this.rafId = null;
         }
+
+        this.nextBeatTime = 0;
     }
 
     restart(
@@ -124,19 +128,5 @@ export default class Metronome {
 
     unmute(): void {
         this.source.setMuted(false);
-    }
-
-    countdownToStart(callback: NextBeatCallback): void {
-        let countdown = 3; // Start from 3 seconds
-
-        const intervalId = setInterval(() => {
-            if (countdown <= 0) {
-                clearInterval(intervalId);
-                callback(0); // Trigger the first beat immediately
-            } else {
-                callback(countdown * 1000); // Convert to milliseconds
-                countdown--;
-            }
-        }, 1000);
     }
 }

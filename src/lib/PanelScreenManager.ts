@@ -162,7 +162,8 @@ export class CustomPanel extends Panel {
 export default class PanelScreenManager extends EventTarget {
     readonly panels: Panel[] = [];
 
-    current: Panel | undefined;
+    // Allow multiple panels to be focused at once.
+    current: Panel[] | undefined;
 
     private dragPanelRoot: DragPanelRoot;
 
@@ -250,7 +251,9 @@ export default class PanelScreenManager extends EventTarget {
             return this.focus(first.name);
         }
 
-        const currentIndex = this.panels.indexOf(currentPanel);
+        // Last focused panel is an array, so we take the first one.
+        const last = currentPanel[currentPanel.length - 1];
+        const currentIndex = this.panels.indexOf(last);
         const nextIndex = (currentIndex + 1) % this.panels.length;
         const nextPanel = this.panels[nextIndex];
 
@@ -277,7 +280,8 @@ export default class PanelScreenManager extends EventTarget {
             return this.focus(last.name);
         }
 
-        const currentIndex = this.panels.indexOf(currentPanel);
+        const last = currentPanel[currentPanel.length - 1];
+        const currentIndex = this.panels.indexOf(last);
         const previousIndex =
             (currentIndex - 1 + this.panels.length) % this.panels.length;
         const previousPanel = this.panels[previousIndex];
@@ -298,13 +302,9 @@ export default class PanelScreenManager extends EventTarget {
             throw new Error(`Panel with name ${name} does not exist.`);
         }
 
-        if (this.current === panel) {
-            return panel;
-        }
-
         panel.element.focus();
 
-        this.current = panel;
+        this.current?.push(panel);
         this.dispatchFocusEvent(panel);
 
         return panel;

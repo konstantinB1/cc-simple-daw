@@ -324,10 +324,10 @@ export default class PanelCard
         }
 
         return html` <icon-button
-            size=${30}
+            size=${26}
             @handle-click=${this.handleDoubleClick.bind(this)}
         >
-            <fullscreen-icon .size=${16}></fullscreen-icon>
+            <fullscreen-icon .size=${14}></fullscreen-icon>
         </icon-button>`;
     }
 

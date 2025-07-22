@@ -6,6 +6,7 @@ export type RootRenderer = TracksCanvasRenderer;
 
 export interface TrackCanvasNode {
     draw(...args: any[]): void;
+    reset?(): void;
 }
 
 export type TrackCanvasNodeConstructor = new (

@@ -8,17 +8,17 @@ import {
 } from "./canvasConstants";
 import type TracksCanvasRenderer from "./TracksCanvasRenderer";
 import { store } from "@/store/AppStore";
-import DragState from "./DragState";
+import type { TrackCanvasNode } from "./NodeInterface";
+import TrackCanvasStoreState from "../TrackCanvasStoreState";
 
-export default class TimelineNode {
+export default class TimelineNode
+    extends TrackCanvasStoreState
+    implements TrackCanvasNode
+{
     private rootRenderer: TracksCanvasRenderer;
 
-    // We have a separate drag state for the timeline
-    // to avoid conflicts with track dragging
-    // and to allow independent timeline dragging
-    private timelineDragState = new DragState();
-
     constructor(rootRenderer: TracksCanvasRenderer) {
+        super();
         this.rootRenderer = rootRenderer;
 
         this.handleClick = this.handleClick.bind(this);
@@ -49,14 +49,14 @@ export default class TimelineNode {
 
         // Convert beat position to time in milliseconds
         // Formula: time = (beat position / (BPM / 60)) * 1000
-        const timeInSeconds = beatPosition / (this.rootRenderer.bpm! / 60);
+        const timeInSeconds = beatPosition / (this.bpm! / 60);
         const timeInMs = timeInSeconds * 1000;
 
         // Ensure we don't return negative time
         return Math.max(0, timeInMs);
     }
 
-    private handleClick = (e: MouseEvent) => {
+    private handleClick(e: MouseEvent) {
         // Only handle clicks in the timeline area (not in the legend)
         if (e.offsetX < TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE) {
             return;
@@ -67,15 +67,10 @@ export default class TimelineNode {
             return;
         }
 
-        // Don't handle clicks if we were dragging
-        if (this.rootRenderer.dragState.isDragging) {
-            return;
-        }
-
         const clickedTime = this.getTimeFromMousePosition(e.offsetX);
 
         store.setCurrentTime(clickedTime);
-    };
+    }
 
     draw(): void {
         const {

@@ -171,9 +171,20 @@ export default class PlaybackElement extends ScopedRegistryHost(LitElement) {
             this.metronome.stop();
             store.stopPlayback();
         } else {
-            this.metronome.start(this.state.bpm, this.beatsPerBar);
-
-            store.startPlayback();
+            if (this.countdown) {
+                this.metronome.start(
+                    this.state.bpm,
+                    this.beatsPerBar,
+                    (_, currentBeat) => {
+                        if (currentBeat === 3) {
+                            store.startPlayback();
+                        }
+                    },
+                );
+            } else {
+                this.metronome.start(this.state.bpm, this.beatsPerBar);
+                store.startPlayback();
+            }
         }
     }
 

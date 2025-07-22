@@ -64,15 +64,6 @@ export default class CanvasScroll {
 
             root.zoomState.x = mouseOffsetInScrollableArea;
 
-            // Cancel any ongoing animations for immediate response
-            if (root.animationState.isAnimating) {
-                if (root.animationFrameId) {
-                    cancelAnimationFrame(root.animationFrameId);
-                    root.animationFrameId = null;
-                }
-                root.animationState.complete();
-            }
-
             const currentZoomLevel = root.zoomState.current!.level;
             const currentViewportOffsetX = root.viewportOffsetX;
 

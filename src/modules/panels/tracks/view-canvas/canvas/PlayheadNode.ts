@@ -72,14 +72,15 @@ export default class PlayheadNode
         const beatPosition = timeInSeconds * (bpm / 60);
         const timelineX = beatPosition * currentBeatWidth;
 
-        // Calculate viewport center position
+        // Position playhead at the left side of viewport (with small margin)
+        const leftMargin = 50; // Small margin from the left edge
+        const targetOffset = timelineX - leftMargin;
+
+        // Calculate viewport constraints
         const scrollableWidth =
             this.rootRenderer.bounds.width -
             TRACK_LEGEND_CONTAINER_PX -
             LEGEND_CONTENT_LINE;
-        const centerOffset = timelineX - scrollableWidth / 2;
-
-        // Update viewport offset to center on playhead
         const maxScrollX = Math.max(
             0,
             currentBeatWidth * this.rootRenderer.virtualTimelineBeats -
@@ -88,7 +89,7 @@ export default class PlayheadNode
 
         this.rootRenderer.viewportOffsetX = Math.max(
             0,
-            Math.min(maxScrollX, centerOffset),
+            Math.min(maxScrollX, targetOffset),
         );
         this.rootRenderer.render();
     }

@@ -6,8 +6,6 @@ import {
     TRACK_LINE_BASE_HEIGHT_PX,
     TIME_LEGEND_CELL_HEIGHT,
 } from "./canvasConstants";
-import DragState from "./DragState";
-import AnimationState from "./AnimationState";
 import ZoomState from "./ZoomState";
 import { themeVars } from "@/styles";
 import type { AudioEvent, PlayEvent } from "@/lib/AudioSource";
@@ -19,35 +17,33 @@ import TracksNode from "./TracksNode";
 import type { TrackCanvasNode } from "./NodeInterface";
 import TrackCanvasStoreState from "../TrackCanvasStoreState";
 import CanvasScroll from "./Scroll";
+import AnimationState from "./AnimationState";
+import TimelineNodeDragSystem from "./TimelineNodeDrag";
 
-export default class TracksCanvasRenderer extends TrackCanvasStoreState {
+export default class TracksCanvasRenderer {
     ctx: CanvasRenderingContext2D;
     element: HTMLCanvasElement;
     currentBottomYOffset = 0;
     viewportOffsetX: number = 0;
-    animationFrameId: number | null = null;
+    tracks: AudioSource[] = [];
+
+    readonly events: AudioEvent[] = [];
+    readonly renderNodes: TrackCanvasNode[] = [];
 
     private _bounds: DOMRect;
 
-    readonly zoomState = new ZoomState();
     readonly animationState = new AnimationState();
-    readonly events: AudioEvent[] = [];
-    readonly renderNodes: TrackCanvasNode[] = [];
-    readonly dragState = new DragState();
+    readonly zoomState = new ZoomState();
 
     private container: HTMLElement | null = null;
-    private momentumAnimationId: number | null = null;
     private resizeObserver: ResizeObserver | null = null;
-
-    tracks: AudioSource[] = [];
+    private dragSystem: TimelineNodeDragSystem | null = null;
 
     constructor(
         element: HTMLCanvasElement,
         ctx: CanvasRenderingContext2D,
         container: HTMLElement | null = null,
     ) {
-        super();
-
         this.ctx = ctx;
         this.element = element;
         this.container = container;
@@ -58,25 +54,13 @@ export default class TracksCanvasRenderer extends TrackCanvasStoreState {
             new PlayheadNode(this),
         ];
 
-        this.handleMouseDown = this.handleMouseDown.bind(this);
-        this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handleMouseUp = this.handleMouseUp.bind(this);
-        this.handleMouseLeave = this.handleMouseLeave.bind(this);
-
         this._bounds = element.getBoundingClientRect();
 
-        this.startEvents();
         this.setupResizeObserver();
 
         new CanvasScroll(this);
-    }
-
-    protected override onCurrentTimeChange(newTime: number): void {
-        super.onCurrentTimeChange(newTime);
-    }
-
-    protected override onBpmChange(newTime: number): void {
-        super.onBpmChange(newTime);
+        this.dragSystem = new TimelineNodeDragSystem(this.element, this);
+        this.animationState = new AnimationState();
     }
 
     set bounds(rect: DOMRect) {
@@ -86,10 +70,6 @@ export default class TracksCanvasRenderer extends TrackCanvasStoreState {
 
     get bounds(): DOMRect {
         return this._bounds;
-    }
-
-    setBPM(bpm: number) {
-        this.bpm = bpm;
     }
 
     setTracks(tracks: AudioSource[]) {
@@ -135,20 +115,6 @@ export default class TracksCanvasRenderer extends TrackCanvasStoreState {
                 this.resizeObserver.observe(this.container);
             }
         }
-    }
-
-    private startEvents() {
-        this.element.addEventListener("mousedown", this.handleMouseDown);
-        this.element.addEventListener("mousemove", this.handleMouseMove);
-        this.element.addEventListener("mouseup", this.handleMouseUp);
-        this.element.addEventListener("mouseleave", this.handleMouseLeave);
-    }
-
-    private removeEvents() {
-        this.element.removeEventListener("mousedown", this.handleMouseDown);
-        this.element.removeEventListener("mousemove", this.handleMouseMove);
-        this.element.removeEventListener("mouseup", this.handleMouseUp);
-        this.element.removeEventListener("mouseleave", this.handleMouseLeave);
     }
 
     private reset() {
@@ -232,55 +198,14 @@ export default class TracksCanvasRenderer extends TrackCanvasStoreState {
         this.renderNodes.forEach((node) => {
             node.draw();
         });
+
+        // Draw selection overlay after all nodes
+        if (this.dragSystem) {
+            this.dragSystem.drawSelection(this.ctx);
+        }
     }
 
-    private handleMouseDown(e: MouseEvent) {
-        // Only start drag if we're in the timeline area (not in the legend)
-        if (e.offsetX < TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE) {
-            return;
-        }
-
-        // Cancel any ongoing animations
-        if (this.animationState.isAnimating) {
-            if (this.animationFrameId) {
-                cancelAnimationFrame(this.animationFrameId);
-                this.animationFrameId = null;
-            }
-            this.animationState.complete();
-        }
-
-        if (this.momentumAnimationId) {
-            cancelAnimationFrame(this.momentumAnimationId);
-            this.momentumAnimationId = null;
-        }
-
-        const rect = this.element.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-
-        this.dragState.start(mouseX, this.viewportOffsetX);
-        this.element.style.cursor = "grabbing";
-    }
-
-    private handleMouseMove(e: MouseEvent) {
-        if (!this.dragState.isDragging) {
-            // Update cursor based on position
-            if (e.offsetX >= TRACK_LEGEND_CONTAINER_PX + LEGEND_CONTENT_LINE) {
-                this.element.style.cursor = "grab";
-            } else {
-                this.element.style.cursor = "default";
-            }
-            return;
-        }
-
-        const rect = this.element.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-
-        const deltaX = this.dragState.update(mouseX);
-
-        this.updateViewportOffset(deltaX);
-    }
-
-    private updateViewportOffset(deltaX: number) {
+    updateViewportOffset(deltaX: number) {
         // Calculate max scroll position based on virtual timeline
         const scrollableWidth =
             this._bounds.width -
@@ -298,51 +223,6 @@ export default class TracksCanvasRenderer extends TrackCanvasStoreState {
         );
 
         this.render();
-    }
-
-    private handleMouseUp() {
-        if (this.dragState.isDragging) {
-            this.dragState.end();
-            this.element.style.cursor = "grab";
-
-            // Start momentum animation if there's velocity
-            if (this.dragState.hasActiveMomentum) {
-                this.startMomentumAnimation();
-            }
-        }
-    }
-
-    private handleMouseLeave() {
-        if (this.dragState.isDragging) {
-            this.dragState.end();
-            this.element.style.cursor = "default";
-
-            // Start momentum animation if there's velocity
-            if (this.dragState.hasActiveMomentum) {
-                this.startMomentumAnimation();
-            }
-        }
-    }
-
-    private startMomentumAnimation() {
-        // Simplified momentum with minimal physics
-        if (this.momentumAnimationId) {
-            cancelAnimationFrame(this.momentumAnimationId);
-        }
-
-        const animate = () => {
-            const deltaX = this.dragState.updateMomentum();
-
-            if (Math.abs(deltaX) > 0.1) {
-                // Higher threshold to stop sooner
-                this.updateViewportOffset(deltaX);
-                this.momentumAnimationId = requestAnimationFrame(animate);
-            } else {
-                this.momentumAnimationId = null;
-            }
-        };
-
-        this.momentumAnimationId = requestAnimationFrame(animate);
     }
 
     // Add public method to force bounds update and re-render
@@ -383,22 +263,15 @@ export default class TracksCanvasRenderer extends TrackCanvasStoreState {
     }
 
     public destroy() {
-        this.removeEvents();
-
         // Cleanup ResizeObserver
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
             this.resizeObserver = null;
         }
 
-        if (this.animationFrameId) {
-            cancelAnimationFrame(this.animationFrameId);
-            this.animationFrameId = null;
-        }
-
-        if (this.momentumAnimationId) {
-            cancelAnimationFrame(this.momentumAnimationId);
-            this.momentumAnimationId = null;
+        if (this.dragSystem) {
+            this.dragSystem.removeEvents();
+            this.dragSystem = null;
         }
     }
 

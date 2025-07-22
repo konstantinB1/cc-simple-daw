@@ -107,6 +107,8 @@ export default class TracksViewCanvas extends LitElement {
                 cursor: grab;
                 background-color: var(--color-primary);
                 touch-action: none;
+
+                outline: none;
             }
 
             #tracks-view-canvas:active {
@@ -186,7 +188,7 @@ export default class TracksViewCanvas extends LitElement {
 
         return html`
             <div class=${classes}>
-                <canvas id="tracks-view-canvas"></canvas>
+                <canvas id="tracks-view-canvas" tabindex="0"></canvas>
             </div>
         `;
     }

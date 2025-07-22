@@ -31,23 +31,15 @@ export default class MenuItem extends ScopedRegistryHost(LitElement) {
                 display: block;
                 cursor: pointer;
                 user-select: none;
-                border-bottom: 1px solid var(--color-border);
+
                 height: 100%;
-            }
-
-            :host(:first-child) .value {
-            }
-
-            :host(:last-child) {
-                border-bottom: none;
-            }
-
-            :host(:last-child) .value {
             }
 
             .value {
                 padding: 10px 18px;
                 background-color: var(--color-secondary);
+                border-bottom: 1px solid var(--color-border);
+                border-left: 5px solid var(--color-border);
 
                 &:hover {
                     background-color: var(--color-dark-contrast);
@@ -57,7 +49,7 @@ export default class MenuItem extends ScopedRegistryHost(LitElement) {
             .value.selected {
                 background-color: var(--color-secondary);
                 color: var(--color-on-primary);
-                border-bottom: 1px solid var(--color-tint-primary);
+                border-left: 5px solid var(--color-tint-primary);
             }
         `,
     ];
